@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Buz Pro - Fixed</title>
-    <!-- FontAwesome & Fonts -->
+    <title>Buz Pro - مكالمات حديثة</title>
+    <!-- FontAwesome & Google Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Tailwind (Optional helper) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
@@ -20,261 +20,244 @@
             --radius-md: 16px;
         }
 
-        * { font-family: 'Alexandria', sans-serif; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        * { font-family: 'Alexandria', sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            height: 100dvh; /* استخدام dvh للموبايل */
+            height: 100dvh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            margin: 0;
         }
 
-        /* --- Screens Logic --- */
+        /* --- Screens --- */
         .screen {
             position: absolute; inset: 0;
             display: flex; flex-direction: column;
             background: var(--bg-dark);
             z-index: 10;
-            transition: opacity 0.3s ease;
         }
-        .hidden-screen { display: none !important; opacity: 0; pointer-events: none; }
+        .hidden-screen { display: none !important; }
 
         /* --- UI Components --- */
         .btn-modern {
-            background: var(--primary); color: #000; font-weight: 700;
-            border-radius: 99px; padding: 14px; width: 100%; border: none;
+            background: var(--primary); color: #000; font-weight: 600;
+            border-radius: 9999px; padding: 16px 32px;
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(195, 255, 0, 0.2);
+            width: 100%; border: none; font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(195, 255, 0, 0.2);
         }
         .btn-modern:active { transform: scale(0.98); }
-
-        .modern-input {
-            width: 100%; background: #2a2a2a; border: 1px solid #333;
-            color: white; padding: 14px; border-radius: 14px; text-align: center;
-            outline: none; margin-bottom: 12px; font-size: 1rem;
+        
+        .btn-icon-circle {
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; background: #2d2d2d; color: white;
+            border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
         }
-        .modern-input:focus { border-color: var(--primary); }
+        .btn-icon-circle.off { background: #2d2d2d; color: var(--danger); position: relative; }
+        .btn-icon-circle.off::after { content: '\\'; position: absolute; font-size: 1.2rem; }
+        .btn-icon-circle.hangup { background: var(--danger); color: white; width: 64px; height: 64px; border:none; }
 
-        /* --- Call Layout (Fixed Overlap) --- */
+        /* --- Call Screen --- */
         .call-layout {
-            display: flex; flex-direction: column; height: 100%; width: 100%;
+            height: 100%; display: flex; flex-direction: column;
+            background: #000; position: relative;
         }
-
         .call-header {
-            padding: 12px 16px; 
+            position: absolute; top: 0; left: 0; right: 0;
+            padding: 16px; z-index: 20;
             display: flex; justify-content: space-between; align-items: center;
-            background: #121212; border-bottom: 1px solid #333;
-            height: 60px; flex-shrink: 0; /* منع التقلص */
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+        }
+        .room-pill {
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            padding: 8px 16px; border-radius: 50px; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; cursor: pointer;
         }
 
-        /* Grid takes remaining space */
+        /* --- Grid & Spacing Fix --- */
         .grid-container {
-            flex: 1; /* يأخذ المساحة المتبقية */
-            display: grid; 
-            padding: 10px; gap: 10px;
-            overflow-y: auto; 
-            align-content: center; /* توسيط المحتوى عمودياً */
+            flex: 1; padding: 12px; gap: 12px;
+            display: grid; overflow-y: auto; align-content: center;
+            /* إضافة مسافة سفلية كبيرة لعدم تداخل الفيديو مع الأزرار */
+            padding-bottom: 120px; 
         }
         .grid-1 { grid-template-columns: 1fr; }
         .grid-2 { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
-        .grid-3 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
-        .grid-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+        .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
 
-        /* Footer Area (Fixed at bottom, no overlap) */
-        .controls-area {
-            height: 90px; flex-shrink: 0; /* ارتفاع ثابت */
-            background: #000;
-            border-top: 1px solid #333;
-            display: flex; align-items: center; justify-content: center; gap: 15px;
-            padding-bottom: 10px; /* مسافة للأجهزة الحديثة */
-        }
-
-        .btn-icon-circle {
-            width: 50px; height: 50px; border-radius: 50%;
-            background: #2d2d2d; color: white; border: none;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; cursor: pointer; transition: 0.2s;
-        }
-        .btn-icon-circle.active { background: white; color: black; }
-        .btn-icon-circle.off { background: #2d2d2d; color: var(--danger); }
-        .btn-icon-circle.hangup { background: var(--danger); color: white; width: 55px; height: 55px; }
-
-        /* --- Video Cards --- */
         .video-wrapper {
-            background: #1e1e1e; border-radius: 16px; overflow: hidden;
-            position: relative; width: 100%; height: 100%;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            background: #1e1e1e; border-radius: var(--radius-md); overflow: hidden;
+            position: relative; width: 100%; height: 100%; min-height: 200px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .video-wrapper video { width: 100%; height: 100%; object-fit: cover; }
-        /* مرآة للفيديو الخاص بي فقط */
-        #vid-local { transform: scaleX(-1); } 
-
+        .video-wrapper video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); background: #000; }
         .user-label {
-            position: absolute; bottom: 10px; left: 10px; right: 10px;
-            display: flex; justify-content: space-between; align-items: flex-end;
-        }
-        .name-tag {
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-            padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; color: white;
-        }
-        .mic-status {
-            width: 24px; height: 24px; background: rgba(255,0,0,0.8);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 0.7rem; color: white; display: none; /* مخفي افتراضياً */
+            position: absolute; bottom: 12px; left: 12px;
+            background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 8px;
+            font-size: 0.8rem; font-weight: 500;
+            display: flex; align-items: center; gap: 6px; text-shadow: 0 1px 2px black;
         }
 
-        /* --- Avatar Upload --- */
-        .avatar-upload {
-            width: 90px; height: 90px; margin: 0 auto 15px; position: relative;
-        }
-        .avatar-upload img {
-            width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #333;
-        }
-        .edit-icon {
-            position: absolute; bottom: 0; right: 0; background: var(--primary);
-            width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            color: black; cursor: pointer;
+        .controls-bar {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(30,30,30,0.95); backdrop-filter: blur(12px);
+            padding: 12px 24px; border-radius: 50px;
+            display: flex; gap: 16px; align-items: center; z-index: 30;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: max-content; margin-bottom: env(safe-area-inset-bottom);
         }
 
-        /* --- Drawers --- */
-        .drawer {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 60vh;
-            background: #1a1a1a; border-radius: 20px 20px 0 0;
-            z-index: 100; transform: translateY(110%); transition: transform 0.3s;
-            display: flex; flex-direction: column; padding: 15px;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+        /* --- Other Styles --- */
+        .preview-container {
+            position: relative; width: 100%; max-width: 400px; aspect-ratio: 9/16; max-height: 55vh;
+            background: #222; border-radius: 24px; overflow: hidden; margin-bottom: 24px;
+            display: flex; align-items: center; justify-content: center; border: 1px solid #333;
         }
-        .drawer.open { transform: translateY(0); }
-        .drawer-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #333;
+        .preview-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        .bottom-sheet {
+            position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);
+            display: flex; flex-direction: column; justify-content: flex-end;
+            opacity: 0; pointer-events: none; transition: 0.3s;
         }
+        .bottom-sheet.open { opacity: 1; pointer-events: auto; }
+        .sheet-content {
+            background: #1e1e1e; border-top-left-radius: 24px; border-top-right-radius: 24px;
+            padding: 20px; max-height: 80vh; min-height: 40vh; display: flex; flex-direction: column;
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            padding-bottom: 40px; /* Safe space */
+        }
+        .bottom-sheet.open .sheet-content { transform: translateY(0); }
+        
+        .modern-input {
+            width: 100%; background: #2a2a2a; border: 1px solid #333; color: white;
+            padding: 16px; border-radius: 16px; font-size: 1.1rem; text-align: center; outline: none; margin-bottom: 16px;
+        }
+        .avatar-upload { position: relative; width: 100px; height: 100px; margin: 0 auto 20px; }
+        .avatar-upload img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #333; }
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #333; color: white; padding: 12px 24px; border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 100;
+            display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
+            transition: 0.4s; opacity: 0;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     </style>
 </head>
 <body>
 
-    <!-- === Screen 1: Welcome === -->
+    <div id="toast" class="toast"><i class="fa-solid fa-circle-info"></i><span id="toast-msg"></span></div>
+
+    <!-- === 1. Welcome === -->
     <div id="screen-welcome" class="screen">
-        <div class="flex-1 flex flex-col items-center justify-center p-6 max-w-md mx-auto w-full">
-            <div class="w-20 h-20 rounded-2xl bg-lime-400 flex items-center justify-center text-3xl mb-6 shadow-lg shadow-lime-400/20">
+        <div class="flex-1 flex flex-col items-center justify-center p-6 text-center w-full max-w-md mx-auto">
+            <div class="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center text-3xl text-black mb-6 shadow-[0_0_30px_rgba(195,255,0,0.3)]">
                 <i class="fa-solid fa-bolt"></i>
             </div>
-            
+            <h1 class="text-2xl font-bold mb-2">Buz Pro</h1>
+            <p class="text-gray-400 mb-8 text-sm">مكالمات فيديو ثابتة وسريعة</p>
+
             <div class="avatar-upload" onclick="document.getElementById('file-in').click()">
                 <img id="avatar-prev" src="https://cdn-icons-png.flaticon.com/512/847/847969.png">
-                <div class="edit-icon"><i class="fa-solid fa-camera"></i></div>
+                <div class="absolute bottom-0 right-0 w-8 h-8 bg-primary text-black rounded-full flex items-center justify-center"><i class="fa-solid fa-pen"></i></div>
             </div>
             <input type="file" id="file-in" hidden accept="image/*">
 
-            <input type="text" id="username-in" class="modern-input" placeholder="اكتب اسمك هنا...">
-
-            <div id="btn-group" class="w-full flex flex-col gap-3">
+            <input type="text" id="username-in" class="modern-input" placeholder="اكتب اسمك">
+            
+            <div id="action-buttons" class="w-full flex flex-col gap-3">
                 <button onclick="goToLobby('create')" class="btn-modern">
                     <i class="fa-solid fa-video"></i> اجتماع جديد
                 </button>
-                <div id="join-options" class="hidden w-full">
-                    <button onclick="goToLobby('join')" class="btn-modern bg-gray-700 text-white">
-                        <i class="fa-solid fa-right-to-bracket"></i> انضمام الآن
+                <div id="join-section" class="hidden w-full">
+                     <button onclick="goToLobby('join')" class="btn-modern bg-gray-700 text-white hover:bg-gray-600">
+                        <i class="fa-solid fa-right-to-bracket"></i> انضمام
                     </button>
-                    <p id="join-status" class="text-center text-lime-400 text-sm mt-2"></p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- === Screen 2: Lobby (Preview) === -->
+    <!-- === 2. Lobby === -->
     <div id="screen-lobby" class="screen hidden-screen">
-        <div class="flex-1 flex flex-col items-center justify-center p-6">
-            <h2 class="text-xl font-bold mb-4">معاينة الفيديو</h2>
+        <div class="flex-1 flex flex-col items-center justify-center p-6 text-center w-full max-w-md mx-auto">
+            <h2 class="text-xl font-bold mb-4">تجهيز الكاميرا</h2>
             
-            <div class="relative w-full max-w-xs aspect-[3/4] bg-black rounded-2xl overflow-hidden mb-6 border border-gray-800">
-                <video id="preview-video" autoplay playsinline muted class="w-full h-full object-cover transform scale-x-[-1]"></video>
-                <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-4">
-                    <button id="prev-mic" onclick="togglePrevMic()" class="w-10 h-10 rounded-full bg-white/20 text-white flex items-center justify-center">
-                        <i class="fa-solid fa-microphone"></i>
-                    </button>
-                    <button id="prev-cam" onclick="togglePrevCam()" class="w-10 h-10 rounded-full bg-white/20 text-white flex items-center justify-center">
-                        <i class="fa-solid fa-video"></i>
-                    </button>
+            <div class="preview-container">
+                <video id="local-preview" autoplay playsinline muted class="preview-video"></video>
+                <div id="preview-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-800 hidden">
+                    <i class="fa-solid fa-video-slash text-2xl text-gray-500 mb-2"></i>
+                    <span class="text-sm text-gray-400">الكاميرا مغلقة</span>
+                </div>
+                <div class="absolute bottom-4 flex gap-4 bg-black/50 backdrop-blur px-4 py-2 rounded-full">
+                    <button onclick="togglePreviewMic()" id="prev-mic-btn" class="w-10 h-10 rounded-full bg-white/20 text-white flex items-center justify-center"><i class="fa-solid fa-microphone"></i></button>
+                    <button onclick="togglePreviewCam()" id="prev-cam-btn" class="w-10 h-10 rounded-full bg-white/20 text-white flex items-center justify-center"><i class="fa-solid fa-video"></i></button>
                 </div>
             </div>
 
-            <div class="w-full max-w-xs">
-                <button id="perm-btn" onclick="requestPerms()" class="btn-modern bg-blue-600 text-white">
-                    <i class="fa-solid fa-shield-halved"></i> السماح بالوصول
-                </button>
-                <button id="enter-btn" onclick="enterRoom()" class="btn-modern hidden">
-                    <i class="fa-solid fa-check"></i> دخول الغرفة
-                </button>
-            </div>
+            <button id="perm-btn" onclick="requestPermissions()" class="btn-modern bg-blue-500 text-white mb-3">
+                <i class="fa-solid fa-lock-open"></i> السماح بالوصول
+            </button>
+            <button id="enter-btn" onclick="enterRoom()" class="btn-modern hidden">
+                <i class="fa-solid fa-check"></i> انضمام الآن
+            </button>
+            <button onclick="location.reload()" class="mt-4 text-gray-500 text-sm">إلغاء</button>
         </div>
     </div>
 
-    <!-- === Screen 3: Call (The Main App) === -->
+    <!-- === 3. Call Screen === -->
     <div id="screen-call" class="screen hidden-screen">
         <div class="call-layout">
-            <!-- Top Header -->
             <div class="call-header">
-                <div class="bg-white/10 px-3 py-1 rounded-full flex items-center gap-2 cursor-pointer" onclick="copyLink()">
+                <div class="room-pill" onclick="copyRoomId()">
                     <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    <span id="room-id-disp" class="text-xs font-mono">ID: ...</span>
-                    <i class="fa-regular fa-copy text-xs text-gray-400"></i>
+                    <span id="room-id-disp" class="font-mono ml-2">...</span>
+                    <i class="fa-regular fa-copy text-gray-400 ml-1"></i>
                 </div>
-                <button onclick="document.getElementById('drawer-users').classList.add('open')" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center relative">
-                    <i class="fa-solid fa-users text-xs"></i>
-                    <span id="req-badge" class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full hidden"></span>
+                <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center" onclick="openDrawer('participants-drawer')">
+                    <i class="fa-solid fa-users text-sm"></i>
+                    <span id="badge-req" class="absolute top-3 right-3 w-3 h-3 bg-red-500 rounded-full hidden"></span>
                 </button>
             </div>
 
-            <!-- Video Grid Area (Takes remaining space) -->
             <div id="video-grid" class="grid-container grid-1">
-                <!-- Videos will be injected here -->
+                <!-- Videos here -->
             </div>
 
-            <!-- Bottom Controls (Fixed Height, No Overlap) -->
-            <div class="controls-area">
-                <button id="btn-mic" class="btn-icon-circle active" onclick="toggleMic()">
-                    <i class="fa-solid fa-microphone"></i>
-                </button>
-                <button id="btn-cam" class="btn-icon-circle active" onclick="toggleCam()">
-                    <i class="fa-solid fa-video"></i>
-                </button>
-                <button class="btn-icon-circle hangup" onclick="location.reload()">
-                    <i class="fa-solid fa-phone-slash"></i>
-                </button>
-                <button class="btn-icon-circle" onclick="document.getElementById('drawer-chat').classList.add('open')">
-                    <i class="fa-solid fa-comment-dots"></i>
-                </button>
+            <div class="controls-bar">
+                <button id="btn-mic" class="btn-icon-circle" onclick="toggleMic()"><i class="fa-solid fa-microphone"></i></button>
+                <button id="btn-cam" class="btn-icon-circle" onclick="toggleCam()"><i class="fa-solid fa-video"></i></button>
+                <button class="btn-icon-circle hangup" onclick="location.reload()"><i class="fa-solid fa-phone-slash"></i></button>
+                <button class="btn-icon-circle" onclick="openDrawer('chat-drawer')"><i class="fa-solid fa-comment-dots"></i></button>
             </div>
         </div>
     </div>
 
     <!-- Drawers -->
-    <div id="drawer-chat" class="drawer">
-        <div class="drawer-header">
-            <h3>المحادثة</h3>
-            <i class="fa-solid fa-xmark cursor-pointer p-2" onclick="document.getElementById('drawer-chat').classList.remove('open')"></i>
-        </div>
-        <div id="chat-list" class="flex-1 overflow-y-auto mb-2 space-y-2"></div>
-        <div class="flex gap-2">
-            <input id="chat-in" type="text" class="flex-1 bg-zinc-800 rounded-full px-4 text-white text-right" placeholder="رسالة...">
-            <button onclick="sendChat()" class="w-10 h-10 rounded-full bg-lime-400 text-black font-bold"><i class="fa-solid fa-paper-plane"></i></button>
+    <div id="chat-drawer" class="bottom-sheet" onclick="if(event.target===this) closeDrawer('chat-drawer')">
+        <div class="sheet-content">
+            <div class="w-10 h-1 bg-gray-600 rounded-full mx-auto mb-4"></div>
+            <h3 class="text-center font-bold mb-4 border-b border-gray-700 pb-2">المحادثة</h3>
+            <div id="chat-list" class="flex-1 overflow-y-auto mb-4 px-2 space-y-3"></div>
+            <div class="flex gap-2 bg-zinc-800 p-2 rounded-full">
+                <input id="chat-input" type="text" class="bg-transparent flex-1 px-4 text-white outline-none text-right" placeholder="اكتب رسالة...">
+                <button onclick="sendChat()" class="w-10 h-10 rounded-full bg-primary text-black flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
         </div>
     </div>
 
-    <div id="drawer-users" class="drawer">
-        <div class="drawer-header">
-            <h3>المشاركون</h3>
-            <i class="fa-solid fa-xmark cursor-pointer p-2" onclick="document.getElementById('drawer-users').classList.remove('open')"></i>
+    <div id="participants-drawer" class="bottom-sheet" onclick="if(event.target===this) closeDrawer('participants-drawer')">
+        <div class="sheet-content">
+            <div class="w-10 h-1 bg-gray-600 rounded-full mx-auto mb-4"></div>
+            <h3 class="text-center font-bold mb-4 border-b border-gray-700 pb-2">المشاركون</h3>
+            <div id="req-list" class="mb-2"></div>
+            <div id="part-list" class="flex-1 overflow-y-auto space-y-3"></div>
         </div>
-        <div id="req-list" class="mb-2"></div>
-        <div id="part-list" class="flex-1 overflow-y-auto"></div>
     </div>
 
-    <!-- Firebase Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue, push, update, remove, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -291,120 +274,127 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // State
         let myId = Math.random().toString(36).substr(2, 6);
-        let roomId = null;
-        let isHost = false;
-        let localStream = null;
-        let peers = {};
-        let myInfo = { name: "User", avatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png" };
+        let roomId = null, isHost = false;
+        let stream = null, peers = {};
+        // Queue for ICE candidates arriving before remote description
+        let iceQueues = {}; 
+        
+        let myInfo = { name: "", avatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png" };
         let myState = { mic: true, cam: true };
-        let pendingCandidates = {}; // FIX: Queue for candidates
-
-        // Load Saved User
-        const saved = localStorage.getItem('buz_user_v3');
-        if(saved) {
-            const p = JSON.parse(saved);
-            document.getElementById('username-in').value = p.name;
-            if(p.avatar) { myInfo.avatar = p.avatar; document.getElementById('avatar-prev').src = p.avatar; }
-        }
-
-        // Init Check
+        
+        // Init
         const urlParams = new URLSearchParams(window.location.search);
         if(urlParams.get('room')) {
             roomId = urlParams.get('room');
-            document.getElementById('btn-group').querySelector('button').style.display='none';
-            document.getElementById('join-options').classList.remove('hidden');
+            document.getElementById('action-buttons').querySelector('button').style.display = 'none';
+            document.getElementById('join-section').classList.remove('hidden');
+        }
+        
+        const saved = localStorage.getItem('buz_user_v2');
+        if(saved) {
+            const p = JSON.parse(saved);
+            document.getElementById('username-in').value = p.name;
+            if(p.avatar) {
+                myInfo.avatar = p.avatar;
+                document.getElementById('avatar-prev').src = p.avatar;
+            }
         }
 
         // --- Functions ---
-
         window.goToLobby = async (mode) => {
             const name = document.getElementById('username-in').value.trim();
-            if(!name) return alert("اكتب اسمك");
+            if(!name) return showToast("اكتب اسمك أولاً", true);
             myInfo.name = name;
-            localStorage.setItem('buz_user_v3', JSON.stringify(myInfo));
+            localStorage.setItem('buz_user_v2', JSON.stringify(myInfo));
 
             if(mode === 'create') {
                 roomId = Math.random().toString(36).substr(2, 6);
                 isHost = true;
             } else {
-                // Check limit
                 const snap = await get(child(ref(db), `rooms/${roomId}/participants`));
-                if(snap.exists() && Object.keys(snap.val()).length >= 4) return alert("الغرفة ممتلئة");
+                if(snap.exists() && Object.keys(snap.val()).length >= 4) return showToast("الغرفة ممتلئة!", true);
             }
-            document.getElementById('screen-welcome').classList.add('hidden-screen');
-            document.getElementById('screen-lobby').classList.remove('hidden-screen');
+            switchScreen('screen-welcome', 'screen-lobby');
         };
 
-        window.requestPerms = async () => {
+        window.requestPermissions = async () => {
             try {
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('preview-video').srcObject = localStream;
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('local-preview').srcObject = stream;
                 document.getElementById('perm-btn').classList.add('hidden');
                 document.getElementById('enter-btn').classList.remove('hidden');
-                document.getElementById('enter-btn').style.display = 'flex';
-            } catch(e) { alert("يجب السماح للكاميرا"); }
+                document.getElementById('enter-btn').classList.add('flex');
+            } catch(e) { showToast("يجب السماح بالكاميرا والمايك", true); }
+        };
+
+        window.togglePreviewCam = () => {
+            myState.cam = !myState.cam;
+            if(stream) stream.getVideoTracks()[0].enabled = myState.cam;
+            const btn = document.getElementById('prev-cam-btn');
+            const ph = document.getElementById('preview-placeholder');
+            if(myState.cam) { btn.classList.remove('bg-red-500'); ph.classList.add('hidden'); }
+            else { btn.classList.add('bg-red-500'); ph.classList.remove('hidden'); }
+        };
+
+        window.togglePreviewMic = () => {
+            myState.mic = !myState.mic;
+            if(stream) stream.getAudioTracks()[0].enabled = myState.mic;
+            const btn = document.getElementById('prev-mic-btn');
+            if(myState.mic) btn.classList.remove('bg-red-500');
+            else btn.classList.add('bg-red-500');
         };
 
         window.enterRoom = async () => {
             if(isHost) {
                 await set(ref(db, `rooms/${roomId}`), { created: Date.now(), hostId: myId });
-                startCall();
+                initCallUI();
             } else {
-                document.getElementById('enter-btn').innerHTML = "انتظار...";
+                document.getElementById('enter-btn').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> انتظار...';
                 await set(ref(db, `rooms/${roomId}/requests/${myId}`), { info: myInfo, status: 'pending' });
                 onValue(ref(db, `rooms/${roomId}/requests/${myId}/status`), (s) => {
-                    if(s.val() === 'accepted') startCall();
-                    else if(s.val() === 'rejected') alert("تم الرفض");
+                    if(s.val() === 'accepted') initCallUI();
+                    else if(s.val() === 'rejected') { showToast("تم الرفض", true); setTimeout(() => location.reload(), 2000); }
                 });
             }
         };
 
-        function startCall() {
-            document.getElementById('screen-lobby').classList.add('hidden-screen');
-            document.getElementById('screen-call').classList.remove('hidden-screen');
-            document.getElementById('room-id-disp').innerText = "ID: " + roomId;
+        function initCallUI() {
+            switchScreen('screen-lobby', 'screen-call');
+            document.getElementById('room-id-disp').innerText = roomId;
+            updateCtrlBtn('btn-mic', myState.mic);
+            updateCtrlBtn('btn-cam', myState.cam);
 
-            // Apply Preview Settings
-            localStream.getAudioTracks()[0].enabled = myState.mic;
-            localStream.getVideoTracks()[0].enabled = myState.cam;
-            updateBtnUI();
-
-            // Add My Video
-            addVideo(myId, myInfo, true);
-            const v = document.getElementById(`vid-local`); // special ID for local mirror
-            v.srcObject = localStream;
+            addVideoNode(myId, myInfo, true);
+            const v = document.getElementById(`vid-${myId}`);
+            v.srcObject = stream;
             v.muted = true;
 
-            // DB Registration
             update(ref(db, `rooms/${roomId}/participants/${myId}`), { info: myInfo, state: myState });
 
-            // Listeners
-            monitorParticipants();
-            monitorSignals();
-            monitorChat();
-            if(isHost) monitorRequests();
+            listenToParticipants();
+            listenToChat();
+            if(isHost) listenToRequests();
+            
+            onValue(ref(db, `rooms/${roomId}/participants/${myId}`), (s) => {
+                if(!s.exists() && document.getElementById('screen-call').style.display !== 'none') {
+                    alert("تم إخراجك"); location.reload();
+                }
+            });
         }
 
-        // --- Core WebRTC Logic (The Fix) ---
-        
-        function monitorParticipants() {
+        function listenToParticipants() {
             onValue(ref(db, `rooms/${roomId}/participants`), (snap) => {
                 const parts = snap.val() || {};
-                updatePartListUI(parts); // Update Drawer List
-
+                updateDrawerList(parts);
                 Object.keys(parts).forEach(uid => {
-                    updatePartState(uid, parts[uid].state);
+                    updateUserUIState(uid, parts[uid].state);
                     if(uid === myId) return;
-
                     if(!peers[uid]) {
-                        addVideo(uid, parts[uid].info, false); // Create UI first
-                        initWebRTC(uid); // Then connect
+                        addVideoNode(uid, parts[uid].info, false);
+                        initWebRTC(uid);
                     }
                 });
-
-                // Cleanup
                 Object.keys(peers).forEach(uid => {
                     if(!parts[uid]) {
                         document.getElementById(`wrap-${uid}`)?.remove();
@@ -414,116 +404,32 @@
                     }
                 });
             });
-        }
-
-        const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-
-        async function initWebRTC(targetId) {
-            const pc = new RTCPeerConnection(rtcConfig);
-            peers[targetId] = pc;
-            pendingCandidates[targetId] = []; // Init queue
-
-            // Add Tracks
-            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-            pc.ontrack = (event) => {
-                const vid = document.getElementById(`vid-${targetId}`);
-                if(vid) vid.srcObject = event.streams[0];
-            };
-
-            pc.onicecandidate = (event) => {
-                if(event.candidate) {
-                    push(ref(db, `rooms/${roomId}/signals/${targetId}`), {
-                        sender: myId, type: 'candidate', candidate: JSON.stringify(event.candidate)
-                    });
-                }
-            };
-
-            // Create Offer only if myId > targetId (Glare handling)
-            if(myId > targetId) {
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                push(ref(db, `rooms/${roomId}/signals/${targetId}`), {
-                    sender: myId, type: 'offer', offer: JSON.stringify(offer)
-                });
-            }
-        }
-
-        function monitorSignals() {
+            
             const sigRef = ref(db, `rooms/${roomId}/signals/${myId}`);
             onValue(sigRef, async (snap) => {
                 const signals = snap.val();
                 if(signals) {
-                    for(const [key, msg] of Object.entries(signals)) {
+                    for(const [k, msg] of Object.entries(signals)) {
                         await handleSignal(msg);
-                        remove(child(sigRef, key));
+                        remove(child(sigRef, k));
                     }
                 }
             });
         }
 
-        async function handleSignal(msg) {
-            const { sender, type } = msg;
-            
-            // If we receive an offer from someone we haven't set up yet
-            if(!peers[sender]) {
-                // Fetch info quickly or just init with placeholders
-                // FIX: Don't wait for GET. Init immediately.
-                const fallbackInfo = { name: "Loading...", avatar: "" };
-                // Try get info from existing UI if available, else DB later
-                addVideo(sender, fallbackInfo, false); 
-                await initWebRTC(sender);
-            }
-
-            const pc = peers[sender];
-
-            if(type === 'offer') {
-                await pc.setRemoteDescription(JSON.parse(msg.offer));
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-                
-                // Process queued candidates now that remote desc is set
-                if(pendingCandidates[sender]) {
-                    pendingCandidates[sender].forEach(c => pc.addIceCandidate(c));
-                    pendingCandidates[sender] = [];
-                }
-
-                push(ref(db, `rooms/${roomId}/signals/${sender}`), {
-                    sender: myId, type: 'answer', answer: JSON.stringify(answer)
-                });
-
-            } else if(type === 'answer') {
-                await pc.setRemoteDescription(JSON.parse(msg.answer));
-                 // Process queued candidates
-                 if(pendingCandidates[sender]) {
-                    pendingCandidates[sender].forEach(c => pc.addIceCandidate(c));
-                    pendingCandidates[sender] = [];
-                }
-
-            } else if(type === 'candidate') {
-                const cand = JSON.parse(msg.candidate);
-                if(pc.remoteDescription) {
-                    pc.addIceCandidate(cand);
-                } else {
-                    // FIX: Queue candidate if remote description not set yet
-                    if(!pendingCandidates[sender]) pendingCandidates[sender] = [];
-                    pendingCandidates[sender].push(cand);
-                }
-            }
-        }
-
-        // --- UI Helpers ---
-
-        function addVideo(uid, info, isLocal) {
+        function addVideoNode(uid, info, isLocal) {
             if(document.getElementById(`wrap-${uid}`)) return;
             const div = document.createElement('div');
             div.className = 'video-wrapper';
             div.id = `wrap-${uid}`;
             div.innerHTML = `
-                <video id="${isLocal ? 'vid-local' : 'vid-' + uid}" autoplay playsinline></video>
+                <video id="vid-${uid}" autoplay playsinline></video>
+                <div id="ph-${uid}" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-800 hidden">
+                    <img src="${info.avatar}" class="w-20 h-20 rounded-full border-2 border-gray-600 object-cover mb-2">
+                </div>
                 <div class="user-label">
-                    <div class="name-tag">${info.name}</div>
-                    <div id="mic-${uid}" class="mic-status"><i class="fa-solid fa-microphone-slash"></i></div>
+                    <i id="ico-mic-${uid}" class="fa-solid fa-microphone-slash text-red-500 hidden text-xs"></i>
+                    <span>${info.name}</span>
                 </div>
             `;
             document.getElementById('video-grid').appendChild(div);
@@ -536,130 +442,186 @@
             g.className = `grid-container grid-${c > 4 ? 4 : c}`;
         }
 
-        function updatePartState(uid, st) {
+        function updateUserUIState(uid, st) {
+            const ph = document.getElementById(`ph-${uid}`);
+            const micIco = document.getElementById(`ico-mic-${uid}`);
             if(!st) return;
-            const mic = document.getElementById(`mic-${uid}`);
-            if(mic) mic.style.display = st.mic ? 'none' : 'flex';
+            if(st.cam) ph?.classList.add('hidden'); else ph?.classList.remove('hidden');
+            if(micIco) micIco.style.display = st.mic ? 'none' : 'block';
+        }
+
+        // --- WebRTC Logic (Fixed) ---
+        const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        
+        async function initWebRTC(targetId) {
+            const pc = new RTCPeerConnection(rtcConfig);
+            peers[targetId] = pc;
+            iceQueues[targetId] = []; // Init queue
+
+            // Add local tracks
+            stream.getTracks().forEach(t => pc.addTrack(t, stream));
+
+            pc.ontrack = e => {
+                const vid = document.getElementById(`vid-${targetId}`);
+                if(vid) {
+                    vid.srcObject = e.streams[0];
+                    vid.play().catch(console.error);
+                }
+            };
+
+            pc.onicecandidate = e => {
+                if(e.candidate) push(ref(db, `rooms/${roomId}/signals/${targetId}`), { sender: myId, type: 'candidate', candidate: JSON.stringify(e.candidate) });
+            };
+
+            // Avoid collision: Only higher ID creates offer initially
+            if(myId > targetId) {
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                push(ref(db, `rooms/${roomId}/signals/${targetId}`), { sender: myId, type: 'offer', offer: JSON.stringify(offer) });
+            }
+        }
+
+        async function handleSignal(msg) {
+            const { sender, type } = msg;
+            
+            // Ensure PeerConnection exists (if I am receiver of offer)
+            if(!peers[sender]) {
+                const snap = await get(ref(db, `rooms/${roomId}/participants/${sender}`));
+                // Ensure UI exists before connecting
+                if(snap.exists()) addVideoNode(sender, snap.val().info, false);
+                await initWebRTC(sender); 
+            }
+            
+            const pc = peers[sender];
+            const q = iceQueues[sender] || [];
+
+            if(type === 'offer') {
+                await pc.setRemoteDescription(JSON.parse(msg.offer));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                push(ref(db, `rooms/${roomId}/signals/${sender}`), { sender: myId, type: 'answer', answer: JSON.stringify(answer) });
+                
+                // Process queued candidates
+                while(q.length) { await pc.addIceCandidate(q.shift()); }
+
+            } else if(type === 'answer') {
+                await pc.setRemoteDescription(JSON.parse(msg.answer));
+                // Process queued candidates
+                while(q.length) { await pc.addIceCandidate(q.shift()); }
+
+            } else if(type === 'candidate') {
+                const cand = JSON.parse(msg.candidate);
+                // If remote description is set, add now. Else queue it.
+                if(pc.remoteDescription) {
+                    try { await pc.addIceCandidate(cand); } catch(e) { console.error(e); }
+                } else {
+                    q.push(cand);
+                }
+            }
         }
 
         // --- Controls ---
-
         window.toggleMic = () => {
             myState.mic = !myState.mic;
-            localStream.getAudioTracks()[0].enabled = myState.mic;
-            updateBtnUI();
-            update(ref(db, `rooms/${roomId}/participants/${myId}/state`), myState);
+            stream.getAudioTracks()[0].enabled = myState.mic;
+            updateCtrlBtn('btn-mic', myState.mic);
+            pushStateDB();
         };
+
         window.toggleCam = () => {
             myState.cam = !myState.cam;
-            localStream.getVideoTracks()[0].enabled = myState.cam;
-            updateBtnUI();
-            update(ref(db, `rooms/${roomId}/participants/${myId}/state`), myState);
+            stream.getVideoTracks()[0].enabled = myState.cam;
+            updateCtrlBtn('btn-cam', myState.cam);
+            updateUserUIState(myId, myState);
+            pushStateDB();
         };
 
-        function updateBtnUI() {
-            const m = document.getElementById('btn-mic');
-            const c = document.getElementById('btn-cam');
-            
-            if(myState.mic) { m.classList.add('active'); m.classList.remove('off'); m.innerHTML='<i class="fa-solid fa-microphone"></i>'; }
-            else { m.classList.remove('active'); m.classList.add('off'); m.innerHTML='<i class="fa-solid fa-microphone-slash"></i>'; }
-
-            if(myState.cam) { c.classList.add('active'); c.classList.remove('off'); c.innerHTML='<i class="fa-solid fa-video"></i>'; }
-            else { c.classList.remove('active'); c.classList.add('off'); c.innerHTML='<i class="fa-solid fa-video-slash"></i>'; }
+        function updateCtrlBtn(id, isActive) {
+            const btn = document.getElementById(id);
+            if(isActive) btn.classList.remove('off');
+            else btn.classList.add('off');
         }
+        function pushStateDB() { update(ref(db, `rooms/${roomId}/participants/${myId}/state`), myState); }
 
-        // --- Chat & Drawer Logic ---
-        function monitorChat() {
-            onValue(ref(db, `rooms/${roomId}/chat`), s => {
+        window.openDrawer = (id) => document.getElementById(id).classList.add('open');
+        window.closeDrawer = (id) => document.getElementById(id).classList.remove('open');
+        
+        // Chat & List Listeners (Simplified)
+        function listenToChat() {
+            onValue(ref(db, `rooms/${roomId}/chat`), (snap) => {
+                const msgs = snap.val();
                 const list = document.getElementById('chat-list');
-                list.innerHTML = "";
-                const msgs = s.val() || {};
+                list.innerHTML = '';
+                if(!msgs) return;
                 Object.values(msgs).forEach(m => {
-                    list.innerHTML += `<div class="bg-zinc-800 p-2 rounded-lg text-sm mb-1"><span class="text-lime-400 text-xs block">${m.name}</span>${m.text}</div>`;
+                    const isMine = m.senderId === myId;
+                    list.innerHTML += `<div class="chat-msg ${isMine ? 'mine' : ''}"><div class="bubble">${m.text}</div></div>`;
                 });
                 list.scrollTop = list.scrollHeight;
             });
         }
         window.sendChat = () => {
-            const t = document.getElementById('chat-in');
-            if(t.value) {
-                push(ref(db, `rooms/${roomId}/chat`), { name: myInfo.name, text: t.value });
-                t.value = "";
-            }
+            const val = document.getElementById('chat-input').value;
+            if(val) { push(ref(db, `rooms/${roomId}/chat`), { senderId: myId, name: myInfo.name, text: val }); document.getElementById('chat-input').value = ''; }
         };
 
-        function updatePartListUI(parts) {
-            const l = document.getElementById('part-list');
-            l.innerHTML = "";
+        function updateDrawerList(parts) {
+            const list = document.getElementById('part-list');
+            list.innerHTML = '';
             Object.keys(parts).forEach(uid => {
-                l.innerHTML += `
-                    <div class="flex items-center justify-between p-2 border-b border-gray-800">
-                        <div class="flex items-center gap-2">
-                            <img src="${parts[uid].info.avatar}" class="w-8 h-8 rounded-full">
-                            <span>${parts[uid].info.name}</span>
+                const p = parts[uid];
+                list.innerHTML += `
+                    <div class="flex items-center justify-between bg-zinc-800 p-3 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <img src="${p.info.avatar}" class="w-10 h-10 rounded-full object-cover">
+                            <span>${p.info.name}</span>
                         </div>
                         ${isHost && uid !== myId ? `<button onclick="kick('${uid}')" class="text-red-500 text-xs">طرد</button>` : ''}
                     </div>`;
             });
         }
 
-        // Image helper
-        document.getElementById('file-in').addEventListener('change', async (e) => {
-            if(e.target.files[0]) {
-                const r = new FileReader();
-                r.readAsDataURL(e.target.files[0]);
-                r.onload = ev => {
-                    const i = new Image(); i.src = ev.target.result;
-                    i.onload = () => {
-                        const c = document.createElement('canvas'); c.width=100; c.height=100;
-                        c.getContext('2d').drawImage(i,0,0,100,100);
-                        myInfo.avatar = c.toDataURL('image/jpeg', 0.6);
-                        document.getElementById('avatar-prev').src = myInfo.avatar;
-                    }
-                }
-            }
-        });
-        
-        // Host Request logic
-        function monitorRequests() {
-            onValue(ref(db, `rooms/${roomId}/requests`), s => {
-                const reqs = s.val() || {};
+        function listenToRequests() {
+            onValue(ref(db, `rooms/${roomId}/requests`), (snap) => {
+                const reqs = snap.val() || {};
                 const list = document.getElementById('req-list');
-                list.innerHTML = "";
+                list.innerHTML = '';
                 let c = 0;
                 Object.keys(reqs).forEach(k => {
                     if(reqs[k].status === 'pending') {
                         c++;
-                        list.innerHTML += `<div class="bg-zinc-800 p-2 mb-2 rounded flex justify-between items-center">
-                            <span>${reqs[k].info.name}</span>
-                            <div>
-                                <button onclick="ans('${k}','accepted')" class="text-green-400 mr-2"><i class="fa-solid fa-check"></i></button>
-                                <button onclick="ans('${k}','rejected')" class="text-red-400"><i class="fa-solid fa-xmark"></i></button>
-                            </div>
-                        </div>`;
+                        list.innerHTML += `<div class="bg-zinc-700 p-2 rounded mb-2 flex justify-between"><span>${reqs[k].info.name}</span><div><button onclick="ans('${k}','accepted')" class="mr-2 text-green-400">قبول</button><button onclick="ans('${k}','rejected')" class="text-red-400">رفض</button></div></div>`;
                     }
                 });
-                if(c>0) { document.getElementById('req-badge').style.display='block'; document.getElementById('req-badge').innerText=c; }
-                else document.getElementById('req-badge').style.display='none';
+                const b = document.getElementById('badge-req');
+                if(c>0) { b.classList.remove('hidden'); } else b.classList.add('hidden');
             });
         }
 
-        // Global
-        window.kick = (u) => remove(ref(db, `rooms/${roomId}/participants/${u}`));
-        window.ans = (u, s) => update(ref(db, `rooms/${roomId}/requests/${u}`), {status: s});
-        window.copyLink = () => navigator.clipboard.writeText(window.location.href + "?room=" + roomId).then(() => alert("تم نسخ الرابط"));
-        
-        // --- Prev Control ---
-        window.togglePrevMic = () => {
-            myState.mic = !myState.mic;
-            document.getElementById('prev-mic').classList.toggle('bg-red-500');
-        };
-        window.togglePrevCam = () => {
-             myState.cam = !myState.cam;
-             document.getElementById('prev-cam').classList.toggle('bg-red-500');
-             document.getElementById('preview-video').style.opacity = myState.cam ? 1 : 0;
-        }
+        window.kick = (uid) => remove(ref(db, `rooms/${roomId}/participants/${uid}`));
+        window.ans = (uid, st) => update(ref(db, `rooms/${roomId}/requests/${uid}`), { status: st });
+        window.copyRoomId = () => { navigator.clipboard.writeText(window.location.href); showToast("تم نسخ الرابط"); };
 
+        function switchScreen(from, to) { document.getElementById(from).classList.add('hidden-screen'); document.getElementById(to).classList.remove('hidden-screen'); }
+        function showToast(msg, err=false) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            t.style.borderLeft = err ? '4px solid red' : '4px solid #c3ff00';
+            t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);
+        }
+        document.getElementById('file-in').addEventListener('change', (e) => {
+            if(e.target.files[0]) {
+                const r = new FileReader(); r.readAsDataURL(e.target.files[0]);
+                r.onload = ev => {
+                    const i = new Image(); i.src = ev.target.result;
+                    i.onload = () => {
+                        const c = document.createElement('canvas'); const s=100/i.width; c.width=100; c.height=i.height*s;
+                        c.getContext('2d').drawImage(i,0,0,c.width,c.height);
+                        myInfo.avatar = c.toDataURL('image/jpeg',0.6); document.getElementById('avatar-prev').src = myInfo.avatar;
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
