@@ -7,22 +7,17 @@
     <!-- FontAwesome & Google Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS (للمساعدة في التنسيق السريع) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
         :root {
             --bg-dark: #121212;
             --bg-surface: #1e1e1e;
-            --primary: #c3ff00; /* Lime Green Modern */
-            --primary-dark: #9acd00;
+            --primary: #c3ff00;
             --danger: #ff4444;
             --text-main: #ffffff;
-            --text-sec: #9ca3af;
-            --glass: rgba(30, 30, 30, 0.7);
-            --radius-lg: 24px;
             --radius-md: 16px;
-            --radius-sm: 12px;
         }
 
         * { font-family: 'Alexandria', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -30,18 +25,11 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            height: 100vh; /* Fallback */
-            height: 100dvh; /* Dynamic Viewport Height */
+            height: 100dvh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
-
-        /* --- Transitions --- */
-        .fade-enter { opacity: 0; transform: scale(0.95); }
-        .fade-enter-active { opacity: 1; transform: scale(1); transition: opacity 0.3s, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .fade-exit { opacity: 1; transform: scale(1); }
-        .fade-exit-active { opacity: 0; transform: scale(0.95); transition: opacity 0.2s, transform 0.2s; pointer-events: none; position: absolute; }
 
         /* --- Screens --- */
         .screen {
@@ -54,72 +42,23 @@
 
         /* --- UI Components --- */
         .btn-modern {
-            background: var(--primary);
-            color: #000;
-            font-weight: 600;
-            border-radius: 9999px;
-            padding: 16px 32px;
-            transition: transform 0.1s;
+            background: var(--primary); color: #000; font-weight: 600;
+            border-radius: 9999px; padding: 16px 32px;
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            width: 100%;
-            font-size: 1rem;
-            border: none;
+            width: 100%; border: none; font-size: 1rem;
             box-shadow: 0 4px 15px rgba(195, 255, 0, 0.2);
         }
         .btn-modern:active { transform: scale(0.98); }
         
         .btn-icon-circle {
-            width: 56px; height: 56px;
-            border-radius: 50%;
+            width: 56px; height: 56px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem;
-            background: #2d2d2d;
-            color: white;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: 0.2s;
-            cursor: pointer;
+            font-size: 1.4rem; background: #2d2d2d; color: white;
+            border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
         }
-        .btn-icon-circle.active { background: #3d3d3d; border-color: transparent; }
         .btn-icon-circle.off { background: #2d2d2d; color: var(--danger); position: relative; }
         .btn-icon-circle.off::after { content: '\\'; position: absolute; font-size: 1.2rem; }
         .btn-icon-circle.hangup { background: var(--danger); color: white; width: 64px; height: 64px; border:none; }
-
-        /* --- Welcome Screen --- */
-        .welcome-content {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 24px; text-align: center; max-width: 450px; margin: 0 auto; width: 100%;
-        }
-        .logo-anim {
-            width: 80px; height: 80px; background: var(--primary);
-            border-radius: 24px; display: flex; align-items: center; justify-content: center;
-            font-size: 2.5rem; color: #000; margin-bottom: 24px;
-            box-shadow: 0 0 30px rgba(195, 255, 0, 0.3);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-        .modern-input {
-            width: 100%; background: #2a2a2a; border: 1px solid #333;
-            color: white; padding: 16px; border-radius: 16px;
-            font-size: 1.1rem; text-align: center; outline: none;
-            transition: 0.3s; margin-bottom: 16px;
-        }
-        .modern-input:focus { border-color: var(--primary); background: #333; }
-
-        /* --- Preview/Lobby Screen --- */
-        .preview-container {
-            position: relative; width: 100%; max-width: 400px; aspect-ratio: 9/16; max-height: 60vh;
-            background: #222; border-radius: 24px; overflow: hidden; margin-bottom: 24px;
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid #333;
-        }
-        .preview-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        .preview-controls {
-            position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 16px;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-            padding: 8px 16px; border-radius: 50px;
-        }
 
         /* --- Call Screen --- */
         .call-layout {
@@ -138,9 +77,12 @@
             display: flex; align-items: center; gap: 8px; cursor: pointer;
         }
 
+        /* --- Grid & Spacing Fix --- */
         .grid-container {
             flex: 1; padding: 12px; gap: 12px;
             display: grid; overflow-y: auto; align-content: center;
+            /* إضافة مسافة سفلية كبيرة لعدم تداخل الفيديو مع الأزرار */
+            padding-bottom: 120px; 
         }
         .grid-1 { grid-template-columns: 1fr; }
         .grid-2 { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
@@ -148,251 +90,178 @@
 
         .video-wrapper {
             background: #1e1e1e; border-radius: var(--radius-md); overflow: hidden;
-            position: relative; width: 100%; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: relative; width: 100%; height: 100%; min-height: 200px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .video-wrapper video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        .video-wrapper video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); background: #000; }
         .user-label {
             position: absolute; bottom: 12px; left: 12px;
             background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 8px;
-            font-size: 0.8rem; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-            display: flex; align-items: center; gap: 6px;
+            font-size: 0.8rem; font-weight: 500;
+            display: flex; align-items: center; gap: 6px; text-shadow: 0 1px 2px black;
         }
 
         .controls-bar {
-            position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
             background: rgba(30,30,30,0.95); backdrop-filter: blur(12px);
             padding: 12px 24px; border-radius: 50px;
-            display: flex; gap: 16px; align-items: center; z-index: 20;
+            display: flex; gap: 16px; align-items: center; z-index: 30;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            width: max-content;
+            width: max-content; margin-bottom: env(safe-area-inset-bottom);
         }
 
-        /* --- Bottom Sheet (Drawer) --- */
+        /* --- Other Styles --- */
+        .preview-container {
+            position: relative; width: 100%; max-width: 400px; aspect-ratio: 9/16; max-height: 55vh;
+            background: #222; border-radius: 24px; overflow: hidden; margin-bottom: 24px;
+            display: flex; align-items: center; justify-content: center; border: 1px solid #333;
+        }
+        .preview-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
         .bottom-sheet {
-            position: fixed; inset: 0; z-index: 50;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);
+            position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);
             display: flex; flex-direction: column; justify-content: flex-end;
             opacity: 0; pointer-events: none; transition: 0.3s;
         }
         .bottom-sheet.open { opacity: 1; pointer-events: auto; }
         .sheet-content {
-            background: #1e1e1e;
-            border-top-left-radius: 24px; border-top-right-radius: 24px;
-            padding: 20px; max-height: 80vh; min-height: 40vh;
-            display: flex; flex-direction: column;
+            background: #1e1e1e; border-top-left-radius: 24px; border-top-right-radius: 24px;
+            padding: 20px; max-height: 80vh; min-height: 40vh; display: flex; flex-direction: column;
             transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 -5px 30px rgba(0,0,0,0.5);
+            padding-bottom: 40px; /* Safe space */
         }
         .bottom-sheet.open .sheet-content { transform: translateY(0); }
         
-        .sheet-drag-handle {
-            width: 40px; height: 5px; background: #444; border-radius: 10px;
-            margin: 0 auto 20px;
+        .modern-input {
+            width: 100%; background: #2a2a2a; border: 1px solid #333; color: white;
+            padding: 16px; border-radius: 16px; font-size: 1.1rem; text-align: center; outline: none; margin-bottom: 16px;
         }
-
-        /* --- Chat Styles --- */
-        .chat-msg { margin-bottom: 12px; display: flex; flex-direction: column; align-items: flex-start; }
-        .chat-msg.mine { align-items: flex-end; }
-        .bubble {
-            padding: 10px 16px; border-radius: 18px; max-width: 85%;
-            font-size: 0.95rem; line-height: 1.4;
-        }
-        .chat-msg.mine .bubble { background: var(--primary); color: black; border-bottom-left-radius: 4px; }
-        .chat-msg:not(.mine) .bubble { background: #333; color: white; border-bottom-right-radius: 4px; }
-        
-        /* --- Toast Notification --- */
+        .avatar-upload { position: relative; width: 100px; height: 100px; margin: 0 auto 20px; }
+        .avatar-upload img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #333; }
         .toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
             background: #333; color: white; padding: 12px 24px; border-radius: 50px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 100;
             display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            opacity: 0;
+            transition: 0.4s; opacity: 0;
         }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .toast i { color: var(--primary); }
-
-        /* --- Utility for Avatar Upload --- */
-        .avatar-upload {
-            position: relative; width: 100px; height: 100px; margin: 0 auto 20px;
-        }
-        .avatar-upload img {
-            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
-            border: 2px solid #333;
-        }
-        .avatar-upload .edit-icon {
-            position: absolute; bottom: 0; right: 0;
-            width: 32px; height: 32px; background: var(--primary); color: black;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 0.9rem; cursor: pointer;
-        }
     </style>
 </head>
 <body>
 
-    <!-- === Toast Notification === -->
-    <div id="toast" class="toast">
-        <i class="fa-solid fa-circle-info"></i>
-        <span id="toast-msg">تم نسخ الرابط بنجاح</span>
-    </div>
+    <div id="toast" class="toast"><i class="fa-solid fa-circle-info"></i><span id="toast-msg"></span></div>
 
-    <!-- === 1. Welcome Screen === -->
-    <div id="screen-welcome" class="screen fade-enter-active">
-        <div class="welcome-content">
-            <div class="logo-anim">
+    <!-- === 1. Welcome === -->
+    <div id="screen-welcome" class="screen">
+        <div class="flex-1 flex flex-col items-center justify-center p-6 text-center w-full max-w-md mx-auto">
+            <div class="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center text-3xl text-black mb-6 shadow-[0_0_30px_rgba(195,255,0,0.3)]">
                 <i class="fa-solid fa-bolt"></i>
             </div>
             <h1 class="text-2xl font-bold mb-2">Buz Pro</h1>
-            <p class="text-gray-400 mb-8 text-sm">مكالمات فيديو بجودة عالية، للجميع.</p>
+            <p class="text-gray-400 mb-8 text-sm">مكالمات فيديو ثابتة وسريعة</p>
 
             <div class="avatar-upload" onclick="document.getElementById('file-in').click()">
                 <img id="avatar-prev" src="https://cdn-icons-png.flaticon.com/512/847/847969.png">
-                <div class="edit-icon"><i class="fa-solid fa-pen"></i></div>
+                <div class="absolute bottom-0 right-0 w-8 h-8 bg-primary text-black rounded-full flex items-center justify-center"><i class="fa-solid fa-pen"></i></div>
             </div>
             <input type="file" id="file-in" hidden accept="image/*">
 
-            <input type="text" id="username-in" class="modern-input" placeholder="اسمك (مطلوب)">
+            <input type="text" id="username-in" class="modern-input" placeholder="اكتب اسمك">
             
             <div id="action-buttons" class="w-full flex flex-col gap-3">
                 <button onclick="goToLobby('create')" class="btn-modern">
                     <i class="fa-solid fa-video"></i> اجتماع جديد
                 </button>
-                
                 <div id="join-section" class="hidden w-full">
                      <button onclick="goToLobby('join')" class="btn-modern bg-gray-700 text-white hover:bg-gray-600">
-                        <i class="fa-solid fa-right-to-bracket"></i> انضمام الآن
+                        <i class="fa-solid fa-right-to-bracket"></i> انضمام
                     </button>
-                    <p id="join-status" class="text-primary text-sm mt-2 text-center"></p>
                 </div>
             </div>
         </div>
-        <div class="p-4 text-center text-gray-600 text-xs">
-            آمن، مشفر، وسريع. v2.0
-        </div>
     </div>
 
-    <!-- === 2. Lobby / Permissions Screen === -->
+    <!-- === 2. Lobby === -->
     <div id="screen-lobby" class="screen hidden-screen">
-        <div class="welcome-content">
-            <h2 class="text-xl font-bold mb-4">التحقق من الصوت والصورة</h2>
-            <p class="text-gray-400 text-sm mb-6">يرجى منح الإذن للكاميرا والميكروفون للبدء.</p>
-
+        <div class="flex-1 flex flex-col items-center justify-center p-6 text-center w-full max-w-md mx-auto">
+            <h2 class="text-xl font-bold mb-4">تجهيز الكاميرا</h2>
+            
             <div class="preview-container">
-                <video id="local-preview" autoplay playsinline muted></video>
-                <div class="preview-placeholder absolute inset-0 flex flex-col items-center justify-center bg-zinc-800 hidden" id="preview-placeholder">
-                    <div class="w-20 h-20 rounded-full bg-zinc-700 flex items-center justify-center mb-2">
-                        <i class="fa-solid fa-video-slash text-2xl text-gray-500"></i>
-                    </div>
+                <video id="local-preview" autoplay playsinline muted class="preview-video"></video>
+                <div id="preview-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-800 hidden">
+                    <i class="fa-solid fa-video-slash text-2xl text-gray-500 mb-2"></i>
                     <span class="text-sm text-gray-400">الكاميرا مغلقة</span>
                 </div>
-                
-                <div class="preview-controls">
-                    <button class="w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white/30 flex items-center justify-center transition" onclick="togglePreviewMic()" id="prev-mic-btn">
-                        <i class="fa-solid fa-microphone"></i>
-                    </button>
-                    <button class="w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white/30 flex items-center justify-center transition" onclick="togglePreviewCam()" id="prev-cam-btn">
-                        <i class="fa-solid fa-video"></i>
-                    </button>
+                <div class="absolute bottom-4 flex gap-4 bg-black/50 backdrop-blur px-4 py-2 rounded-full">
+                    <button onclick="togglePreviewMic()" id="prev-mic-btn" class="w-10 h-10 rounded-full bg-white/20 text-white flex items-center justify-center"><i class="fa-solid fa-microphone"></i></button>
+                    <button onclick="togglePreviewCam()" id="prev-cam-btn" class="w-10 h-10 rounded-full bg-white/20 text-white flex items-center justify-center"><i class="fa-solid fa-video"></i></button>
                 </div>
             </div>
 
-            <div class="w-full max-w-sm">
-                <button id="perm-btn" onclick="requestPermissions()" class="btn-modern bg-blue-500 text-white mb-3">
-                    <i class="fa-solid fa-lock-open"></i> السماح بالوصول
-                </button>
-                <button id="enter-btn" onclick="enterRoom()" class="btn-modern hidden">
-                    <i class="fa-solid fa-check"></i> انضمام للغرفة
-                </button>
-                <button onclick="location.reload()" class="mt-4 text-gray-500 text-sm hover:text-white">إلغاء</button>
-            </div>
+            <button id="perm-btn" onclick="requestPermissions()" class="btn-modern bg-blue-500 text-white mb-3">
+                <i class="fa-solid fa-lock-open"></i> السماح بالوصول
+            </button>
+            <button id="enter-btn" onclick="enterRoom()" class="btn-modern hidden">
+                <i class="fa-solid fa-check"></i> انضمام الآن
+            </button>
+            <button onclick="location.reload()" class="mt-4 text-gray-500 text-sm">إلغاء</button>
         </div>
     </div>
 
-    <!-- === 3. Active Call Screen === -->
+    <!-- === 3. Call Screen === -->
     <div id="screen-call" class="screen hidden-screen">
         <div class="call-layout">
-            <!-- Header -->
             <div class="call-header">
                 <div class="room-pill" onclick="copyRoomId()">
                     <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    <span id="room-id-disp" class="font-mono">...</span>
+                    <span id="room-id-disp" class="font-mono ml-2">...</span>
                     <i class="fa-regular fa-copy text-gray-400 ml-1"></i>
                 </div>
-                <div class="flex gap-2">
-                    <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center" onclick="openDrawer('participants-drawer')">
-                        <i class="fa-solid fa-users text-sm"></i>
-                        <span id="badge-req" class="absolute top-3 right-3 w-3 h-3 bg-red-500 rounded-full border-2 border-black hidden"></span>
-                    </button>
-                </div>
+                <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center" onclick="openDrawer('participants-drawer')">
+                    <i class="fa-solid fa-users text-sm"></i>
+                    <span id="badge-req" class="absolute top-3 right-3 w-3 h-3 bg-red-500 rounded-full hidden"></span>
+                </button>
             </div>
 
-            <!-- Video Grid -->
             <div id="video-grid" class="grid-container grid-1">
-                <!-- Videos injected here -->
+                <!-- Videos here -->
             </div>
 
-            <!-- Bottom Controls -->
             <div class="controls-bar">
-                <button id="btn-mic" class="btn-icon-circle" onclick="toggleMic()">
-                    <i class="fa-solid fa-microphone"></i>
-                </button>
-                <button id="btn-cam" class="btn-icon-circle" onclick="toggleCam()">
-                    <i class="fa-solid fa-video"></i>
-                </button>
-                <button class="btn-icon-circle hangup" onclick="location.reload()">
-                    <i class="fa-solid fa-phone-slash"></i>
-                </button>
-                <button class="btn-icon-circle" onclick="openDrawer('chat-drawer')">
-                    <i class="fa-solid fa-comment-dots"></i>
-                </button>
-                <button id="btn-share" class="btn-icon-circle hidden md:flex" onclick="toggleShare()">
-                    <i class="fa-solid fa-desktop"></i>
-                </button>
+                <button id="btn-mic" class="btn-icon-circle" onclick="toggleMic()"><i class="fa-solid fa-microphone"></i></button>
+                <button id="btn-cam" class="btn-icon-circle" onclick="toggleCam()"><i class="fa-solid fa-video"></i></button>
+                <button class="btn-icon-circle hangup" onclick="location.reload()"><i class="fa-solid fa-phone-slash"></i></button>
+                <button class="btn-icon-circle" onclick="openDrawer('chat-drawer')"><i class="fa-solid fa-comment-dots"></i></button>
             </div>
         </div>
     </div>
 
-    <!-- === Drawers (Bottom Sheets) === -->
-    
-    <!-- 1. Chat Drawer -->
+    <!-- Drawers -->
     <div id="chat-drawer" class="bottom-sheet" onclick="if(event.target===this) closeDrawer('chat-drawer')">
         <div class="sheet-content">
-            <div class="sheet-drag-handle"></div>
+            <div class="w-10 h-1 bg-gray-600 rounded-full mx-auto mb-4"></div>
             <h3 class="text-center font-bold mb-4 border-b border-gray-700 pb-2">المحادثة</h3>
-            
-            <div id="chat-list" class="flex-1 overflow-y-auto mb-4 px-2">
-                <!-- Messages -->
-                <div class="text-center text-gray-600 text-sm mt-10">لا توجد رسائل بعد</div>
-            </div>
-
+            <div id="chat-list" class="flex-1 overflow-y-auto mb-4 px-2 space-y-3"></div>
             <div class="flex gap-2 bg-zinc-800 p-2 rounded-full">
                 <input id="chat-input" type="text" class="bg-transparent flex-1 px-4 text-white outline-none text-right" placeholder="اكتب رسالة...">
-                <button onclick="sendChat()" class="w-10 h-10 rounded-full bg-primary text-black flex items-center justify-center font-bold hover:scale-105 transition">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
+                <button onclick="sendChat()" class="w-10 h-10 rounded-full bg-primary text-black flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
-    <!-- 2. Participants Drawer -->
     <div id="participants-drawer" class="bottom-sheet" onclick="if(event.target===this) closeDrawer('participants-drawer')">
         <div class="sheet-content">
-            <div class="sheet-drag-handle"></div>
-            <h3 class="text-center font-bold mb-4 border-b border-gray-700 pb-2">المتواجدون</h3>
-            
+            <div class="w-10 h-1 bg-gray-600 rounded-full mx-auto mb-4"></div>
+            <h3 class="text-center font-bold mb-4 border-b border-gray-700 pb-2">المشاركون</h3>
             <div id="req-list" class="mb-2"></div>
-            <div id="part-list" class="flex-1 overflow-y-auto space-y-3">
-                <!-- Participants -->
-            </div>
+            <div id="part-list" class="flex-1 overflow-y-auto space-y-3"></div>
         </div>
     </div>
 
-    <!-- Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue, push, update, remove, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAjE-2q6PONBkCin9ZN22gDp9Q8pAH9ZW8",
             authDomain: "story-97cf7.firebaseapp.com",
@@ -405,26 +274,23 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // State
         let myId = Math.random().toString(36).substr(2, 6);
-        let roomId = null;
-        let isHost = false;
-        let stream = null;
-        let peers = {};
+        let roomId = null, isHost = false;
+        let stream = null, peers = {};
+        // Queue for ICE candidates arriving before remote description
+        let iceQueues = {}; 
         
-        // User Info & Settings
         let myInfo = { name: "", avatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png" };
         let myState = { mic: true, cam: true };
         
-        // --- Initialization ---
+        // Init
         const urlParams = new URLSearchParams(window.location.search);
         if(urlParams.get('room')) {
             roomId = urlParams.get('room');
-            document.getElementById('action-buttons').querySelector('button').style.display = 'none'; // Hide create
+            document.getElementById('action-buttons').querySelector('button').style.display = 'none';
             document.getElementById('join-section').classList.remove('hidden');
         }
-
-        // Auto Load User
+        
         const saved = localStorage.getItem('buz_user_v2');
         if(saved) {
             const p = JSON.parse(saved);
@@ -435,25 +301,20 @@
             }
         }
 
-        // --- Navigation Logic ---
+        // --- Functions ---
         window.goToLobby = async (mode) => {
             const name = document.getElementById('username-in').value.trim();
-            if(!name) return showToast("الرجاء كتابة اسمك أولاً", true);
-            
+            if(!name) return showToast("اكتب اسمك أولاً", true);
             myInfo.name = name;
             localStorage.setItem('buz_user_v2', JSON.stringify(myInfo));
 
             if(mode === 'create') {
-                roomId = Math.random().toString(36).substr(2, 6); // Simple ID
+                roomId = Math.random().toString(36).substr(2, 6);
                 isHost = true;
             } else {
-                // Check if room full
                 const snap = await get(child(ref(db), `rooms/${roomId}/participants`));
-                if(snap.exists() && Object.keys(snap.val()).length >= 4) {
-                    return showToast("الغرفة ممتلئة!", true);
-                }
+                if(snap.exists() && Object.keys(snap.val()).length >= 4) return showToast("الغرفة ممتلئة!", true);
             }
-
             switchScreen('screen-welcome', 'screen-lobby');
         };
 
@@ -461,66 +322,39 @@
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 document.getElementById('local-preview').srcObject = stream;
-                
-                // Update Buttons UI
                 document.getElementById('perm-btn').classList.add('hidden');
                 document.getElementById('enter-btn').classList.remove('hidden');
-                document.getElementById('enter-btn').classList.add('flex'); // Because it's flex styled
-                
-            } catch(e) {
-                console.error(e);
-                showToast("يجب السماح بالوصول للكاميرا والمايكروفون", true);
-            }
+                document.getElementById('enter-btn').classList.add('flex');
+            } catch(e) { showToast("يجب السماح بالكاميرا والمايك", true); }
         };
 
-        // --- Pre-Join Controls ---
         window.togglePreviewCam = () => {
             myState.cam = !myState.cam;
             if(stream) stream.getVideoTracks()[0].enabled = myState.cam;
-            
             const btn = document.getElementById('prev-cam-btn');
-            const placeholder = document.getElementById('preview-placeholder');
-            
-            if(myState.cam) {
-                btn.classList.remove('bg-red-500');
-                btn.innerHTML = '<i class="fa-solid fa-video"></i>';
-                placeholder.classList.add('hidden');
-            } else {
-                btn.classList.add('bg-red-500');
-                btn.innerHTML = '<i class="fa-solid fa-video-slash"></i>';
-                placeholder.classList.remove('hidden');
-            }
+            const ph = document.getElementById('preview-placeholder');
+            if(myState.cam) { btn.classList.remove('bg-red-500'); ph.classList.add('hidden'); }
+            else { btn.classList.add('bg-red-500'); ph.classList.remove('hidden'); }
         };
 
         window.togglePreviewMic = () => {
             myState.mic = !myState.mic;
             if(stream) stream.getAudioTracks()[0].enabled = myState.mic;
-            
             const btn = document.getElementById('prev-mic-btn');
-            if(myState.mic) {
-                btn.classList.remove('bg-red-500');
-                btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-            } else {
-                btn.classList.add('bg-red-500');
-                btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-            }
+            if(myState.mic) btn.classList.remove('bg-red-500');
+            else btn.classList.add('bg-red-500');
         };
 
-        // --- Joining Logic ---
         window.enterRoom = async () => {
             if(isHost) {
                 await set(ref(db, `rooms/${roomId}`), { created: Date.now(), hostId: myId });
                 initCallUI();
             } else {
-                document.getElementById('enter-btn').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> انتظار الموافقة...';
+                document.getElementById('enter-btn').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> انتظار...';
                 await set(ref(db, `rooms/${roomId}/requests/${myId}`), { info: myInfo, status: 'pending' });
-                
                 onValue(ref(db, `rooms/${roomId}/requests/${myId}/status`), (s) => {
                     if(s.val() === 'accepted') initCallUI();
-                    else if(s.val() === 'rejected') {
-                        showToast("تم رفض طلب الانضمام", true);
-                        setTimeout(() => location.reload(), 2000);
-                    }
+                    else if(s.val() === 'rejected') { showToast("تم الرفض", true); setTimeout(() => location.reload(), 2000); }
                 });
             }
         };
@@ -528,58 +362,39 @@
         function initCallUI() {
             switchScreen('screen-lobby', 'screen-call');
             document.getElementById('room-id-disp').innerText = roomId;
-            
-            // Apply states to main buttons
             updateCtrlBtn('btn-mic', myState.mic);
             updateCtrlBtn('btn-cam', myState.cam);
 
-            // 1. Add My Video
             addVideoNode(myId, myInfo, true);
             const v = document.getElementById(`vid-${myId}`);
             v.srcObject = stream;
             v.muted = true;
 
-            // 2. Register in DB
-            update(ref(db, `rooms/${roomId}/participants/${myId}`), {
-                info: myInfo,
-                state: myState
-            });
+            update(ref(db, `rooms/${roomId}/participants/${myId}`), { info: myInfo, state: myState });
 
-            // 3. Listeners
             listenToParticipants();
             listenToChat();
             if(isHost) listenToRequests();
             
-            // 4. Kicked?
             onValue(ref(db, `rooms/${roomId}/participants/${myId}`), (s) => {
                 if(!s.exists() && document.getElementById('screen-call').style.display !== 'none') {
-                    alert("تم إخراجك من المكالمة");
-                    location.reload();
+                    alert("تم إخراجك"); location.reload();
                 }
             });
         }
 
-        // --- Call Core ---
         function listenToParticipants() {
             onValue(ref(db, `rooms/${roomId}/participants`), (snap) => {
                 const parts = snap.val() || {};
-                
-                // Update List in Drawer
                 updateDrawerList(parts);
-
-                // Add/Remove Videos
                 Object.keys(parts).forEach(uid => {
                     updateUserUIState(uid, parts[uid].state);
-                    
-                    if(uid === myId) return; // Skip me
-
+                    if(uid === myId) return;
                     if(!peers[uid]) {
                         addVideoNode(uid, parts[uid].info, false);
-                        initWebRTC(uid); // Connect
+                        initWebRTC(uid);
                     }
                 });
-
-                // Cleanup left users
                 Object.keys(peers).forEach(uid => {
                     if(!parts[uid]) {
                         document.getElementById(`wrap-${uid}`)?.remove();
@@ -590,7 +405,6 @@
                 });
             });
             
-            // Signals
             const sigRef = ref(db, `rooms/${roomId}/signals/${myId}`);
             onValue(sigRef, async (snap) => {
                 const signals = snap.val();
@@ -603,10 +417,8 @@
             });
         }
 
-        // --- UI Rendering ---
         function addVideoNode(uid, info, isLocal) {
             if(document.getElementById(`wrap-${uid}`)) return;
-            
             const div = document.createElement('div');
             div.className = 'video-wrapper';
             div.id = `wrap-${uid}`;
@@ -617,7 +429,7 @@
                 </div>
                 <div class="user-label">
                     <i id="ico-mic-${uid}" class="fa-solid fa-microphone-slash text-red-500 hidden text-xs"></i>
-                    <span>${info.name} ${isLocal ? '(أنت)' : ''}</span>
+                    <span>${info.name}</span>
                 </div>
             `;
             document.getElementById('video-grid').appendChild(div);
@@ -634,14 +446,81 @@
             const ph = document.getElementById(`ph-${uid}`);
             const micIco = document.getElementById(`ico-mic-${uid}`);
             if(!st) return;
-
-            if(st.cam) ph?.classList.add('hidden');
-            else ph?.classList.remove('hidden');
-
+            if(st.cam) ph?.classList.add('hidden'); else ph?.classList.remove('hidden');
             if(micIco) micIco.style.display = st.mic ? 'none' : 'block';
         }
 
-        // --- Controls Logic ---
+        // --- WebRTC Logic (Fixed) ---
+        const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        
+        async function initWebRTC(targetId) {
+            const pc = new RTCPeerConnection(rtcConfig);
+            peers[targetId] = pc;
+            iceQueues[targetId] = []; // Init queue
+
+            // Add local tracks
+            stream.getTracks().forEach(t => pc.addTrack(t, stream));
+
+            pc.ontrack = e => {
+                const vid = document.getElementById(`vid-${targetId}`);
+                if(vid) {
+                    vid.srcObject = e.streams[0];
+                    vid.play().catch(console.error);
+                }
+            };
+
+            pc.onicecandidate = e => {
+                if(e.candidate) push(ref(db, `rooms/${roomId}/signals/${targetId}`), { sender: myId, type: 'candidate', candidate: JSON.stringify(e.candidate) });
+            };
+
+            // Avoid collision: Only higher ID creates offer initially
+            if(myId > targetId) {
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                push(ref(db, `rooms/${roomId}/signals/${targetId}`), { sender: myId, type: 'offer', offer: JSON.stringify(offer) });
+            }
+        }
+
+        async function handleSignal(msg) {
+            const { sender, type } = msg;
+            
+            // Ensure PeerConnection exists (if I am receiver of offer)
+            if(!peers[sender]) {
+                const snap = await get(ref(db, `rooms/${roomId}/participants/${sender}`));
+                // Ensure UI exists before connecting
+                if(snap.exists()) addVideoNode(sender, snap.val().info, false);
+                await initWebRTC(sender); 
+            }
+            
+            const pc = peers[sender];
+            const q = iceQueues[sender] || [];
+
+            if(type === 'offer') {
+                await pc.setRemoteDescription(JSON.parse(msg.offer));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                push(ref(db, `rooms/${roomId}/signals/${sender}`), { sender: myId, type: 'answer', answer: JSON.stringify(answer) });
+                
+                // Process queued candidates
+                while(q.length) { await pc.addIceCandidate(q.shift()); }
+
+            } else if(type === 'answer') {
+                await pc.setRemoteDescription(JSON.parse(msg.answer));
+                // Process queued candidates
+                while(q.length) { await pc.addIceCandidate(q.shift()); }
+
+            } else if(type === 'candidate') {
+                const cand = JSON.parse(msg.candidate);
+                // If remote description is set, add now. Else queue it.
+                if(pc.remoteDescription) {
+                    try { await pc.addIceCandidate(cand); } catch(e) { console.error(e); }
+                } else {
+                    q.push(cand);
+                }
+            }
+        }
+
+        // --- Controls ---
         window.toggleMic = () => {
             myState.mic = !myState.mic;
             stream.getAudioTracks()[0].enabled = myState.mic;
@@ -662,49 +541,30 @@
             if(isActive) btn.classList.remove('off');
             else btn.classList.add('off');
         }
+        function pushStateDB() { update(ref(db, `rooms/${roomId}/participants/${myId}/state`), myState); }
 
-        function pushStateDB() {
-            update(ref(db, `rooms/${roomId}/participants/${myId}/state`), myState);
-        }
-
-        // --- Drawer & Chat Logic ---
         window.openDrawer = (id) => document.getElementById(id).classList.add('open');
         window.closeDrawer = (id) => document.getElementById(id).classList.remove('open');
-
+        
+        // Chat & List Listeners (Simplified)
         function listenToChat() {
             onValue(ref(db, `rooms/${roomId}/chat`), (snap) => {
                 const msgs = snap.val();
                 const list = document.getElementById('chat-list');
                 list.innerHTML = '';
-                if(!msgs) {
-                    list.innerHTML = '<div class="text-center text-gray-600 text-sm mt-10">لا توجد رسائل بعد</div>';
-                    return;
-                }
-                
+                if(!msgs) return;
                 Object.values(msgs).forEach(m => {
                     const isMine = m.senderId === myId;
-                    list.innerHTML += `
-                        <div class="chat-msg ${isMine ? 'mine' : ''}">
-                            <span class="text-xs text-gray-500 mb-1 px-1">${m.name}</span>
-                            <div class="bubble">${m.text}</div>
-                        </div>
-                    `;
+                    list.innerHTML += `<div class="chat-msg ${isMine ? 'mine' : ''}"><div class="bubble">${m.text}</div></div>`;
                 });
                 list.scrollTop = list.scrollHeight;
             });
         }
-
         window.sendChat = () => {
-            const inp = document.getElementById('chat-input');
-            const txt = inp.value.trim();
-            if(!txt) return;
-            push(ref(db, `rooms/${roomId}/chat`), {
-                senderId: myId, name: myInfo.name, text: txt, time: Date.now()
-            });
-            inp.value = '';
+            const val = document.getElementById('chat-input').value;
+            if(val) { push(ref(db, `rooms/${roomId}/chat`), { senderId: myId, name: myInfo.name, text: val }); document.getElementById('chat-input').value = ''; }
         };
 
-        // --- Participants List & Requests (Host) ---
         function updateDrawerList(parts) {
             const list = document.getElementById('part-list');
             list.innerHTML = '';
@@ -714,16 +574,10 @@
                     <div class="flex items-center justify-between bg-zinc-800 p-3 rounded-xl">
                         <div class="flex items-center gap-3">
                             <img src="${p.info.avatar}" class="w-10 h-10 rounded-full object-cover">
-                            <div class="flex flex-col">
-                                <span class="font-bold text-sm">${p.info.name}</span>
-                                <span class="text-xs text-gray-500">${uid === myId ? 'أنت' : 'متصل'}</span>
-                            </div>
+                            <span>${p.info.name}</span>
                         </div>
-                        ${isHost && uid !== myId ? 
-                          `<button onclick="kick('${uid}')" class="text-red-500 bg-red-500/10 p-2 rounded-full text-xs">طرد</button>` 
-                          : ''}
-                    </div>
-                `;
+                        ${isHost && uid !== myId ? `<button onclick="kick('${uid}')" class="text-red-500 text-xs">طرد</button>` : ''}
+                    </div>`;
             });
         }
 
@@ -732,115 +586,38 @@
                 const reqs = snap.val() || {};
                 const list = document.getElementById('req-list');
                 list.innerHTML = '';
-                let count = 0;
-
+                let c = 0;
                 Object.keys(reqs).forEach(k => {
                     if(reqs[k].status === 'pending') {
-                        count++;
-                        list.innerHTML += `
-                            <div class="bg-zinc-700 p-3 rounded-xl mb-2 flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <img src="${reqs[k].info.avatar}" class="w-8 h-8 rounded-full">
-                                    <span class="text-sm">${reqs[k].info.name}</span>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button onclick="ans('${k}','accepted')" class="bg-primary text-black px-3 py-1 rounded-lg text-xs font-bold">قبول</button>
-                                    <button onclick="ans('${k}','rejected')" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs">رفض</button>
-                                </div>
-                            </div>
-                        `;
+                        c++;
+                        list.innerHTML += `<div class="bg-zinc-700 p-2 rounded mb-2 flex justify-between"><span>${reqs[k].info.name}</span><div><button onclick="ans('${k}','accepted')" class="mr-2 text-green-400">قبول</button><button onclick="ans('${k}','rejected')" class="text-red-400">رفض</button></div></div>`;
                     }
                 });
-
-                const badge = document.getElementById('badge-req');
-                if(count > 0) { badge.classList.remove('hidden'); badge.innerText = ""; }
-                else badge.classList.add('hidden');
+                const b = document.getElementById('badge-req');
+                if(c>0) { b.classList.remove('hidden'); } else b.classList.add('hidden');
             });
         }
 
-        // Global Actions for HTML
         window.kick = (uid) => remove(ref(db, `rooms/${roomId}/participants/${uid}`));
         window.ans = (uid, st) => update(ref(db, `rooms/${roomId}/requests/${uid}`), { status: st });
-        window.copyRoomId = () => {
-            navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?room=${roomId}`);
-            showToast("تم نسخ رابط الدعوة");
-        };
+        window.copyRoomId = () => { navigator.clipboard.writeText(window.location.href); showToast("تم نسخ الرابط"); };
 
-        // --- WebRTC (Simplified Mesh) ---
-        const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-        
-        async function initWebRTC(targetId) {
-            const pc = new RTCPeerConnection(rtcConfig);
-            peers[targetId] = pc;
-            stream.getTracks().forEach(t => pc.addTrack(t, stream));
-
-            pc.ontrack = e => {
-                const vid = document.getElementById(`vid-${targetId}`);
-                if(vid) vid.srcObject = e.streams[0];
-            };
-
-            pc.onicecandidate = e => {
-                if(e.candidate) push(ref(db, `rooms/${roomId}/signals/${targetId}`), { sender: myId, type: 'candidate', candidate: JSON.stringify(e.candidate) });
-            };
-
-            if(myId > targetId) {
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                push(ref(db, `rooms/${roomId}/signals/${targetId}`), { sender: myId, type: 'offer', offer: JSON.stringify(offer) });
-            }
-        }
-
-        async function handleSignal(msg) {
-            const { sender, type } = msg;
-            if(!peers[sender]) {
-                const snap = await get(ref(db, `rooms/${roomId}/participants/${sender}`));
-                addVideoNode(sender, snap.val().info, false);
-                await initWebRTC(sender);
-            }
-            const pc = peers[sender];
-            if(type === 'offer') {
-                await pc.setRemoteDescription(JSON.parse(msg.offer));
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-                push(ref(db, `rooms/${roomId}/signals/${sender}`), { sender: myId, type: 'answer', answer: JSON.stringify(answer) });
-            } else if(type === 'answer') {
-                await pc.setRemoteDescription(JSON.parse(msg.answer));
-            } else if(type === 'candidate') {
-                pc.addIceCandidate(JSON.parse(msg.candidate));
-            }
-        }
-
-        // --- Helpers ---
-        function switchScreen(from, to) {
-            document.getElementById(from).classList.add('hidden-screen');
-            document.getElementById(to).classList.remove('hidden-screen');
-        }
-
-        function showToast(msg, isError = false) {
+        function switchScreen(from, to) { document.getElementById(from).classList.add('hidden-screen'); document.getElementById(to).classList.remove('hidden-screen'); }
+        function showToast(msg, err=false) {
             const t = document.getElementById('toast');
-            const tm = document.getElementById('toast-msg');
-            tm.innerText = msg;
-            t.style.borderLeft = isError ? '4px solid red' : '4px solid var(--primary)';
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
+            document.getElementById('toast-msg').innerText = msg;
+            t.style.borderLeft = err ? '4px solid red' : '4px solid #c3ff00';
+            t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);
         }
-
-        // Image Resize
-        document.getElementById('file-in').addEventListener('change', async (e) => {
+        document.getElementById('file-in').addEventListener('change', (e) => {
             if(e.target.files[0]) {
-                const r = new FileReader();
-                r.readAsDataURL(e.target.files[0]);
+                const r = new FileReader(); r.readAsDataURL(e.target.files[0]);
                 r.onload = ev => {
-                    const img = new Image();
-                    img.src = ev.target.result;
-                    img.onload = () => {
-                        const c = document.createElement('canvas');
-                        const s = 100/img.width;
-                        c.width = 100; c.height = img.height*s;
-                        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-                        const b64 = c.toDataURL('image/jpeg',0.7);
-                        myInfo.avatar = b64;
-                        document.getElementById('avatar-prev').src = b64;
+                    const i = new Image(); i.src = ev.target.result;
+                    i.onload = () => {
+                        const c = document.createElement('canvas'); const s=100/i.width; c.width=100; c.height=i.height*s;
+                        c.getContext('2d').drawImage(i,0,0,c.width,c.height);
+                        myInfo.avatar = c.toDataURL('image/jpeg',0.6); document.getElementById('avatar-prev').src = myInfo.avatar;
                     }
                 }
             }
