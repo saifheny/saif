@@ -2,274 +2,397 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Buz Pro - مكالمات جماعية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Buz Pro - مكالمات حديثة</title>
+    <!-- FontAwesome & Google Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS (للمساعدة في التنسيق السريع) -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
         :root {
-            --bg-dark: #0f0f10;
-            --bg-card: #1e1e24;
-            --primary: #a5ff00; /* اللون الليموني */
-            --danger: #ff4d4d;
+            --bg-dark: #121212;
+            --bg-surface: #1e1e1e;
+            --primary: #c3ff00; /* Lime Green Modern */
+            --primary-dark: #9acd00;
+            --danger: #ff4444;
             --text-main: #ffffff;
-            --text-sec: #aaaaaa;
-            --glass: rgba(255, 255, 255, 0.08);
-            --radius: 16px;
+            --text-sec: #9ca3af;
+            --glass: rgba(30, 30, 30, 0.7);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
+        * { font-family: 'Alexandria', sans-serif; -webkit-tap-highlight-color: transparent; }
+
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            height: 100vh;
+            height: 100vh; /* Fallback */
+            height: 100dvh; /* Dynamic Viewport Height */
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
-        /* --- شاشات الدخول --- */
+        /* --- Transitions --- */
+        .fade-enter { opacity: 0; transform: scale(0.95); }
+        .fade-enter-active { opacity: 1; transform: scale(1); transition: opacity 0.3s, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .fade-exit { opacity: 1; transform: scale(1); }
+        .fade-exit-active { opacity: 0; transform: scale(0.95); transition: opacity 0.2s, transform 0.2s; pointer-events: none; position: absolute; }
+
+        /* --- Screens --- */
         .screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
             background: var(--bg-dark);
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 10; padding: 20px; transition: opacity 0.3s;
+            z-index: 10;
         }
-        .screen.active { display: flex; }
+        .hidden-screen { display: none !important; }
 
-        .logo-box {
-            width: 100px; height: 100px;
-            background: radial-gradient(circle, rgba(165,255,0,0.2) 0%, rgba(0,0,0,0) 70%);
-            border: 2px solid var(--primary);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            margin-bottom: 20px; box-shadow: 0 0 20px rgba(165,255,0,0.3);
+        /* --- UI Components --- */
+        .btn-modern {
+            background: var(--primary);
+            color: #000;
+            font-weight: 600;
+            border-radius: 9999px;
+            padding: 16px 32px;
+            transition: transform 0.1s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%;
+            font-size: 1rem;
+            border: none;
+            box-shadow: 0 4px 15px rgba(195, 255, 0, 0.2);
         }
-        .logo-box i { font-size: 2.5rem; color: var(--primary); }
-
-        .form-box { width: 100%; max-width: 350px; text-align: center; }
+        .btn-modern:active { transform: scale(0.98); }
         
-        .avatar-select {
-            width: 90px; height: 90px; margin: 0 auto 20px;
-            border-radius: 50%; background: var(--bg-card); border: 2px dashed #444;
-            position: relative; cursor: pointer; overflow: hidden;
+        .btn-icon-circle {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            background: #2d2d2d;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.2s;
+            cursor: pointer;
         }
-        .avatar-select img { width: 100%; height: 100%; object-fit: cover; }
-        .avatar-select i { position: absolute; bottom: 5px; width: 100%; text-align: center; font-size: 12px; background: rgba(0,0,0,0.6); padding: 2px; }
+        .btn-icon-circle.active { background: #3d3d3d; border-color: transparent; }
+        .btn-icon-circle.off { background: #2d2d2d; color: var(--danger); position: relative; }
+        .btn-icon-circle.off::after { content: '\\'; position: absolute; font-size: 1.2rem; }
+        .btn-icon-circle.hangup { background: var(--danger); color: white; width: 64px; height: 64px; border:none; }
 
-        input[type="text"] {
-            width: 100%; padding: 15px; border-radius: 50px;
-            border: 1px solid #333; background: var(--bg-card);
-            color: white; text-align: center; margin-bottom: 15px; outline: none;
+        /* --- Welcome Screen --- */
+        .welcome-content {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 24px; text-align: center; max-width: 450px; margin: 0 auto; width: 100%;
         }
-        input:focus { border-color: var(--primary); }
+        .logo-anim {
+            width: 80px; height: 80px; background: var(--primary);
+            border-radius: 24px; display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; color: #000; margin-bottom: 24px;
+            box-shadow: 0 0 30px rgba(195, 255, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        .btn {
-            width: 100%; padding: 15px; border-radius: 50px; border: none;
-            font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-            margin-bottom: 10px; transition: 0.2s; font-size: 1rem;
+        .modern-input {
+            width: 100%; background: #2a2a2a; border: 1px solid #333;
+            color: white; padding: 16px; border-radius: 16px;
+            font-size: 1.1rem; text-align: center; outline: none;
+            transition: 0.3s; margin-bottom: 16px;
         }
-        .btn-primary { background: var(--primary); color: #000; }
-        .btn-sec { background: #333; color: white; }
-        .btn:active { transform: scale(0.97); }
+        .modern-input:focus { border-color: var(--primary); background: #333; }
 
-        /* --- شاشة المكالمة --- */
-        #call-screen { padding: 0; justify-content: space-between; background: #000; }
+        /* --- Preview/Lobby Screen --- */
+        .preview-container {
+            position: relative; width: 100%; max-width: 400px; aspect-ratio: 9/16; max-height: 60vh;
+            background: #222; border-radius: 24px; overflow: hidden; margin-bottom: 24px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid #333;
+        }
+        .preview-video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        .preview-controls {
+            position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 16px;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+            padding: 8px 16px; border-radius: 50px;
+        }
 
-        /* الهيدر */
-        .header {
-            width: 100%; height: 60px; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 15px; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
-            position: absolute; top: 0; z-index: 5;
+        /* --- Call Screen --- */
+        .call-layout {
+            height: 100%; display: flex; flex-direction: column;
+            background: #000; position: relative;
         }
-        .room-id { font-size: 0.9rem; background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 20px; }
-        
-        /* شبكة الفيديو */
-        .video-grid {
-            flex: 1; width: 100%; display: grid; gap: 8px; padding: 70px 10px 10px;
-            overflow-y: auto; align-content: center;
+        .call-header {
+            position: absolute; top: 0; left: 0; right: 0;
+            padding: 16px; z-index: 20;
+            display: flex; justify-content: space-between; align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
         }
-        /* تنسيق الشبكة حسب العدد */
+        .room-pill {
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            padding: 8px 16px; border-radius: 50px; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; cursor: pointer;
+        }
+
+        .grid-container {
+            flex: 1; padding: 12px; gap: 12px;
+            display: grid; overflow-y: auto; align-content: center;
+        }
         .grid-1 { grid-template-columns: 1fr; }
         .grid-2 { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
-        .grid-3 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; } /* الثالث يأخذ مساحة */
-        .grid-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+        .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
 
-        .video-card {
-            background: #1a1a1a; border-radius: var(--radius); overflow: hidden;
-            position: relative; width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        .video-wrapper {
+            background: #1e1e1e; border-radius: var(--radius-md); overflow: hidden;
+            position: relative; width: 100%; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .video-card video { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* حالة الفيديو مغلق */
-        .video-card.cam-off video { display: none; }
-        .video-card.cam-off .placeholder { display: flex; }
-        
-        .placeholder {
-            display: none; flex-direction: column; align-items: center;
-            width: 100%; height: 100%; justify-content: center; background: #222;
+        .video-wrapper video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        .user-label {
+            position: absolute; bottom: 12px; left: 12px;
+            background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 8px;
+            font-size: 0.8rem; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            display: flex; align-items: center; gap: 6px;
         }
-        .placeholder img { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 10px; border: 2px solid #444; object-fit: cover; }
-        
-        /* معلومات المستخدم */
-        .user-tag {
-            position: absolute; bottom: 10px; left: 10px;
-            background: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 10px;
-            font-size: 0.8rem; display: flex; align-items: center; gap: 6px; backdrop-filter: blur(4px);
-        }
-        .mute-icon { color: var(--danger); display: none; } /* يظهر عند الكتم */
 
-        /* منطقة الشات */
-        .chat-container {
-            height: 30%; background: var(--bg-card); border-top-left-radius: 20px; border-top-right-radius: 20px;
-            display: flex; flex-direction: column; position: relative; transition: height 0.3s;
-            border-top: 1px solid #333;
+        .controls-bar {
+            position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: rgba(30,30,30,0.95); backdrop-filter: blur(12px);
+            padding: 12px 24px; border-radius: 50px;
+            display: flex; gap: 16px; align-items: center; z-index: 20;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: max-content;
         }
-        .chat-container.collapsed { height: 40px; }
+
+        /* --- Bottom Sheet (Drawer) --- */
+        .bottom-sheet {
+            position: fixed; inset: 0; z-index: 50;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);
+            display: flex; flex-direction: column; justify-content: flex-end;
+            opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .bottom-sheet.open { opacity: 1; pointer-events: auto; }
+        .sheet-content {
+            background: #1e1e1e;
+            border-top-left-radius: 24px; border-top-right-radius: 24px;
+            padding: 20px; max-height: 80vh; min-height: 40vh;
+            display: flex; flex-direction: column;
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.5);
+        }
+        .bottom-sheet.open .sheet-content { transform: translateY(0); }
         
-        .chat-header {
-            padding: 10px; text-align: center; border-bottom: 1px solid #333; cursor: pointer;
-            font-size: 0.8rem; color: var(--text-sec);
+        .sheet-drag-handle {
+            width: 40px; height: 5px; background: #444; border-radius: 10px;
+            margin: 0 auto 20px;
         }
-        .chat-messages {
-            flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px;
-        }
-        .chat-input-area {
-            padding: 10px; display: flex; gap: 10px; background: #111;
-        }
-        .chat-input-area input { margin: 0; text-align: right; padding: 10px; }
-        .send-btn { width: 45px; height: 45px; border-radius: 50%; background: var(--primary); border:none; cursor: pointer; }
 
-        .msg {
-            background: #333; padding: 8px 12px; border-radius: 12px; width: fit-content; max-width: 80%;
-            position: relative; font-size: 0.9rem;
+        /* --- Chat Styles --- */
+        .chat-msg { margin-bottom: 12px; display: flex; flex-direction: column; align-items: flex-start; }
+        .chat-msg.mine { align-items: flex-end; }
+        .bubble {
+            padding: 10px 16px; border-radius: 18px; max-width: 85%;
+            font-size: 0.95rem; line-height: 1.4;
         }
-        .msg.mine { align-self: flex-end; background: #2d4503; color: var(--primary); }
-        .msg-name { font-size: 0.7rem; color: #aaa; margin-bottom: 2px; display: block;}
-        .msg-del { position: absolute; left: -20px; top: 5px; color: var(--danger); cursor: pointer; display: none;}
-        .msg:hover .msg-del { display: block; } /* يظهر الحذف للمضيف عند اللمس */
-
-        /* شريط التحكم السفلي */
-        .controls {
-            padding: 15px; display: flex; justify-content: center; gap: 15px;
-            background: rgba(0,0,0,0.9); width: 100%;
-        }
-        .ctrl-btn {
-            width: 50px; height: 50px; border-radius: 50%; border: none; font-size: 1.2rem;
-            background: #333; color: white; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .ctrl-btn.active { background: white; color: black; }
-        .ctrl-btn.hangup { background: var(--danger); width: 60px; height: 60px; margin-top: -5px; }
-
-        /* القوائم المنبثقة */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 100; display: none; align-items: center; justify-content: center;
-        }
-        .modal-content {
-            background: var(--bg-card); width: 85%; max-width: 400px; border-radius: 20px; padding: 20px;
-        }
-        .req-item {
-            display: flex; justify-content: space-between; align-items: center; background: #2a2a2a;
-            padding: 10px; margin-bottom: 10px; border-radius: 10px;
-        }
-        .req-user img { width: 35px; height: 35px; border-radius: 50%; margin-left: 10px; vertical-align: middle;}
-        .btn-xs { padding: 5px 12px; border-radius: 8px; border: none; cursor: pointer; margin-left: 5px; font-size: 0.8rem;}
+        .chat-msg.mine .bubble { background: var(--primary); color: black; border-bottom-left-radius: 4px; }
+        .chat-msg:not(.mine) .bubble { background: #333; color: white; border-bottom-right-radius: 4px; }
         
-        .badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; display: none;}
+        /* --- Toast Notification --- */
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #333; color: white; padding: 12px 24px; border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 100;
+            display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast i { color: var(--primary); }
+
+        /* --- Utility for Avatar Upload --- */
+        .avatar-upload {
+            position: relative; width: 100px; height: 100px; margin: 0 auto 20px;
+        }
+        .avatar-upload img {
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+            border: 2px solid #333;
+        }
+        .avatar-upload .edit-icon {
+            position: absolute; bottom: 0; right: 0;
+            width: 32px; height: 32px; background: var(--primary); color: black;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-    <!-- === 1. شاشة التسجيل / الانتظار === -->
-    <div id="setup-screen" class="screen active">
-        <div class="logo-box"><i class="fa-solid fa-tower-broadcast"></i></div>
-        <div class="form-box">
-            <h2 style="margin-bottom: 20px;">Buz Voice</h2>
-            
-            <div class="avatar-select" onclick="document.getElementById('file-in').click()">
+    <!-- === Toast Notification === -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-info"></i>
+        <span id="toast-msg">تم نسخ الرابط بنجاح</span>
+    </div>
+
+    <!-- === 1. Welcome Screen === -->
+    <div id="screen-welcome" class="screen fade-enter-active">
+        <div class="welcome-content">
+            <div class="logo-anim">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <h1 class="text-2xl font-bold mb-2">Buz Pro</h1>
+            <p class="text-gray-400 mb-8 text-sm">مكالمات فيديو بجودة عالية، للجميع.</p>
+
+            <div class="avatar-upload" onclick="document.getElementById('file-in').click()">
                 <img id="avatar-prev" src="https://cdn-icons-png.flaticon.com/512/847/847969.png">
-                <i class="fa-solid fa-camera"></i>
+                <div class="edit-icon"><i class="fa-solid fa-pen"></i></div>
             </div>
             <input type="file" id="file-in" hidden accept="image/*">
+
+            <input type="text" id="username-in" class="modern-input" placeholder="اسمك (مطلوب)">
             
-            <input type="text" id="username" placeholder="اكتب اسمك هنا...">
-            
-            <div id="start-btns">
-                <button id="create-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> إنشاء غرفة جديدة</button>
-                <div id="join-area" style="display:none; width:100%">
-                     <button id="join-btn" class="btn btn-primary"><i class="fa-solid fa-phone"></i> انضمام للمكالمة</button>
-                     <p id="status-txt" style="color: var(--primary); margin-top:10px; font-size:0.9rem;"></p>
+            <div id="action-buttons" class="w-full flex flex-col gap-3">
+                <button onclick="goToLobby('create')" class="btn-modern">
+                    <i class="fa-solid fa-video"></i> اجتماع جديد
+                </button>
+                
+                <div id="join-section" class="hidden w-full">
+                     <button onclick="goToLobby('join')" class="btn-modern bg-gray-700 text-white hover:bg-gray-600">
+                        <i class="fa-solid fa-right-to-bracket"></i> انضمام الآن
+                    </button>
+                    <p id="join-status" class="text-primary text-sm mt-2 text-center"></p>
                 </div>
             </div>
         </div>
+        <div class="p-4 text-center text-gray-600 text-xs">
+            آمن، مشفر، وسريع. v2.0
+        </div>
     </div>
 
-    <!-- === 2. شاشة المكالمة === -->
-    <div id="call-screen" class="screen">
-        <div class="header">
-            <div class="room-id" id="room-display">ID: ...</div>
-            <div>
-                <button class="ctrl-btn" style="width:40px; height:40px; background:transparent;" onclick="copyLink()">
-                    <i class="fa-regular fa-copy"></i>
+    <!-- === 2. Lobby / Permissions Screen === -->
+    <div id="screen-lobby" class="screen hidden-screen">
+        <div class="welcome-content">
+            <h2 class="text-xl font-bold mb-4">التحقق من الصوت والصورة</h2>
+            <p class="text-gray-400 text-sm mb-6">يرجى منح الإذن للكاميرا والميكروفون للبدء.</p>
+
+            <div class="preview-container">
+                <video id="local-preview" autoplay playsinline muted></video>
+                <div class="preview-placeholder absolute inset-0 flex flex-col items-center justify-center bg-zinc-800 hidden" id="preview-placeholder">
+                    <div class="w-20 h-20 rounded-full bg-zinc-700 flex items-center justify-center mb-2">
+                        <i class="fa-solid fa-video-slash text-2xl text-gray-500"></i>
+                    </div>
+                    <span class="text-sm text-gray-400">الكاميرا مغلقة</span>
+                </div>
+                
+                <div class="preview-controls">
+                    <button class="w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white/30 flex items-center justify-center transition" onclick="togglePreviewMic()" id="prev-mic-btn">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white/30 flex items-center justify-center transition" onclick="togglePreviewCam()" id="prev-cam-btn">
+                        <i class="fa-solid fa-video"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full max-w-sm">
+                <button id="perm-btn" onclick="requestPermissions()" class="btn-modern bg-blue-500 text-white mb-3">
+                    <i class="fa-solid fa-lock-open"></i> السماح بالوصول
                 </button>
-                <button class="ctrl-btn" style="width:40px; height:40px; background:transparent; position:relative;" id="users-btn">
-                    <i class="fa-solid fa-users"></i>
-                    <span id="req-badge" class="badge">0</span>
+                <button id="enter-btn" onclick="enterRoom()" class="btn-modern hidden">
+                    <i class="fa-solid fa-check"></i> انضمام للغرفة
+                </button>
+                <button onclick="location.reload()" class="mt-4 text-gray-500 text-sm hover:text-white">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- === 3. Active Call Screen === -->
+    <div id="screen-call" class="screen hidden-screen">
+        <div class="call-layout">
+            <!-- Header -->
+            <div class="call-header">
+                <div class="room-pill" onclick="copyRoomId()">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    <span id="room-id-disp" class="font-mono">...</span>
+                    <i class="fa-regular fa-copy text-gray-400 ml-1"></i>
+                </div>
+                <div class="flex gap-2">
+                    <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center" onclick="openDrawer('participants-drawer')">
+                        <i class="fa-solid fa-users text-sm"></i>
+                        <span id="badge-req" class="absolute top-3 right-3 w-3 h-3 bg-red-500 rounded-full border-2 border-black hidden"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Video Grid -->
+            <div id="video-grid" class="grid-container grid-1">
+                <!-- Videos injected here -->
+            </div>
+
+            <!-- Bottom Controls -->
+            <div class="controls-bar">
+                <button id="btn-mic" class="btn-icon-circle" onclick="toggleMic()">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                <button id="btn-cam" class="btn-icon-circle" onclick="toggleCam()">
+                    <i class="fa-solid fa-video"></i>
+                </button>
+                <button class="btn-icon-circle hangup" onclick="location.reload()">
+                    <i class="fa-solid fa-phone-slash"></i>
+                </button>
+                <button class="btn-icon-circle" onclick="openDrawer('chat-drawer')">
+                    <i class="fa-solid fa-comment-dots"></i>
+                </button>
+                <button id="btn-share" class="btn-icon-circle hidden md:flex" onclick="toggleShare()">
+                    <i class="fa-solid fa-desktop"></i>
                 </button>
             </div>
         </div>
+    </div>
 
-        <!-- شبكة الفيديو -->
-        <div id="video-grid" class="video-grid grid-1">
-            <!-- سيتم إضافة الفيديوهات هنا -->
-        </div>
+    <!-- === Drawers (Bottom Sheets) === -->
+    
+    <!-- 1. Chat Drawer -->
+    <div id="chat-drawer" class="bottom-sheet" onclick="if(event.target===this) closeDrawer('chat-drawer')">
+        <div class="sheet-content">
+            <div class="sheet-drag-handle"></div>
+            <h3 class="text-center font-bold mb-4 border-b border-gray-700 pb-2">المحادثة</h3>
+            
+            <div id="chat-list" class="flex-1 overflow-y-auto mb-4 px-2">
+                <!-- Messages -->
+                <div class="text-center text-gray-600 text-sm mt-10">لا توجد رسائل بعد</div>
+            </div>
 
-        <!-- الشات -->
-        <div class="chat-container" id="chat-panel">
-            <div class="chat-header" onclick="toggleChat()">
-                <i class="fa-solid fa-grip-lines"></i> المحادثة
+            <div class="flex gap-2 bg-zinc-800 p-2 rounded-full">
+                <input id="chat-input" type="text" class="bg-transparent flex-1 px-4 text-white outline-none text-right" placeholder="اكتب رسالة...">
+                <button onclick="sendChat()" class="w-10 h-10 rounded-full bg-primary text-black flex items-center justify-center font-bold hover:scale-105 transition">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
             </div>
-            <div class="chat-messages" id="chat-list">
-                <!-- الرسائل -->
-            </div>
-            <div class="chat-input-area">
-                <input type="text" id="msg-input" placeholder="اكتب رسالة...">
-                <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
-            </div>
-        </div>
-
-        <!-- التحكم -->
-        <div class="controls">
-            <button id="mic-btn" class="ctrl-btn active"><i class="fa-solid fa-microphone"></i></button>
-            <button id="cam-btn" class="ctrl-btn active"><i class="fa-solid fa-video"></i></button>
-            <button id="share-btn" class="ctrl-btn"><i class="fa-solid fa-desktop"></i></button>
-            <button id="hangup-btn" class="ctrl-btn hangup"><i class="fa-solid fa-phone-slash"></i></button>
         </div>
     </div>
 
-    <!-- قائمة المشاركين والطلبات -->
-    <div id="users-modal" class="modal">
-        <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <h3>المتواجدون / الطلبات</h3>
-                <i class="fa-solid fa-xmark" onclick="document.getElementById('users-modal').style.display='none'" style="cursor:pointer"></i>
+    <!-- 2. Participants Drawer -->
+    <div id="participants-drawer" class="bottom-sheet" onclick="if(event.target===this) closeDrawer('participants-drawer')">
+        <div class="sheet-content">
+            <div class="sheet-drag-handle"></div>
+            <h3 class="text-center font-bold mb-4 border-b border-gray-700 pb-2">المتواجدون</h3>
+            
+            <div id="req-list" class="mb-2"></div>
+            <div id="part-list" class="flex-1 overflow-y-auto space-y-3">
+                <!-- Participants -->
             </div>
-            <div id="requests-list"></div>
-            <hr style="border-color:#333; margin:10px 0;">
-            <div id="participants-list"></div>
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue, push, update, remove, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // إعدادات Firebase
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAjE-2q6PONBkCin9ZN22gDp9Q8pAH9ZW8",
             authDomain: "story-97cf7.firebaseapp.com",
@@ -277,435 +400,451 @@
             projectId: "story-97cf7",
             storageBucket: "story-97cf7.firebasestorage.app",
             messagingSenderId: "742801388214",
-            appId: "1:742801388214:web:32a305a8057b0582c5ec17",
-            measurementId: "G-9DPPWX7CF0"
+            appId: "1:742801388214:web:32a305a8057b0582c5ec17"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // متغيرات الحالة
-        let myId = generateId();
+        // State
+        let myId = Math.random().toString(36).substr(2, 6);
         let roomId = null;
-        let localStream;
-        let myInfo = { name: "", avatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png" }; // صورة افتراضية
-        let myState = { mic: true, cam: true };
-        let peers = {};
         let isHost = false;
-        const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-
-        // --- 1. التحقق من البيانات المحفوظة (Auto Login) ---
-        const savedData = localStorage.getItem('buz_user');
-        if (savedData) {
-            const parsed = JSON.parse(savedData);
-            document.getElementById('username').value = parsed.name;
-            if(parsed.avatar) {
-                myInfo.avatar = parsed.avatar;
-                document.getElementById('avatar-prev').src = parsed.avatar;
-            }
-        }
-
-        // معالجة الرابط
+        let stream = null;
+        let peers = {};
+        
+        // User Info & Settings
+        let myInfo = { name: "", avatar: "https://cdn-icons-png.flaticon.com/512/847/847969.png" };
+        let myState = { mic: true, cam: true };
+        
+        // --- Initialization ---
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('room')) {
+        if(urlParams.get('room')) {
             roomId = urlParams.get('room');
-            document.getElementById('create-btn').style.display = 'none';
-            document.getElementById('join-area').style.display = 'block';
+            document.getElementById('action-buttons').querySelector('button').style.display = 'none'; // Hide create
+            document.getElementById('join-section').classList.remove('hidden');
         }
 
-        // معالجة رفع الصورة
-        document.getElementById('file-in').addEventListener('change', async (e) => {
-            if(e.target.files[0]) {
-                const base64 = await resizeImage(e.target.files[0]);
-                myInfo.avatar = base64;
-                document.getElementById('avatar-prev').src = base64;
+        // Auto Load User
+        const saved = localStorage.getItem('buz_user_v2');
+        if(saved) {
+            const p = JSON.parse(saved);
+            document.getElementById('username-in').value = p.name;
+            if(p.avatar) {
+                myInfo.avatar = p.avatar;
+                document.getElementById('avatar-prev').src = p.avatar;
             }
-        });
+        }
 
-        // --- 2. إنشاء / انضمام ---
-        document.getElementById('create-btn').addEventListener('click', async () => {
-            if(!validateUser()) return;
-            roomId = generateId();
-            isHost = true;
-            await set(ref(db, `rooms/${roomId}`), { created: Date.now(), hostId: myId });
-            startCall();
-        });
-
-        document.getElementById('join-btn').addEventListener('click', async () => {
-            if(!validateUser()) return;
+        // --- Navigation Logic ---
+        window.goToLobby = async (mode) => {
+            const name = document.getElementById('username-in').value.trim();
+            if(!name) return showToast("الرجاء كتابة اسمك أولاً", true);
             
-            // التحقق من العدد (الحد الأقصى 4)
-            const snap = await get(child(ref(db), `rooms/${roomId}/participants`));
-            if(snap.exists() && Object.keys(snap.val()).length >= 4) {
-                alert("الغرفة ممتلئة (الحد الأقصى 4 أشخاص)");
-                return;
-            }
-
-            document.getElementById('status-txt').innerText = "جاري انتظار موافقة المضيف...";
-            await set(ref(db, `rooms/${roomId}/requests/${myId}`), { info: myInfo, status: 'pending' });
-
-            onValue(ref(db, `rooms/${roomId}/requests/${myId}/status`), (s) => {
-                if(s.val() === 'accepted') startCall();
-                else if(s.val() === 'rejected') document.getElementById('status-txt').innerText = "تم الرفض.";
-            });
-        });
-
-        function validateUser() {
-            const name = document.getElementById('username').value.trim();
-            if(!name) { alert("اكتب اسمك أولاً"); return false; }
             myInfo.name = name;
-            // حفظ البيانات للمستقبل
-            localStorage.setItem('buz_user', JSON.stringify(myInfo));
-            return true;
-        }
+            localStorage.setItem('buz_user_v2', JSON.stringify(myInfo));
 
-        // --- 3. بدء المكالمة ---
-        async function startCall() {
-            document.getElementById('setup-screen').classList.remove('active');
-            document.getElementById('call-screen').classList.add('active');
-            document.getElementById('room-display').innerText = `ID: ${roomId}`;
-
-            // استعادة حالة المايك/الكاميرا من آخر جلسة لو أمكن (اختياري)
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                // إضافة الفيديو الخاص بي
-                addVideoCard(myId, myInfo, true);
-                const vid = document.getElementById(`vid-${myId}`);
-                vid.srcObject = localStream;
-                vid.muted = true; // اكتم صوتك لنفسك
-            } catch(e) {
-                alert("يرجى السماح بالوصول للكاميرا والميكروفون");
+            if(mode === 'create') {
+                roomId = Math.random().toString(36).substr(2, 6); // Simple ID
+                isHost = true;
+            } else {
+                // Check if room full
+                const snap = await get(child(ref(db), `rooms/${roomId}/participants`));
+                if(snap.exists() && Object.keys(snap.val()).length >= 4) {
+                    return showToast("الغرفة ممتلئة!", true);
+                }
             }
 
-            // تسجيل الدخول في قاعدة البيانات
-            await update(ref(db, `rooms/${roomId}/participants/${myId}`), {
+            switchScreen('screen-welcome', 'screen-lobby');
+        };
+
+        window.requestPermissions = async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('local-preview').srcObject = stream;
+                
+                // Update Buttons UI
+                document.getElementById('perm-btn').classList.add('hidden');
+                document.getElementById('enter-btn').classList.remove('hidden');
+                document.getElementById('enter-btn').classList.add('flex'); // Because it's flex styled
+                
+            } catch(e) {
+                console.error(e);
+                showToast("يجب السماح بالوصول للكاميرا والمايكروفون", true);
+            }
+        };
+
+        // --- Pre-Join Controls ---
+        window.togglePreviewCam = () => {
+            myState.cam = !myState.cam;
+            if(stream) stream.getVideoTracks()[0].enabled = myState.cam;
+            
+            const btn = document.getElementById('prev-cam-btn');
+            const placeholder = document.getElementById('preview-placeholder');
+            
+            if(myState.cam) {
+                btn.classList.remove('bg-red-500');
+                btn.innerHTML = '<i class="fa-solid fa-video"></i>';
+                placeholder.classList.add('hidden');
+            } else {
+                btn.classList.add('bg-red-500');
+                btn.innerHTML = '<i class="fa-solid fa-video-slash"></i>';
+                placeholder.classList.remove('hidden');
+            }
+        };
+
+        window.togglePreviewMic = () => {
+            myState.mic = !myState.mic;
+            if(stream) stream.getAudioTracks()[0].enabled = myState.mic;
+            
+            const btn = document.getElementById('prev-mic-btn');
+            if(myState.mic) {
+                btn.classList.remove('bg-red-500');
+                btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+            } else {
+                btn.classList.add('bg-red-500');
+                btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
+            }
+        };
+
+        // --- Joining Logic ---
+        window.enterRoom = async () => {
+            if(isHost) {
+                await set(ref(db, `rooms/${roomId}`), { created: Date.now(), hostId: myId });
+                initCallUI();
+            } else {
+                document.getElementById('enter-btn').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> انتظار الموافقة...';
+                await set(ref(db, `rooms/${roomId}/requests/${myId}`), { info: myInfo, status: 'pending' });
+                
+                onValue(ref(db, `rooms/${roomId}/requests/${myId}/status`), (s) => {
+                    if(s.val() === 'accepted') initCallUI();
+                    else if(s.val() === 'rejected') {
+                        showToast("تم رفض طلب الانضمام", true);
+                        setTimeout(() => location.reload(), 2000);
+                    }
+                });
+            }
+        };
+
+        function initCallUI() {
+            switchScreen('screen-lobby', 'screen-call');
+            document.getElementById('room-id-disp').innerText = roomId;
+            
+            // Apply states to main buttons
+            updateCtrlBtn('btn-mic', myState.mic);
+            updateCtrlBtn('btn-cam', myState.cam);
+
+            // 1. Add My Video
+            addVideoNode(myId, myInfo, true);
+            const v = document.getElementById(`vid-${myId}`);
+            v.srcObject = stream;
+            v.muted = true;
+
+            // 2. Register in DB
+            update(ref(db, `rooms/${roomId}/participants/${myId}`), {
                 info: myInfo,
                 state: myState
             });
 
-            // تفعيل المستمعين
-            monitorParticipants();
-            monitorChat();
-            if(isHost) monitorRequests();
-
-            // الاستماع للطرد (Kick)
-            onValue(ref(db, `rooms/${roomId}/participants/${myId}`), (snap) => {
-                if(!snap.exists()) {
-                    alert("تم إخراجك من المكالمة.");
+            // 3. Listeners
+            listenToParticipants();
+            listenToChat();
+            if(isHost) listenToRequests();
+            
+            // 4. Kicked?
+            onValue(ref(db, `rooms/${roomId}/participants/${myId}`), (s) => {
+                if(!s.exists() && document.getElementById('screen-call').style.display !== 'none') {
+                    alert("تم إخراجك من المكالمة");
                     location.reload();
                 }
             });
         }
 
-        // --- 4. نظام الفيديو والشبكة ---
-        function addVideoCard(userId, info, isLocal) {
-            if(document.getElementById(`card-${userId}`)) return;
-
-            const div = document.createElement('div');
-            div.className = 'video-card';
-            div.id = `card-${userId}`;
-            div.innerHTML = `
-                <video id="vid-${userId}" autoplay playsinline></video>
-                <div class="placeholder">
-                    <img src="${info.avatar}" alt="Avatar">
-                    <span style="color:#aaa">الكاميرا مغلقة</span>
-                </div>
-                <div class="user-tag">
-                    <i class="fa-solid fa-microphone-slash mute-icon" id="mute-${userId}"></i>
-                    <span>${info.name}</span>
-                </div>
-            `;
-            document.getElementById('video-grid').appendChild(div);
-            adjustGrid();
-        }
-
-        function adjustGrid() {
-            const grid = document.getElementById('video-grid');
-            const count = grid.children.length;
-            grid.className = `video-grid grid-${count > 4 ? 4 : count}`;
-        }
-
-        // مراقبة المشاركين وتحديث حالتهم
-        function monitorParticipants() {
-            const pRef = ref(db, `rooms/${roomId}/participants`);
-            onValue(pRef, (snap) => {
+        // --- Call Core ---
+        function listenToParticipants() {
+            onValue(ref(db, `rooms/${roomId}/participants`), (snap) => {
                 const parts = snap.val() || {};
                 
-                // تحديث القائمة للمضيف (للطرد)
-                updateParticipantsList(parts);
+                // Update List in Drawer
+                updateDrawerList(parts);
 
-                // إضافة/تحديث المشاركين
+                // Add/Remove Videos
                 Object.keys(parts).forEach(uid => {
-                    // تحديث الحالة (مايك/كاميرا)
-                    updateUserStateUI(uid, parts[uid].state);
+                    updateUserUIState(uid, parts[uid].state);
+                    
+                    if(uid === myId) return; // Skip me
 
-                    if (uid === myId) return;
-
-                    if (!peers[uid]) {
-                        // مستخدم جديد، أنشئ الكارد وابدأ WebRTC
-                        addVideoCard(uid, parts[uid].info, false);
-                        initWebRTC(uid);
+                    if(!peers[uid]) {
+                        addVideoNode(uid, parts[uid].info, false);
+                        initWebRTC(uid); // Connect
                     }
                 });
 
-                // إزالة الخارجين
+                // Cleanup left users
                 Object.keys(peers).forEach(uid => {
                     if(!parts[uid]) {
-                        document.getElementById(`card-${uid}`)?.remove();
+                        document.getElementById(`wrap-${uid}`)?.remove();
                         peers[uid].close();
                         delete peers[uid];
-                        adjustGrid();
+                        updateGrid();
                     }
                 });
             });
             
-            // WebRTC Signaling
+            // Signals
             const sigRef = ref(db, `rooms/${roomId}/signals/${myId}`);
             onValue(sigRef, async (snap) => {
                 const signals = snap.val();
                 if(signals) {
-                    for(const [key, msg] of Object.entries(signals)) {
+                    for(const [k, msg] of Object.entries(signals)) {
                         await handleSignal(msg);
-                        remove(child(sigRef, key));
+                        remove(child(sigRef, k));
                     }
                 }
             });
         }
 
-        function updateUserStateUI(uid, state) {
-            const card = document.getElementById(`card-${uid}`);
-            if(!card || !state) return;
-
-            // تحديث أيقونة الكاميرا
-            if(state.cam) {
-                card.classList.remove('cam-off');
-            } else {
-                card.classList.add('cam-off');
-            }
-
-            // تحديث أيقونة المايك
-            const micIcon = document.getElementById(`mute-${uid}`);
-            if(micIcon) micIcon.style.display = state.mic ? 'none' : 'block';
-        }
-
-        // --- 5. منطق WebRTC (مبسط) ---
-        async function initWebRTC(targetId) {
-            const pc = new RTCPeerConnection(rtcConfig);
-            peers[targetId] = pc;
+        // --- UI Rendering ---
+        function addVideoNode(uid, info, isLocal) {
+            if(document.getElementById(`wrap-${uid}`)) return;
             
-            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-            pc.ontrack = (e) => {
-                const vid = document.getElementById(`vid-${targetId}`);
-                if(vid) vid.srcObject = e.streams[0];
-            };
-
-            pc.onicecandidate = (e) => {
-                if(e.candidate) sendSignal(targetId, { type: 'candidate', candidate: JSON.stringify(e.candidate) });
-            };
-
-            if(myId > targetId) { // منع التصادم
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                sendSignal(targetId, { type: 'offer', offer: JSON.stringify(offer) });
-            }
+            const div = document.createElement('div');
+            div.className = 'video-wrapper';
+            div.id = `wrap-${uid}`;
+            div.innerHTML = `
+                <video id="vid-${uid}" autoplay playsinline></video>
+                <div id="ph-${uid}" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-800 hidden">
+                    <img src="${info.avatar}" class="w-20 h-20 rounded-full border-2 border-gray-600 object-cover mb-2">
+                </div>
+                <div class="user-label">
+                    <i id="ico-mic-${uid}" class="fa-solid fa-microphone-slash text-red-500 hidden text-xs"></i>
+                    <span>${info.name} ${isLocal ? '(أنت)' : ''}</span>
+                </div>
+            `;
+            document.getElementById('video-grid').appendChild(div);
+            updateGrid();
         }
 
-        async function handleSignal(msg) {
-            const sender = msg.sender;
-            if(!peers[sender]) { // لو أنا المستقبل
-                // نحتاج لجلب بياناته أولاً لرسم الـ Card (في حالة تأخر onValue)
-                const snap = await get(ref(db, `rooms/${roomId}/participants/${sender}`));
-                addVideoCard(sender, snap.val().info, false);
-                await initWebRTC(sender);
-            }
-            const pc = peers[sender];
-            if(msg.type === 'offer') {
-                await pc.setRemoteDescription(JSON.parse(msg.offer));
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-                sendSignal(sender, { type: 'answer', answer: JSON.stringify(answer) });
-            } else if(msg.type === 'answer') {
-                await pc.setRemoteDescription(JSON.parse(msg.answer));
-            } else if(msg.type === 'candidate') {
-                pc.addIceCandidate(JSON.parse(msg.candidate));
-            }
+        function updateGrid() {
+            const g = document.getElementById('video-grid');
+            const c = g.children.length;
+            g.className = `grid-container grid-${c > 4 ? 4 : c}`;
         }
 
-        function sendSignal(to, data) {
-            push(ref(db, `rooms/${roomId}/signals/${to}`), { sender: myId, ...data });
+        function updateUserUIState(uid, st) {
+            const ph = document.getElementById(`ph-${uid}`);
+            const micIco = document.getElementById(`ico-mic-${uid}`);
+            if(!st) return;
+
+            if(st.cam) ph?.classList.add('hidden');
+            else ph?.classList.remove('hidden');
+
+            if(micIco) micIco.style.display = st.mic ? 'none' : 'block';
         }
 
-        // --- 6. الشات ---
-        function monitorChat() {
-            const cRef = ref(db, `rooms/${roomId}/chat`);
-            onValue(cRef, (snap) => {
+        // --- Controls Logic ---
+        window.toggleMic = () => {
+            myState.mic = !myState.mic;
+            stream.getAudioTracks()[0].enabled = myState.mic;
+            updateCtrlBtn('btn-mic', myState.mic);
+            pushStateDB();
+        };
+
+        window.toggleCam = () => {
+            myState.cam = !myState.cam;
+            stream.getVideoTracks()[0].enabled = myState.cam;
+            updateCtrlBtn('btn-cam', myState.cam);
+            updateUserUIState(myId, myState);
+            pushStateDB();
+        };
+
+        function updateCtrlBtn(id, isActive) {
+            const btn = document.getElementById(id);
+            if(isActive) btn.classList.remove('off');
+            else btn.classList.add('off');
+        }
+
+        function pushStateDB() {
+            update(ref(db, `rooms/${roomId}/participants/${myId}/state`), myState);
+        }
+
+        // --- Drawer & Chat Logic ---
+        window.openDrawer = (id) => document.getElementById(id).classList.add('open');
+        window.closeDrawer = (id) => document.getElementById(id).classList.remove('open');
+
+        function listenToChat() {
+            onValue(ref(db, `rooms/${roomId}/chat`), (snap) => {
                 const msgs = snap.val();
                 const list = document.getElementById('chat-list');
                 list.innerHTML = '';
-                if(msgs) {
-                    Object.keys(msgs).forEach(key => {
-                        const m = msgs[key];
-                        const div = document.createElement('div');
-                        div.className = `msg ${m.senderId === myId ? 'mine' : ''}`;
-                        div.innerHTML = `
-                            <span class="msg-name">${m.name}</span>
-                            ${m.text}
-                            ${isHost ? `<i class="fa-solid fa-trash msg-del" onclick="window.delMsg('${key}')"></i>` : ''}
-                        `;
-                        list.appendChild(div);
-                    });
-                    list.scrollTop = list.scrollHeight;
+                if(!msgs) {
+                    list.innerHTML = '<div class="text-center text-gray-600 text-sm mt-10">لا توجد رسائل بعد</div>';
+                    return;
                 }
+                
+                Object.values(msgs).forEach(m => {
+                    const isMine = m.senderId === myId;
+                    list.innerHTML += `
+                        <div class="chat-msg ${isMine ? 'mine' : ''}">
+                            <span class="text-xs text-gray-500 mb-1 px-1">${m.name}</span>
+                            <div class="bubble">${m.text}</div>
+                        </div>
+                    `;
+                });
+                list.scrollTop = list.scrollHeight;
             });
         }
 
-        window.sendMessage = () => {
-            const txt = document.getElementById('msg-input').value;
+        window.sendChat = () => {
+            const inp = document.getElementById('chat-input');
+            const txt = inp.value.trim();
             if(!txt) return;
             push(ref(db, `rooms/${roomId}/chat`), {
                 senderId: myId, name: myInfo.name, text: txt, time: Date.now()
             });
-            document.getElementById('msg-input').value = '';
+            inp.value = '';
         };
 
-        window.delMsg = (key) => { if(isHost) remove(ref(db, `rooms/${roomId}/chat/${key}`)); };
-        window.toggleChat = () => { document.getElementById('chat-panel').classList.toggle('collapsed'); };
-
-        // --- 7. التحكم (Host + User) ---
-        // أزرار التحكم
-        document.getElementById('mic-btn').addEventListener('click', (e) => {
-            myState.mic = !myState.mic;
-            localStream.getAudioTracks()[0].enabled = myState.mic;
-            updateBtn(e.currentTarget, myState.mic, 'fa-microphone', 'fa-microphone-slash');
-            updateMyStateDB();
-        });
-
-        document.getElementById('cam-btn').addEventListener('click', (e) => {
-            myState.cam = !myState.cam;
-            localStream.getVideoTracks()[0].enabled = myState.cam;
-            updateBtn(e.currentTarget, myState.cam, 'fa-video', 'fa-video-slash');
-            updateUserStateUI(myId, myState); // تحديث محلي فوري
-            updateMyStateDB();
-        });
-
-        // مشاركة الشاشة
-        document.getElementById('share-btn').addEventListener('click', async () => {
-            try {
-                const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-                const videoTrack = screenStream.getVideoTracks()[0];
-                
-                // استبدال التراك في كل الاتصالات
-                Object.values(peers).forEach(pc => {
-                    const sender = pc.getSenders().find(s => s.track.kind === 'video');
-                    if(sender) sender.replaceTrack(videoTrack);
-                });
-                
-                // تحديث الفيديو المحلي
-                document.getElementById(`vid-${myId}`).srcObject = screenStream;
-                
-                videoTrack.onended = () => {
-                    // العودة للكاميرا عند ايقاف المشاركة
-                    const camTrack = localStream.getVideoTracks()[0];
-                    Object.values(peers).forEach(pc => {
-                        const sender = pc.getSenders().find(s => s.track.kind === 'video');
-                        if(sender) sender.replaceTrack(camTrack);
-                    });
-                    document.getElementById(`vid-${myId}`).srcObject = localStream;
-                };
-            } catch(e) { console.error(e); }
-        });
-
-        function updateMyStateDB() {
-            update(ref(db, `rooms/${roomId}/participants/${myId}/state`), myState);
-        }
-
-        function updateBtn(btn, isActive, iconOn, iconOff) {
-            btn.className = `ctrl-btn ${isActive ? 'active' : ''}`;
-            btn.innerHTML = `<i class="fa-solid ${isActive ? iconOn : iconOff}"></i>`;
-        }
-
-        // إدارة المستخدمين (Host)
-        document.getElementById('users-btn').addEventListener('click', () => {
-            document.getElementById('users-modal').style.display = 'flex';
-        });
-
-        function monitorRequests() {
-            onValue(ref(db, `rooms/${roomId}/requests`), (snap) => {
-                const list = document.getElementById('requests-list');
-                list.innerHTML = '';
-                const reqs = snap.val() || {};
-                let count = 0;
-                Object.keys(reqs).forEach(key => {
-                    if(reqs[key].status === 'pending') {
-                        count++;
-                        list.innerHTML += `
-                            <div class="req-item">
-                                <div class="req-user">
-                                    <img src="${reqs[key].info.avatar}"> 
-                                    <span>${reqs[key].info.name}</span>
-                                </div>
-                                <div>
-                                    <button class="btn-xs btn-primary" onclick="window.ansReq('${key}','accepted')">قبول</button>
-                                    <button class="btn-xs btn-sec" onclick="window.ansReq('${key}','rejected')">رفض</button>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-                const badge = document.getElementById('req-badge');
-                if(count > 0) { badge.style.display='block'; badge.innerText = count; } 
-                else { badge.style.display='none'; list.innerHTML='<div style="text-align:center; color:#555">لا توجد طلبات</div>'; }
-            });
-        }
-
-        function updateParticipantsList(parts) {
-            const list = document.getElementById('participants-list');
-            list.innerHTML = '<h4 style="margin-bottom:10px; color:#888">المشاركون</h4>';
+        // --- Participants List & Requests (Host) ---
+        function updateDrawerList(parts) {
+            const list = document.getElementById('part-list');
+            list.innerHTML = '';
             Object.keys(parts).forEach(uid => {
                 const p = parts[uid];
                 list.innerHTML += `
-                    <div class="req-item">
-                        <div class="req-user">
-                            <img src="${p.info.avatar}">
-                            <span>${p.info.name} ${uid===myId ? '(أنت)' : ''}</span>
+                    <div class="flex items-center justify-between bg-zinc-800 p-3 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <img src="${p.info.avatar}" class="w-10 h-10 rounded-full object-cover">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-sm">${p.info.name}</span>
+                                <span class="text-xs text-gray-500">${uid === myId ? 'أنت' : 'متصل'}</span>
+                            </div>
                         </div>
                         ${isHost && uid !== myId ? 
-                          `<button class="btn-xs" style="background:var(--danger); color:white" onclick="window.kickUser('${uid}')">طرد</button>` 
+                          `<button onclick="kick('${uid}')" class="text-red-500 bg-red-500/10 p-2 rounded-full text-xs">طرد</button>` 
                           : ''}
                     </div>
                 `;
             });
         }
 
-        // Global Actions
-        window.ansReq = (uid, st) => update(ref(db, `rooms/${roomId}/requests/${uid}`), { status: st });
-        window.kickUser = (uid) => remove(ref(db, `rooms/${roomId}/participants/${uid}`));
-        window.copyLink = () => {
-            navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?room=${roomId}`);
-            alert("تم نسخ الرابط");
-        };
-        document.getElementById('hangup-btn').addEventListener('click', () => location.reload());
+        function listenToRequests() {
+            onValue(ref(db, `rooms/${roomId}/requests`), (snap) => {
+                const reqs = snap.val() || {};
+                const list = document.getElementById('req-list');
+                list.innerHTML = '';
+                let count = 0;
 
-        // Utilities
-        function generateId() { return Math.random().toString(36).substr(2, 6); }
-        function resizeImage(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = () => {
-                        const cvs = document.createElement('canvas');
-                        const scale = 100 / img.width;
-                        cvs.width = 100; cvs.height = img.height * scale;
-                        cvs.getContext('2d').drawImage(img,0,0,cvs.width,cvs.height);
-                        resolve(cvs.toDataURL('image/jpeg', 0.6));
+                Object.keys(reqs).forEach(k => {
+                    if(reqs[k].status === 'pending') {
+                        count++;
+                        list.innerHTML += `
+                            <div class="bg-zinc-700 p-3 rounded-xl mb-2 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <img src="${reqs[k].info.avatar}" class="w-8 h-8 rounded-full">
+                                    <span class="text-sm">${reqs[k].info.name}</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="ans('${k}','accepted')" class="bg-primary text-black px-3 py-1 rounded-lg text-xs font-bold">قبول</button>
+                                    <button onclick="ans('${k}','rejected')" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs">رفض</button>
+                                </div>
+                            </div>
+                        `;
                     }
-                }
+                });
+
+                const badge = document.getElementById('badge-req');
+                if(count > 0) { badge.classList.remove('hidden'); badge.innerText = ""; }
+                else badge.classList.add('hidden');
             });
         }
+
+        // Global Actions for HTML
+        window.kick = (uid) => remove(ref(db, `rooms/${roomId}/participants/${uid}`));
+        window.ans = (uid, st) => update(ref(db, `rooms/${roomId}/requests/${uid}`), { status: st });
+        window.copyRoomId = () => {
+            navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?room=${roomId}`);
+            showToast("تم نسخ رابط الدعوة");
+        };
+
+        // --- WebRTC (Simplified Mesh) ---
+        const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        
+        async function initWebRTC(targetId) {
+            const pc = new RTCPeerConnection(rtcConfig);
+            peers[targetId] = pc;
+            stream.getTracks().forEach(t => pc.addTrack(t, stream));
+
+            pc.ontrack = e => {
+                const vid = document.getElementById(`vid-${targetId}`);
+                if(vid) vid.srcObject = e.streams[0];
+            };
+
+            pc.onicecandidate = e => {
+                if(e.candidate) push(ref(db, `rooms/${roomId}/signals/${targetId}`), { sender: myId, type: 'candidate', candidate: JSON.stringify(e.candidate) });
+            };
+
+            if(myId > targetId) {
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                push(ref(db, `rooms/${roomId}/signals/${targetId}`), { sender: myId, type: 'offer', offer: JSON.stringify(offer) });
+            }
+        }
+
+        async function handleSignal(msg) {
+            const { sender, type } = msg;
+            if(!peers[sender]) {
+                const snap = await get(ref(db, `rooms/${roomId}/participants/${sender}`));
+                addVideoNode(sender, snap.val().info, false);
+                await initWebRTC(sender);
+            }
+            const pc = peers[sender];
+            if(type === 'offer') {
+                await pc.setRemoteDescription(JSON.parse(msg.offer));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                push(ref(db, `rooms/${roomId}/signals/${sender}`), { sender: myId, type: 'answer', answer: JSON.stringify(answer) });
+            } else if(type === 'answer') {
+                await pc.setRemoteDescription(JSON.parse(msg.answer));
+            } else if(type === 'candidate') {
+                pc.addIceCandidate(JSON.parse(msg.candidate));
+            }
+        }
+
+        // --- Helpers ---
+        function switchScreen(from, to) {
+            document.getElementById(from).classList.add('hidden-screen');
+            document.getElementById(to).classList.remove('hidden-screen');
+        }
+
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            const tm = document.getElementById('toast-msg');
+            tm.innerText = msg;
+            t.style.borderLeft = isError ? '4px solid red' : '4px solid var(--primary)';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // Image Resize
+        document.getElementById('file-in').addEventListener('change', async (e) => {
+            if(e.target.files[0]) {
+                const r = new FileReader();
+                r.readAsDataURL(e.target.files[0]);
+                r.onload = ev => {
+                    const img = new Image();
+                    img.src = ev.target.result;
+                    img.onload = () => {
+                        const c = document.createElement('canvas');
+                        const s = 100/img.width;
+                        c.width = 100; c.height = img.height*s;
+                        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+                        const b64 = c.toDataURL('image/jpeg',0.7);
+                        myInfo.avatar = b64;
+                        document.getElementById('avatar-prev').src = b64;
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
