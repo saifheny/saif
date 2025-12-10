@@ -7,16 +7,14 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Buz Pro V2 - Next Gen Call</title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.js"></script>
-
     <style>
-        /* --- Core Variables --- */
+        /* Core Variables */
         :root {
-            --primary: #CCFF00;  /* Neon Lime */
+            --primary: #CCFF00; /* Neon Lime */
             --primary-dim: #a3cc00;
             --dark-bg: #050505;
             --glass: rgba(255, 255, 255, 0.08);
@@ -24,8 +22,7 @@
             --danger: #FF3B30;
         }
 
-        * { font-family: 'Alexandria', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
-        
+        * { font-family: 'Alexandria', sans-serif; }
         body {
             background-color: var(--dark-bg);
             color: white;
@@ -33,11 +30,12 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            /* خلفية جمالية خفيفة */
             background-image: radial-gradient(circle at 50% 10%, #1a1a1a 0%, #000 70%);
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
-        /* --- Custom UI Elements --- */
+        /* Custom UI Elements */
         .glass-panel {
             background: var(--glass);
             backdrop-filter: blur(20px);
@@ -53,7 +51,10 @@
             padding: 18px;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 0 20px rgba(204, 255, 0, 0.15);
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         .btn-primary:active { transform: scale(0.96); opacity: 0.9; }
 
@@ -68,72 +69,105 @@
             outline: none;
             transition: 0.3s;
         }
-        .modern-input:focus { border-color: var(--primary); background: rgba(255,255,255,0.1); }
+        .modern-input:focus {
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.1);
+        }
 
-        /* --- Layout & Screens --- */
+        /* Layout Screens */
         .screen {
-            position: absolute; inset: 0;
-            display: flex; flex-direction: column;
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
             background: var(--dark-bg);
             z-index: 10;
             transition: opacity 0.4s ease, transform 0.4s ease;
         }
         .screen.hidden-screen {
-            opacity: 0; pointer-events: none; transform: scale(0.95); z-index: 0;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95);
+            z-index: 0;
         }
         .screen.active-screen {
-            opacity: 1; pointer-events: auto; transform: scale(1); z-index: 10;
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+            z-index: 10;
         }
 
-        /* --- Avatar Uploader --- */
+        /* Avatar Uploader */
         .avatar-ring {
             position: relative;
-            width: 140px; height: 140px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
             padding: 4px;
             background: linear-gradient(45deg, var(--primary), transparent);
             margin-bottom: 30px;
         }
         .avatar-img {
-            width: 100%; height: 100%;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             object-fit: cover;
             border: 4px solid #111;
             background: #222;
         }
         .add-photo-btn {
-            position: absolute; bottom: 5px; right: 5px;
-            width: 40px; height: 40px;
-            background: white; color: black;
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            color: black;
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.2rem;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
-        /* --- Video Grid --- */
+        /* Video Grid */
         .grid-container {
-            display: grid; gap: 10px; padding: 10px;
-            height: 100%; align-content: center;
+            display: grid;
+            gap: 10px;
+            padding: 10px;
+            height: 100%;
+            align-content: center;
             padding-bottom: 110px; /* Space for controls */
         }
-        /* Mobile Specific Layouts */
         .grid-1 { grid-template-columns: 1fr; }
-        .grid-2 { grid-template-rows: 1fr 1fr; } 
+        .grid-2 { grid-template-rows: 1fr 1fr; }
         .grid-3 { grid-template-rows: repeat(3, 1fr); } /* Stack vertically on mobile */
         .grid-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
 
         .video-card {
-            background: #151515; border-radius: 20px; overflow: hidden;
-            position: relative; width: 100%; height: 100%;
+            background: #151515;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            height: 100%;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
-        .video-card video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        
-        /* --- Floating Reactions --- */
+        .video-card video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        /* Floating Reactions */
         .reaction-emoji {
-            position: absolute; bottom: 100px; right: 20px;
-            font-size: 2.5rem; pointer-events: none;
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+            font-size: 2.5rem;
+            pointer-events: none;
             animation: floatUp 2s ease-out forwards;
             z-index: 100;
         }
@@ -143,193 +177,251 @@
             100% { transform: translateY(-150px) scale(1); opacity: 0; }
         }
 
-        /* --- Bottom Bar --- */
+        /* Bottom Bar */
         .control-dock {
-            position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
             background: rgba(20, 20, 20, 0.9);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255,255,255,0.1);
             padding: 10px 20px;
             border-radius: 30px;
-            display: flex; gap: 12px;
+            display: flex;
+            gap: 12px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            z-index: 50; width: max-content;
+            z-index: 50;
+            width: max-content;
         }
         .dock-btn {
-            width: 50px; height: 50px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; color: white; background: rgba(255,255,255,0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            background: rgba(255,255,255,0.1);
             transition: 0.2s;
         }
         .dock-btn:active { transform: scale(0.9); }
-        .dock-btn.off { background: rgba(255,255,255,0.05); color: #777; position: relative; }
-        .dock-btn.off::after { content: ''; position: absolute; width: 100%; height: 2px; background: currentColor; transform: rotate(45deg); }
+        .dock-btn.off {
+            background: rgba(255,255,255,0.05);
+            color: #777;
+            position: relative;
+        }
+        .dock-btn.off::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: currentColor;
+            transform: rotate(45deg);
+        }
         .dock-btn.danger { background: var(--danger); color: white; }
         .dock-btn.accent { background: var(--primary); color: black; }
 
-        /* --- Drawers --- */
+        /* Drawers */
         .drawer-overlay {
-            position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-            opacity: 0; pointer-events: none; transition: 0.3s;
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
         }
         .drawer-overlay.open { opacity: 1; pointer-events: auto; }
         .drawer-content {
-            position: absolute; bottom: 0; left: 0; right: 0;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
             background: #1A1A1A;
-            border-top-left-radius: 28px; border-top-right-radius: 28px;
-            padding: 24px; padding-bottom: 50px;
-            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            max-height: 85vh; display: flex; flex-direction: column;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            padding: 24px;
+            padding-bottom: 50px;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
         }
         .drawer-overlay.open .drawer-content { transform: translateY(0); }
-        
+
         .toast {
-            position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: rgba(30,30,30,0.95); color: white;
-            padding: 12px 24px; border-radius: 50px;
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100%);
+            background: rgba(30,30,30,0.95);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.1);
-            display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 0.9rem;
-            z-index: 200; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            z-index: 200;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
         .toast.show { transform: translateX(-50%) translateY(0); }
-
     </style>
 </head>
 <body>
-
+    <!-- Toast Notification -->
     <div id="toast" class="toast">
         <i id="toast-icon" class="fa-solid fa-circle-check text-primary"></i>
-        <span id="toast-msg">تمت العملية بنجاح</span>
+        <span id="toast-msg"></span>
     </div>
 
+    <!-- Splash Screen -->
     <div id="screen-splash" class="screen active-screen">
         <div class="flex-1 flex flex-col items-center justify-center p-8 text-center animate__animated animate__fadeIn">
             <div class="relative mb-6">
                 <div class="absolute inset-0 bg-primary blur-2xl opacity-20 rounded-full"></div>
-                <div class="w-24 h-24 bg-gradient-to-tr from-[#ccff00] to-[#8fb300] rounded-[2rem] flex items-center justify-center text-4xl text-black shadow-2xl z-10 relative rotate-3">
+                <div class="w-24 h-24 bg-gradient-to-tr from-[#ccff00] to-[#8fb300] rounded-2rem flex items-center justify-center text-4xl text-black shadow-2xl z-10 relative rotate-3">
                     <i class="fa-solid fa-bolt"></i>
                 </div>
             </div>
-            <h1 class="text-4xl font-extrabold mb-2 tracking-tighter">Buz<span class="text-primary">Pro</span></h1>
-            <p class="text-gray-400 text-sm mb-12">الجيل القادم من مكالمات الفيديو</p>
-
+            <h1 class="text-4xl font-extrabold mb-2 tracking-tighter">
+                Buz<span class="text-primary">Pro</span>
+            </h1>
+            <p class="text-gray-400 text-sm mb-12">التطبيق الاحترافي للمكالمات الجماعية</p>
             <button onclick="nextStep('screen-avatar')" class="btn-primary w-full max-w-xs group">
-                ابدأ الآن <i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+                <i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+                ابدأ الآن
             </button>
-            <p class="mt-6 text-xs text-gray-600">آمن • سريع • مشفر بالكامل</p>
+            <p class="mt-6 text-xs text-gray-600">الإصدار V2 - الجيل الجديد</p>
         </div>
     </div>
 
+    <!-- Avatar Screen -->
     <div id="screen-avatar" class="screen hidden-screen">
         <div class="flex-1 flex flex-col items-center justify-center p-8 animate__animated animate__fadeInRight">
             <div class="w-full flex justify-between items-center mb-8">
-                <button onclick="prevStep('screen-splash')" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
+                <button onclick="prevStep('screen-splash')" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
                 <div class="h-1 bg-gray-800 flex-1 mx-4 rounded-full overflow-hidden">
                     <div class="h-full bg-primary w-1/2"></div>
                 </div>
                 <span class="text-xs text-gray-500 font-mono">1/2</span>
             </div>
-
-            <h2 class="text-2xl font-bold mb-2">اختر صورتك</h2>
-            <p class="text-gray-400 text-sm mb-8 text-center">أظهر شخصيتك للعالم، اضغط لتغيير الصورة</p>
-
+            <h2 class="text-2xl font-bold mb-2">صورة الملف الشخصي</h2>
+            <p class="text-gray-400 text-sm mb-8 text-center">اختر صورة جميلة لك</p>
             <div class="avatar-ring cursor-pointer hover:scale-105 transition-transform" onclick="document.getElementById('file-in').click()">
-                <img id="avatar-prev" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="avatar-img">
+                <img id="avatar-prev" src="https://cdn-icons-png.flaticon.com/512/8478/847969.png" class="avatar-img" />
                 <div class="add-photo-btn"><i class="fa-solid fa-camera"></i></div>
             </div>
             <input type="file" id="file-in" hidden accept="image/*">
-
             <div class="flex-1"></div>
-            <button onclick="nextStep('screen-name')" class="btn-primary w-full shadow-lg">التالي</button>
+            <button onclick="nextStep('screen-name')" class="btn-primary w-full shadow-lg">متابعة</button>
         </div>
     </div>
 
+    <!-- Name Screen -->
     <div id="screen-name" class="screen hidden-screen">
         <div class="flex-1 flex flex-col p-8 animate__animated animate__fadeInRight">
             <div class="w-full flex justify-between items-center mb-8">
-                <button onclick="prevStep('screen-avatar')" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
+                <button onclick="prevStep('screen-avatar')" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
                 <div class="h-1 bg-gray-800 flex-1 mx-4 rounded-full overflow-hidden">
                     <div class="h-full bg-primary w-full"></div>
                 </div>
                 <span class="text-xs text-gray-500 font-mono">2/2</span>
             </div>
-
-            <h2 class="text-2xl font-bold mb-2">عرفنا عليك</h2>
-            <p class="text-gray-400 text-sm mb-8">الاسم الذي سيظهر للمشاركين في الاجتماع</p>
-
+            <h2 class="text-2xl font-bold mb-2">الاسم الكامل</h2>
+            <p class="text-gray-400 text-sm mb-8">اكتب اسمك ليظهر للآخرين</p>
             <div class="space-y-4 w-full">
                 <div>
                     <label class="text-xs text-gray-500 mr-2 mb-1 block">الاسم الأول</label>
-                    <input type="text" id="fname-in" class="modern-input" placeholder="مثال: محمد">
+                    <input type="text" id="fname-in" class="modern-input" placeholder="محمد">
                 </div>
                 <div>
                     <label class="text-xs text-gray-500 mr-2 mb-1 block">الاسم الأخير</label>
-                    <input type="text" id="lname-in" class="modern-input" placeholder="مثال: أحمد">
+                    <input type="text" id="lname-in" class="modern-input" placeholder="أحمد">
                 </div>
             </div>
-
             <div class="flex-1"></div>
-            <button onclick="finishSetup()" class="btn-primary w-full">تم <i class="fa-solid fa-check"></i></button>
+            <button onclick="finishSetup()" class="btn-primary w-full">
+                <i class="fa-solid fa-check"></i> إنهاء الإعداد
+            </button>
         </div>
     </div>
 
+    <!-- Lobby Screen -->
     <div id="screen-lobby" class="screen hidden-screen">
         <div class="flex flex-col h-full p-6">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
-                    <img id="lobby-avatar" src="" class="w-12 h-12 rounded-full border border-gray-600">
+                    <img id="lobby-avatar" src="" class="w-12 h-12 rounded-full border border-gray-600" />
                     <div>
-                        <h3 id="lobby-name" class="font-bold text-lg leading-tight">...</h3>
-                        <p class="text-xs text-primary">متصل <i class="fa-solid fa-circle text-[8px] ml-1"></i></p>
+                        <h3 id="lobby-name" class="font-bold text-lg leading-tight"></h3>
+                        <p class="text-xs text-primary"><i class="fa-solid fa-circle text-8px ml-1"></i> جاهز</p>
                     </div>
                 </div>
-                <button onclick="location.reload()" class="text-gray-500 hover:text-white"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <button onclick="location.reload()" class="text-gray-500 hover:text-white">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
             </div>
 
             <div class="relative w-full aspect-[4/5] bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10 mb-6">
                 <video id="local-preview" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                
-                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4">
-                    <button onclick="togglePreviewMic()" id="prev-mic-btn" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur text-white flex items-center justify-center hover:bg-white/30"><i class="fa-solid fa-microphone"></i></button>
-                    <button onclick="togglePreviewCam()" id="prev-cam-btn" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur text-white flex items-center justify-center hover:bg-white/30"><i class="fa-solid fa-video"></i></button>
+                <div class="absolute bottom-6 left-12 -translate-x-12 flex gap-4">
+                    <button onclick="togglePreviewMic()" id="prev-mic-btn" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur text-white flex items-center justify-center hover:bg-white/30">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    <button onclick="togglePreviewCam()" id="prev-cam-btn" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur text-white flex items-center justify-center hover:bg-white/30">
+                        <i class="fa-solid fa-video"></i>
+                    </button>
                 </div>
-                
                 <div class="absolute top-4 right-4 bg-black/40 backdrop-blur px-3 py-1 rounded-full text-xs flex items-center gap-2">
-                    <i class="fa-solid fa-signal text-green-400"></i> جودة عالية
+                    <i class="fa-solid fa-signal text-green-400"></i>
+                    <span>ممتاز</span>
                 </div>
             </div>
 
             <div class="flex flex-col gap-3 mt-auto">
                 <div id="create-mode">
                     <button onclick="startRoom('create')" class="btn-primary w-full text-lg">
-                        <i class="fa-solid fa-video"></i> اجتماع جديد
+                        <i class="fa-solid fa-video"></i> إنشاء غرفة جديدة
                     </button>
-                    <div class="my-4 flex items-center gap-4">
-                        <div class="h-[1px] bg-gray-800 flex-1"></div>
-                        <span class="text-gray-500 text-sm">أو</span>
-                        <div class="h-[1px] bg-gray-800 flex-1"></div>
-                    </div>
-                    <div class="flex gap-2">
-                        <input id="room-code-in" type="text" class="modern-input text-center font-mono tracking-widest uppercase" placeholder="--- ---">
-                        <button onclick="startRoom('join')" class="bg-gray-800 text-white rounded-2xl px-6 font-bold hover:bg-gray-700">انضمام</button>
-                    </div>
+                </div>
+                <div class="my-4 flex items-center gap-4">
+                    <div class="h-1px bg-gray-800 flex-1"></div>
+                    <span class="text-gray-500 text-sm">أو</span>
+                    <div class="h-1px bg-gray-800 flex-1"></div>
+                </div>
+                <div class="flex gap-2">
+                    <input id="room-code-in" type="text" class="modern-input text-center font-mono tracking-widest uppercase" placeholder="--- --- ---">
+                    <button onclick="startRoom('join')" class="bg-gray-800 text-white rounded-2xl px-6 font-bold hover:bg-gray-700">انضمام</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Call Screen -->
     <div id="screen-call" class="screen hidden-screen">
         <div class="absolute top-0 left-0 right-0 p-4 z-20 flex justify-between items-start bg-gradient-to-b from-black/80 to-transparent">
             <div onclick="copyRoomId()" class="glass-panel px-4 py-2 rounded-full flex items-center gap-2 cursor-pointer active:scale-95 transition">
                 <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                <span id="room-id-display" class="font-mono text-sm font-bold tracking-wider">...</span>
+                <span id="room-id-display" class="font-mono text-sm font-bold tracking-wider"></span>
                 <i class="fa-regular fa-copy text-gray-400 text-xs"></i>
             </div>
-            
             <div class="flex gap-2">
-                <button onclick="togglePiP()" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center"><i class="fa-solid fa-images text-sm"></i></button>
+                <button onclick="togglePiP()" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center">
+                    <i class="fa-solid fa-images text-sm"></i>
+                </button>
                 <button onclick="openDrawer('participants-drawer')" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center relative">
                     <i class="fa-solid fa-users text-sm"></i>
                     <span id="badge-req" class="absolute top-0 right-0 w-3 h-3 bg-primary rounded-full hidden border-2 border-black"></span>
@@ -337,77 +429,84 @@
             </div>
         </div>
 
-        <div id="video-grid" class="grid-container grid-1">
-            </div>
-
+        <div id="video-grid" class="grid-container grid-1"></div>
         <div id="reactions-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
 
         <div class="control-dock">
-            <button id="btn-mic" class="dock-btn" onclick="toggleMic()"><i class="fa-solid fa-microphone"></i></button>
-            <button id="btn-cam" class="dock-btn" onclick="toggleCam()"><i class="fa-solid fa-video"></i></button>
-            <button class="dock-btn accent" onclick="openDrawer('reactions-drawer')"><i class="fa-solid fa-face-smile"></i></button>
+            <button id="btn-mic" class="dock-btn" onclick="toggleMic()">
+                <i class="fa-solid fa-microphone"></i>
+            </button>
+            <button id="btn-cam" class="dock-btn" onclick="toggleCam()">
+                <i class="fa-solid fa-video"></i>
+            </button>
+            <button class="dock-btn accent" onclick="openDrawer('reactions-drawer')">
+                <i class="fa-solid fa-face-smile"></i>
+            </button>
             <button class="dock-btn" onclick="openDrawer('chat-drawer')">
                 <i class="fa-solid fa-comment-dots"></i>
                 <span id="chat-badge" class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full hidden"></span>
             </button>
-            <button class="dock-btn danger" onclick="leaveCall()"><i class="fa-solid fa-phone-slash"></i></button>
+            <button class="dock-btn danger" onclick="leaveCall()">
+                <i class="fa-solid fa-phone-slash"></i>
+            </button>
         </div>
     </div>
 
+    <!-- Chat Drawer -->
     <div id="chat-drawer" class="drawer-overlay" onclick="if(event.target===this) closeDrawer('chat-drawer')">
         <div class="drawer-content">
             <div class="w-12 h-1.5 bg-gray-700 rounded-full mx-auto mb-6"></div>
-            <h3 class="text-center font-bold mb-4 border-b border-gray-800 pb-4">المحادثة المباشرة</h3>
+            <h3 class="text-center font-bold mb-4 border-b border-gray-800 pb-4">المحادثة</h3>
             <div id="chat-list" class="flex-1 overflow-y-auto mb-4 space-y-4 p-1"></div>
-            <form onsubmit="event.preventDefault(); sendChat();" class="flex gap-2">
-                <input id="chat-input" type="text" class="modern-input" placeholder="اكتب رسالة..." style="padding: 12px 20px;">
-                <button type="submit" class="w-14 bg-primary text-black rounded-2xl flex items-center justify-center text-lg"><i class="fa-solid fa-paper-plane"></i></button>
+            <form onsubmit="event.preventDefault(); sendChat()" class="flex gap-2" style="padding: 12px 20px">
+                <input id="chat-input" type="text" class="modern-input flex-1" placeholder="اكتب رسالتك...">
+                <button type="submit" class="w-14 bg-primary text-black rounded-2xl flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
             </form>
         </div>
     </div>
 
+    <!-- Reactions Drawer -->
     <div id="reactions-drawer" class="drawer-overlay" onclick="if(event.target===this) closeDrawer('reactions-drawer')">
         <div class="drawer-content pb-10">
             <div class="w-12 h-1.5 bg-gray-700 rounded-full mx-auto mb-6"></div>
-            <h3 class="text-center font-bold mb-6">أرسل تفاعلاً</h3>
+            <h3 class="text-center font-bold mb-6">الإيموجي</h3>
             <div class="grid grid-cols-4 gap-4 px-4">
+                <button onclick="sendReaction('😂')" class="text-4xl bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition">😂</button>
                 <button onclick="sendReaction('❤️')" class="text-4xl bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition">❤️</button>
                 <button onclick="sendReaction('👍')" class="text-4xl bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition">👍</button>
-                <button onclick="sendReaction('😂')" class="text-4xl bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition">😂</button>
+                <button onclick="sendReaction('🔥')" class="text-4xl bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition">🔥</button>
                 <button onclick="sendReaction('👏')" class="text-4xl bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition">👏</button>
                 <button onclick="sendReaction('🎉')" class="text-4xl bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition">🎉</button>
-                <button onclick="sendReaction('😮')" class="text-4xl bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition">😮</button>
-                <button onclick="sendReaction('😢')" class="text-4xl bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition">😢</button>
-                <button onclick="sendReaction('👋')" class="text-4xl bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition">👋</button>
+                <button onclick="sendReaction('😍')" class="text-4xl bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition">😍</button>
+                <button onclick="sendReaction('🙌')" class="text-4xl bg-white/5 p-4 rounded-2xl hover:bg-white/10 transition">🙌</button>
             </div>
         </div>
     </div>
 
+    <!-- Participants Drawer -->
     <div id="participants-drawer" class="drawer-overlay" onclick="if(event.target===this) closeDrawer('participants-drawer')">
         <div class="drawer-content">
             <div class="w-12 h-1.5 bg-gray-700 rounded-full mx-auto mb-6"></div>
-            <h3 class="text-center font-bold mb-4">المشاركون</h3>
+            <h3 class="text-center font-bold mb-4">المشتركين</h3>
             
             <div id="req-section" class="mb-4 hidden">
-                <h4 class="text-xs text-primary mb-2 uppercase tracking-wider">طلبات الانضمام</h4>
+                <h4 class="text-xs text-primary mb-2 uppercase tracking-wider">طلبات الإنضمام</h4>
                 <div id="req-list" class="space-y-2"></div>
             </div>
-
-            <h4 class="text-xs text-gray-500 mb-2 uppercase tracking-wider">المتصلون حالياً</h4>
+            
+            <h4 class="text-xs text-gray-500 mb-2 uppercase tracking-wider">المشتركون الحاليون</h4>
             <div id="part-list" class="flex-1 overflow-y-auto space-y-3"></div>
             
-            <button onclick="shareLink()" class="mt-4 btn-primary py-3 text-sm bg-gray-800 text-white shadow-none border border-gray-700">
-                <i class="fa-solid fa-share-nodes"></i> مشاركة رابط الغرفة
+            <button onclick="shareLink()" class="mt-4 btn-primary py-3 text-sm">
+                <i class="fa-solid fa-share-nodes"></i> مشاركة الرابط
             </button>
         </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, onValue, push, update, remove, get, child, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-        // --- Config ---
-        // NOTE: For production, secure these keys!
+        // Firebase Config - غيّر هذه المفاتيح للإنتاج!
         const firebaseConfig = {
             apiKey: "AIzaSyAjE-2q6PONBkCin9ZN22gDp9Q8pAH9ZW8",
             authDomain: "story-97cf7.firebaseapp.com",
@@ -415,23 +514,26 @@
             projectId: "story-97cf7",
             storageBucket: "story-97cf7.firebasestorage.app",
             messagingSenderId: "742801388214",
-            appId: "1:742801388214:web:32a305a8057b0582c5ec17"
+            appId: "1:742801388214|web:32a305a8057b0582c5ec17"
         };
+
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, onValue, push, update, remove, get, child, onDisconnect } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- State ---
-        let myId = localStorage.getItem('buz_uid') || Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('buz_uid', myId);
-        
-        let myInfo = { name: "", avatar: "", joined: 0 };
+        // State
+        let myId = localStorage.getItem('buzuid') || Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('buzuid', myId);
+        let myInfo = { name: '', avatar: '', joined: 0 };
         let myState = { mic: true, cam: true };
         let roomId = null, isHost = false;
         let localStream = null;
-        let peers = {}; 
+        let peers = {};
         let iceQueues = {};
 
-        // --- Navigation Logic ---
+        // Navigation Logic
         window.nextStep = (id) => {
             document.querySelectorAll('.screen').forEach(s => {
                 s.classList.remove('active-screen');
@@ -440,20 +542,20 @@
             document.getElementById(id).classList.remove('hidden-screen');
             document.getElementById(id).classList.add('active-screen');
         };
+
         window.prevStep = (id) => window.nextStep(id);
 
-        // --- Setup Logic ---
+        // Setup Logic
         window.finishSetup = () => {
             const f = document.getElementById('fname-in').value.trim();
             const l = document.getElementById('lname-in').value.trim();
+            if (!f || !l) return showToast('يرجى إدخال الاسم الكامل', true);
             
-            if(!f || !l) return showToast('يرجى كتابة الاسم كاملاً', true);
-            
-            myInfo.name = `${f} ${l}`;
+            myInfo.name = f + ' ' + l;
             myInfo.avatar = document.getElementById('avatar-prev').src;
             
             // Save local
-            localStorage.setItem('buz_user_v3', JSON.stringify(myInfo));
+            localStorage.setItem('buzuserv3', JSON.stringify(myInfo));
             
             // Update Lobby UI
             document.getElementById('lobby-name').innerText = myInfo.name;
@@ -467,53 +569,62 @@
             try {
                 localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 document.getElementById('local-preview').srcObject = localStream;
-            } catch(e) {
-                showToast("يرجى السماح بالوصول للكاميرا", true);
+            } catch (e) {
+                showToast('خطأ في الوصول للكاميرا/الميكروفون', true);
             }
         }
 
-        // --- Room Logic ---
+        // Room Logic
         window.startRoom = async (mode) => {
-            if(mode === 'create') {
+            if (mode === 'create') {
                 roomId = Math.random().toString(36).substr(2, 6).toUpperCase();
                 isHost = true;
                 await enterRoomLogic();
             } else {
                 const code = document.getElementById('room-code-in').value.trim().toUpperCase();
-                if(code.length < 3) return showToast("كود الغرفة غير صحيح", true);
+                if (code.length < 3) return showToast('أدخل كود الغرفة صحيح', true);
+                
                 roomId = code;
                 isHost = false;
                 
                 // Check if room exists
                 const snap = await get(ref(db, `rooms/${roomId}`));
-                if(!snap.exists()) return showToast("الغرفة غير موجودة", true);
+                if (!snap.exists()) return showToast('الغرفة غير موجودة', true);
                 
                 // Send Request
-                document.querySelector('#create-mode button').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> جار الانضمام...';
-                await set(ref(db, `rooms/${roomId}/requests/${myId}`), { info: myInfo, status: 'pending' });
+                document.querySelector('#create-mode button').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+                await set(ref(db, `rooms/${roomId}/requests/${myId}`), {
+                    info: myInfo,
+                    status: 'pending'
+                });
                 
                 // Wait for acceptance
                 onValue(ref(db, `rooms/${roomId}/requests/${myId}/status`), (s) => {
-                    if(s.val() === 'accepted') enterRoomLogic();
-                    if(s.val() === 'rejected') { showToast("تم رفض طلبك", true); setTimeout(()=>location.reload(), 2000); }
+                    if (s.val() === 'accepted') enterRoomLogic();
+                    if (s.val() === 'rejected') {
+                        showToast('تم رفض الطلب', true);
+                        setTimeout(() => location.reload(), 2000);
+                    }
                 });
             }
         };
 
         async function enterRoomLogic() {
             myInfo.joined = Date.now();
-            
-            if(isHost) {
-                await set(ref(db, `rooms/${roomId}`), { created: Date.now(), hostId: myId });
+            if (isHost) {
+                await set(ref(db, `rooms/${roomId}`), {
+                    created: Date.now(),
+                    hostId: myId
+                });
             }
             
-            // Presence System (Auto remove on disconnect)
+            // Presence System - Auto remove on disconnect
             const userRef = ref(db, `rooms/${roomId}/participants/${myId}`);
             onDisconnect(userRef).remove();
             onDisconnect(ref(db, `rooms/${roomId}/requests/${myId}`)).remove();
-
+            
             await update(userRef, { info: myInfo, state: myState });
-
+            
             nextStep('screen-call');
             document.getElementById('room-id-display').innerText = roomId;
             
@@ -522,7 +633,7 @@
             const v = document.getElementById(`vid-${myId}`);
             v.srcObject = localStream;
             v.muted = true;
-
+            
             // Listeners
             initListeners();
         }
@@ -530,31 +641,30 @@
         function initListeners() {
             // 1. Participants
             onValue(ref(db, `rooms/${roomId}/participants`), (snap) => {
-                const parts = snap.val() || {};
+                const parts = snap.val();
                 updateParticipantList(parts);
                 
                 // Manage Peers
-                Object.keys(parts).forEach(uid => {
-                    if(uid === myId) return;
+                Object.keys(parts || {}).forEach(uid => {
+                    if (uid === myId) return;
                     
                     // UI Update
                     updatePeerStateUI(uid, parts[uid].state);
-
+                    
                     // Connection
-                    if(!peers[uid]) {
+                    if (!peers[uid]) {
                         addVideoTile(uid, parts[uid].info, false);
                         initWebRTC(uid);
                     }
                 });
-
+                
                 // Cleanup left users
                 Object.keys(peers).forEach(uid => {
-                    if(!parts[uid]) {
+                    if (!parts || !parts[uid]) {
                         document.getElementById(`card-${uid}`)?.remove();
                         peers[uid].close();
                         delete peers[uid];
                         updateGrid();
-                        showToast("غادر أحد المشاركين");
                     }
                 });
             });
@@ -563,8 +673,8 @@
             const sigRef = ref(db, `rooms/${roomId}/signals/${myId}`);
             onValue(sigRef, async (snap) => {
                 const signals = snap.val();
-                if(signals) {
-                    for(const [key, msg] of Object.entries(signals)) {
+                if (signals) {
+                    for (const [key, msg] of Object.entries(signals)) {
                         await handleSignal(msg);
                         remove(child(sigRef, key));
                     }
@@ -572,9 +682,9 @@
             });
 
             // 3. Requests (Host Only)
-            if(isHost) {
+            if (isHost) {
                 onValue(ref(db, `rooms/${roomId}/requests`), (snap) => {
-                    const reqs = snap.val() || {};
+                    const reqs = snap.val();
                     const list = document.getElementById('req-list');
                     const section = document.getElementById('req-section');
                     const badge = document.getElementById('badge-req');
@@ -582,25 +692,27 @@
                     list.innerHTML = '';
                     let count = 0;
                     
-                    Object.keys(reqs).forEach(uid => {
-                        if(reqs[uid].status === 'pending') {
-                            count++;
-                            list.innerHTML += `
-                                <div class="bg-gray-800 p-3 rounded-xl flex justify-between items-center animate__animated animate__fadeIn">
-                                    <div class="flex items-center gap-2">
-                                        <img src="${reqs[uid].info.avatar}" class="w-8 h-8 rounded-full">
-                                        <span class="font-bold text-sm">${reqs[uid].info.name}</span>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <button onclick="answerReq('${uid}','accepted')" class="w-8 h-8 rounded-full bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-white transition"><i class="fa-solid fa-check"></i></button>
-                                        <button onclick="answerReq('${uid}','rejected')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
-                                    </div>
+                    Object.keys(reqs || {}).forEach(uid => {
+                        if (reqs[uid].status === 'pending') count++;
+                        list.innerHTML += `
+                            <div class="bg-gray-800 p-3 rounded-xl flex justify-between items-center animate__animated animate__fadeIn">
+                                <div class="flex items-center gap-2">
+                                    <img src="${reqs[uid].info.avatar}" class="w-8 h-8 rounded-full">
+                                    <span class="font-bold text-sm">${reqs[uid].info.name}</span>
                                 </div>
-                            `;
-                        }
+                                <div class="flex gap-2">
+                                    <button onclick="answerReq('${uid}', 'accepted')" class="w-8 h-8 rounded-full bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-white transition">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                    <button onclick="answerReq('${uid}', 'rejected')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
                     });
-
-                    if(count > 0) {
+                    
+                    if (count > 0) {
                         section.classList.remove('hidden');
                         badge.classList.remove('hidden');
                     } else {
@@ -615,35 +727,39 @@
                 const msgs = snap.val();
                 const list = document.getElementById('chat-list');
                 list.innerHTML = '';
-                if(msgs) {
+                
+                if (msgs) {
                     Object.values(msgs).forEach(m => {
                         const isMine = m.uid === myId;
                         list.innerHTML += `
                             <div class="flex flex-col ${isMine ? 'items-end' : 'items-start'} mb-2">
-                                <div class="${isMine ? 'bg-primary text-black' : 'bg-gray-800 text-white'} px-4 py-2 rounded-2xl max-w-[80%] text-sm">
-                                    ${!isMine ? `<span class="block text-[10px] opacity-50 mb-1">${m.name}</span>` : ''}
+                                ${!isMine ? `<span class="block text-10px opacity-50 mb-1">${m.name}</span>` : ''}
+                                <div class="${isMine ? 'bg-primary text-black' : 'bg-gray-800 text-white'} px-4 py-2 rounded-2xl max-w-80 text-sm">
                                     ${m.text}
                                 </div>
                             </div>
                         `;
                     });
-                    list.scrollTop = list.scrollHeight;
-                    // Badge logic could go here
                 }
+                list.scrollTop = list.scrollHeight;
             });
 
             // 5. Reactions
             onValue(ref(db, `rooms/${roomId}/reactions`), (snap) => {
-                // Just trigger animation, data is transient
                 const val = snap.val();
-                if(val && val.ts > Date.now() - 2000) {
+                if (val && val.ts > Date.now() - 2000) {
                     showFloatingEmoji(val.emoji);
                 }
             });
         }
 
-        // --- WebRTC Core ---
-        const rtcConfig = { iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }] };
+        // WebRTC Core
+        const rtcConfig = {
+            iceServers: [
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' }
+            ]
+        };
 
         async function initWebRTC(targetId) {
             const pc = new RTCPeerConnection(rtcConfig);
@@ -652,60 +768,70 @@
 
             localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
 
-            pc.ontrack = e => {
+            pc.ontrack = (e) => {
                 const v = document.getElementById(`vid-${targetId}`);
-                if(v) { v.srcObject = e.streams[0]; v.play().catch(()=>{}); }
+                if (v) {
+                    v.srcObject = e.streams[0];
+                    v.play().catch(() => {});
+                }
             };
 
-            pc.onicecandidate = e => {
-                if(e.candidate) {
+            pc.onicecandidate = (e) => {
+                if (e.candidate) {
                     push(ref(db, `rooms/${roomId}/signals/${targetId}`), {
-                        sender: myId, type: 'candidate', candidate: JSON.stringify(e.candidate)
+                        sender: myId,
+                        type: 'candidate',
+                        candidate: JSON.stringify(e.candidate)
                     });
                 }
             };
 
-            // Negotiation: Older ID offers to Newer ID
-            if(myId > targetId) {
+            // Negotiation - Older ID offers to Newer ID
+            if (myId < targetId) {
                 const offer = await pc.createOffer();
                 await pc.setLocalDescription(offer);
                 push(ref(db, `rooms/${roomId}/signals/${targetId}`), {
-                    sender: myId, type: 'offer', offer: JSON.stringify(offer)
+                    sender: myId,
+                    type: 'offer',
+                    offer: JSON.stringify(offer)
                 });
             }
         }
 
         async function handleSignal(msg) {
             const { sender, type } = msg;
-            if(!peers[sender]) await initWebRTC(sender); // Just in case
-            
+            if (!peers[sender]) await initWebRTC(sender); // Just in case
+
             const pc = peers[sender];
             const q = iceQueues[sender];
 
-            if(type === 'offer') {
+            if (type === 'offer') {
                 await pc.setRemoteDescription(JSON.parse(msg.offer));
                 const answer = await pc.createAnswer();
                 await pc.setLocalDescription(answer);
                 push(ref(db, `rooms/${roomId}/signals/${sender}`), {
-                    sender: myId, type: 'answer', answer: JSON.stringify(answer)
+                    sender: myId,
+                    type: 'answer',
+                    answer: JSON.stringify(answer)
                 });
-                while(q.length) await pc.addIceCandidate(q.shift());
-            } 
-            else if(type === 'answer') {
+                while (q.length > 0) await pc.addIceCandidate(q.shift());
+            } else if (type === 'answer') {
                 await pc.setRemoteDescription(JSON.parse(msg.answer));
-                while(q.length) await pc.addIceCandidate(q.shift());
-            } 
-            else if(type === 'candidate') {
+                while (q.length > 0) await pc.addIceCandidate(q.shift());
+            } else if (type === 'candidate') {
                 const cand = JSON.parse(msg.candidate);
-                if(pc.remoteDescription) await pc.addIceCandidate(cand);
-                else q.push(cand);
+                if (pc.remoteDescription) {
+                    await pc.addIceCandidate(cand);
+                } else {
+                    q.push(cand);
+                }
             }
         }
 
-        // --- UI Builders ---
+        // UI Builders
         function addVideoTile(uid, info, isLocal) {
-            if(document.getElementById(`card-${uid}`)) return;
-            
+            if (document.getElementById(`card-${uid}`)) return;
+
             const div = document.createElement('div');
             div.className = 'video-card animate__animated animate__zoomIn';
             div.id = `card-${uid}`;
@@ -716,7 +842,7 @@
                 </div>
                 <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur px-3 py-1 rounded-lg text-xs font-medium z-20 flex items-center gap-2">
                     <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                    ${isLocal ? 'أنت' : info.name}
+                    ${isLocal ? info.name : ''}
                     <i id="mic-icon-${uid}" class="fa-solid fa-microphone-slash text-red-500 hidden ml-1"></i>
                 </div>
             `;
@@ -731,41 +857,51 @@
         }
 
         function updatePeerStateUI(uid, state) {
-            if(!state) return;
+            if (!state) return;
             const cover = document.getElementById(`cover-${uid}`);
             const micIcon = document.getElementById(`mic-icon-${uid}`);
             
-            if(state.cam) cover?.classList.add('hidden');
-            else cover?.classList.remove('hidden');
-
-            if(state.mic) micIcon?.classList.add('hidden');
-            else micIcon?.classList.remove('hidden');
+            if (state.cam) {
+                cover?.classList.add('hidden');
+            } else {
+                cover?.classList.remove('hidden');
+            }
+            
+            if (state.mic) {
+                micIcon?.classList.add('hidden');
+            } else {
+                micIcon?.classList.remove('hidden');
+            }
         }
 
         function updateParticipantList(parts) {
             const list = document.getElementById('part-list');
             list.innerHTML = '';
-            Object.keys(parts).forEach(uid => {
+            Object.keys(parts || {}).forEach(uid => {
                 const p = parts[uid];
                 list.innerHTML += `
                     <div class="flex items-center justify-between p-2 rounded-lg hover:bg-white/5">
                         <div class="flex items-center gap-3">
                             <img src="${p.info.avatar}" class="w-10 h-10 rounded-full object-cover">
                             <div>
-                                <p class="text-sm font-bold">${p.info.name} ${uid===myId ? '(أنت)' : ''}</p>
-                                <p class="text-[10px] text-gray-400">متصل</p>
+                                <p class="text-sm font-bold">${p.info.name}</p>
+                                ${uid !== myId ? `<p class="text-10px text-gray-400">${uid}</p>` : ''}
                             </div>
                         </div>
-                        ${isHost && uid !== myId ? `<button onclick="kickUser('${uid}')" class="text-xs text-red-400 border border-red-400 px-2 py-1 rounded hover:bg-red-400 hover:text-white transition">طرد</button>` : ''}
+                        ${isHost && uid !== myId ? `
+                            <button onclick="kickUser('${uid}')" class="text-xs text-red-400 border border-red-400 px-2 py-1 rounded hover:bg-red-400 hover:text-white transition">
+                                طرد
+                            </button>
+                        ` : ''}
                     </div>
                 `;
             });
         }
 
-        // --- Features ---
+        // Features
         window.toggleMic = () => {
             myState.mic = !myState.mic;
-            localStream.getAudioTracks()[0].enabled = myState.mic;
+            if (localStream) localStream.getAudioTracks()[0].enabled = myState.mic;
             document.getElementById('btn-mic').classList.toggle('off');
             update(ref(db, `rooms/${roomId}/participants/${myId}/state`), myState);
             updatePeerStateUI(myId, myState);
@@ -773,7 +909,7 @@
 
         window.toggleCam = () => {
             myState.cam = !myState.cam;
-            localStream.getVideoTracks()[0].enabled = myState.cam;
+            if (localStream) localStream.getVideoTracks()[0].enabled = myState.cam;
             document.getElementById('btn-cam').classList.toggle('off');
             update(ref(db, `rooms/${roomId}/participants/${myId}/state`), myState);
             updatePeerStateUI(myId, myState);
@@ -781,27 +917,37 @@
 
         // Preview Controls (Lobby)
         window.togglePreviewMic = () => {
-             myState.mic = !myState.mic;
-             if(localStream) localStream.getAudioTracks()[0].enabled = myState.mic;
-             document.getElementById('prev-mic-btn').classList.toggle('bg-red-500');
+            myState.mic = !myState.mic;
+            if (localStream) localStream.getAudioTracks()[0].enabled = myState.mic;
+            document.getElementById('prev-mic-btn').classList.toggle('bg-red-500');
         };
+
         window.togglePreviewCam = () => {
-             myState.cam = !myState.cam;
-             if(localStream) localStream.getVideoTracks()[0].enabled = myState.cam;
-             document.getElementById('prev-cam-btn').classList.toggle('bg-red-500');
+            myState.cam = !myState.cam;
+            if (localStream) localStream.getVideoTracks()[0].enabled = myState.cam;
+            document.getElementById('prev-cam-btn').classList.toggle('bg-red-500');
         };
 
         window.sendChat = () => {
             const input = document.getElementById('chat-input');
             const txt = input.value.trim();
-            if(txt) {
-                push(ref(db, `rooms/${roomId}/chat`), { uid: myId, name: myInfo.name, text: txt, ts: Date.now() });
+            if (txt) {
+                push(ref(db, `rooms/${roomId}/chat`), {
+                    uid: myId,
+                    name: myInfo.name,
+                    text: txt,
+                    ts: Date.now()
+                });
                 input.value = '';
             }
         };
 
         window.sendReaction = (emoji) => {
-            set(ref(db, `rooms/${roomId}/reactions`), { emoji: emoji, sender: myId, ts: Date.now() });
+            set(ref(db, `rooms/${roomId}/reactions`), {
+                emoji: emoji,
+                sender: myId,
+                ts: Date.now()
+            });
             showFloatingEmoji(emoji); // Show local instantly
             closeDrawer('reactions-drawer');
         };
@@ -811,87 +957,110 @@
             const el = document.createElement('div');
             el.innerText = emoji;
             el.className = 'reaction-emoji';
-            el.style.left = Math.random() * 80 + 10 + '%'; // Random horizontal
+            el.style.left = (Math.random() * 80 + 10) + '%'; // Random horizontal
             c.appendChild(el);
             setTimeout(() => el.remove(), 2000);
         }
 
         window.togglePiP = async () => {
-            const v = document.getElementById(`vid-${myId}`); // Or switch to active speaker
-            if(document.pictureInPictureElement) document.exitPictureInPicture();
-            else if(v && v.requestPictureInPicture) v.requestPictureInPicture();
-            else showToast('المتصفح لا يدعم PiP');
+            const v = document.getElementById(`vid-${myId}`);
+            if (document.pictureInPictureElement) {
+                document.exitPictureInPicture();
+            } else if (v) {
+                v.requestPictureInPicture();
+            } else {
+                showToast('صورة PiP غير متاحة');
+            }
         };
 
         // Host Controls
-        window.answerReq = (uid, status) => update(ref(db, `rooms/${roomId}/requests/${uid}`), { status: status });
-        window.kickUser = (uid) => remove(ref(db, `rooms/${roomId}/participants/${uid}`));
+        window.answerReq = (uid, status) => {
+            update(ref(db, `rooms/${roomId}/requests/${uid}`), { status });
+        };
+
+        window.kickUser = (uid) => {
+            remove(ref(db, `rooms/${roomId}/participants/${uid}`));
+        };
 
         // Utils
-        window.copyRoomId = () => { navigator.clipboard.writeText(window.location.href + "?room=" + roomId); showToast("تم نسخ رابط الدعوة"); };
-        window.shareLink = () => {
-            if(navigator.share) navigator.share({ title: 'Join Call', url: window.location.href + "?room=" + roomId });
-            else window.copyRoomId();
+        window.copyRoomId = () => {
+            navigator.clipboard.writeText(`${window.location.href}?room=${roomId}`);
+            showToast('تم نسخ رابط الغرفة');
         };
+
+        window.shareLink = () => {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Join Call',
+                    url: `${window.location.href}?room=${roomId}`
+                });
+            } else {
+                copyRoomId();
+            }
+        };
+
         window.leaveCall = () => {
             remove(ref(db, `rooms/${roomId}/participants/${myId}`));
             location.reload();
         };
-        
-        window.openDrawer = (id) => { document.getElementById(id).classList.add('open'); };
-        window.closeDrawer = (id) => { document.getElementById(id).classList.remove('open'); };
 
-        function showToast(msg, error=false) {
+        window.openDrawer = (id) => {
+            document.getElementById(id).classList.add('open');
+        };
+
+        window.closeDrawer = (id) => {
+            document.getElementById(id).classList.remove('open');
+        };
+
+        function showToast(msg, error = false) {
             const t = document.getElementById('toast');
             const i = document.getElementById('toast-icon');
             document.getElementById('toast-msg').innerText = msg;
-            
-            i.className = error ? "fa-solid fa-circle-exclamation text-red-500" : "fa-solid fa-circle-check text-primary";
-            
+            i.className = error ? 'fa-solid fa-circle-exclamation text-red-500' : 'fa-solid fa-circle-check text-primary';
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);
         }
 
         // Image Handling
         document.getElementById('file-in').addEventListener('change', function(e) {
-            if(e.target.files && e.target.files[0]) {
+            if (e.target.files && e.target.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(ev) {
                     const img = new Image();
                     img.src = ev.target.result;
                     img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
                         // Resize for performance
                         const scale = 150 / img.width;
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
                         canvas.width = 150;
                         canvas.height = img.height * scale;
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         document.getElementById('avatar-prev').src = canvas.toDataURL('image/jpeg', 0.7);
                     };
-                }
+                };
                 reader.readAsDataURL(e.target.files[0]);
             }
         });
 
         // URL Join Check
         const urlP = new URLSearchParams(window.location.search);
-        if(urlP.get('room')) {
+        if (urlP.get('room')) {
             document.getElementById('room-code-in').value = urlP.get('room');
             document.getElementById('create-mode').innerHTML = `
-                <button onclick="startRoom('join')" class="btn-primary w-full">انضمام للدعوة</button>
-                <button onclick="location.href=location.pathname" class="text-gray-500 text-sm mt-3 w-full">إلغاء</button>
+                <button onclick="startRoom('join')" class="btn-primary w-full">انضمام للغرفة</button>
+                <button onclick="location.href=location.pathname" class="text-gray-500 text-sm mt-3 w-full">إنشاء غرفة جديدة</button>
             `;
         }
 
         // Restore User
-        const saved = localStorage.getItem('buz_user_v3');
-        if(saved) {
+        const saved = localStorage.getItem('buzuserv3');
+        if (saved) {
             const p = JSON.parse(saved);
             document.getElementById('avatar-prev').src = p.avatar;
             const names = p.name.split(' ');
-            document.getElementById('fname-in').value = names[0] || "";
-            document.getElementById('lname-in').value = names.slice(1).join(' ') || "";
+            document.getElementById('fname-in').value = names[0];
+            document.getElementById('lname-in').value = names.slice(1).join(' ');
         }
     </script>
 </body>
