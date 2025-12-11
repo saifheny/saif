@@ -11,383 +11,276 @@
     
     <style>
         :root {
-            --bg-deep: #050511;
-            --bg-gradient: radial-gradient(circle at 50% 50%, #1a1a40 0%, #050511 100%);
+            --bg-deep: #000000;
             --primary: #6C63FF;
-            --primary-hover: #5a52d5;
             --accent: #00f2ff;
             --danger: #ff4757;
-            --success: #2ed573;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-strong: rgba(20, 20, 35, 0.85);
-            --border: rgba(255, 255, 255, 0.1);
-            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --glass: rgba(20, 20, 20, 0.6);
+            --glass-strong: rgba(10, 10, 10, 0.9);
+            --border: rgba(255, 255, 255, 0.15);
             --text: #ffffff;
             --radius-lg: 24px;
             --radius-md: 16px;
-            --radius-sm: 12px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body {
             background: var(--bg-deep);
-            background-image: var(--bg-gradient);
             color: var(--text);
             height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            user-select: none; /* Prevent text selection */
         }
 
         /* --- Animations --- */
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
-        @keyframes pulse-glow { 0% { box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(108, 99, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(108, 99, 255, 0); } }
-        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        @keyframes emojiFloat { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-100px) scale(1.5); } }
+        @keyframes slideIn { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(108, 99, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(108, 99, 255, 0); } }
 
         /* --- Common UI --- */
         .btn {
             border: none; outline: none; cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.2s active;
             display: flex; align-items: center; justify-content: center;
-            font-family: inherit;
         }
         .btn:active { transform: scale(0.95); }
 
         .glass-panel {
             background: var(--glass);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            box-shadow: var(--shadow);
         }
 
-        /* --- Login Screen --- */
+        /* --- Login Wizard --- */
         #login-screen {
             position: fixed; inset: 0; z-index: 2000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop') no-repeat center center/cover;
-        }
-        #login-screen::before {
-            content: ''; position: absolute; inset: 0;
-            background: rgba(5, 5, 17, 0.85); backdrop-filter: blur(8px);
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
         }
 
-        .login-card {
-            position: relative;
-            width: 90%; max-width: 450px;
-            padding: 40px;
-            border-radius: var(--radius-lg);
-            text-align: center;
-            animation: fadeIn 0.8s ease-out;
+        .wizard-card {
+            width: 90%; max-width: 400px;
+            padding: 30px; border-radius: var(--radius-lg);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            text-align: center; position: relative;
+            overflow: hidden; min-height: 400px;
+            display: flex; flex-direction: column; justify-content: center;
         }
 
-        .logo-area { margin-bottom: 30px; }
-        .logo-icon { font-size: 40px; color: var(--accent); margin-bottom: 10px; animation: float 3s ease-in-out infinite; }
-        .logo-text { font-size: 28px; font-weight: 700; background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .step-content {
+            display: none;
+            animation: slideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            flex-direction: column; align-items: center; gap: 20px;
+            width: 100%;
+        }
+        .step-content.active { display: flex; }
 
-        .preview-container {
-            width: 140px; height: 140px; margin: 0 auto 25px;
-            border-radius: 50%; border: 3px solid var(--primary);
-            position: relative; overflow: hidden;
-            box-shadow: 0 0 30px rgba(108, 99, 255, 0.3);
+        .step-title { font-size: 24px; margin-bottom: 10px; color: var(--primary); }
+        
+        /* Avatar Step */
+        .avatar-preview {
+            width: 140px; height: 140px; border-radius: 50%;
+            border: 4px solid var(--primary); overflow: hidden;
+            position: relative; margin: 10px auto;
             background: #000;
         }
-        .preview-container video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        .preview-container img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-preview video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
         
-        .upload-overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.6);
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: 0.3s; cursor: pointer;
+        .btn-upload {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: rgba(0,0,0,0.7); color: white; padding: 5px;
+            font-size: 12px; cursor: pointer;
         }
-        .preview-container:hover .upload-overlay { opacity: 1; }
 
-        .input-group { position: relative; margin-bottom: 20px; }
-        .input-group i { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); color: var(--primary); }
+        /* Input Step */
         .inp-field {
-            width: 100%; padding: 16px 50px 16px 20px;
-            background: rgba(255,255,255,0.07); border: 1px solid var(--border);
-            border-radius: var(--radius-md); color: white; font-size: 16px;
-            transition: 0.3s;
+            width: 100%; padding: 15px; border-radius: 12px;
+            background: rgba(255,255,255,0.1); border: 1px solid var(--border);
+            color: white; text-align: center; font-size: 18px;
         }
-        .inp-field:focus { border-color: var(--primary); background: rgba(255,255,255,0.12); outline: none; }
+        .inp-field:focus { border-color: var(--primary); outline: none; }
 
-        .btn-start {
-            width: 100%; padding: 16px;
-            background: linear-gradient(135deg, var(--primary), #8e2de2);
-            border-radius: var(--radius-md); font-weight: 700; font-size: 18px; color: white;
-            box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+        .btn-action {
+            width: 100%; padding: 15px; border-radius: 12px;
+            background: var(--primary); color: white; font-weight: bold; font-size: 16px;
+            margin-top: 10px;
         }
-        .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(108, 99, 255, 0.6); }
+        .btn-secondary { background: transparent; border: 1px solid var(--border); margin-top: 10px; }
 
-        /* --- Main App Layout --- */
+        /* --- Main App --- */
         #app-container {
-            flex: 1; display: flex; flex-direction: column;
-            position: relative; height: 100%;
-            padding: 15px; gap: 15px;
+            flex: 1; position: relative; width: 100%; height: 100%;
         }
 
-        /* Header */
-        .app-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 20px; border-radius: var(--radius-md);
-            z-index: 100;
-        }
-        .room-badge {
-            display: flex; align-items: center; gap: 10px;
-            background: rgba(255,255,255,0.1); padding: 8px 16px;
-            border-radius: 50px; border: 1px solid var(--border);
-        }
-        .rec-indicator {
-            display: none; align-items: center; gap: 8px; color: var(--danger); font-weight: bold;
-            animation: pulse-glow 2s infinite;
-        }
-        .rec-dot { width: 10px; height: 10px; background: var(--danger); border-radius: 50%; }
-
-        /* Video Grid */
+        /* Video Grid & Layouts */
         #video-grid {
-            flex: 1; width: 100%; position: relative;
-            display: grid; gap: 15px;
-            /* Default to auto grid */
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            grid-auto-rows: minmax(200px, 1fr);
-            align-content: center;
-            overflow-y: auto; padding-bottom: 80px;
+            width: 100%; height: 100%;
+            display: flex; flex-wrap: wrap;
+            align-content: center; justify-content: center;
+            gap: 10px; padding: 10px;
+            transition: all 0.3s ease;
         }
-        
-        /* Specific Layouts */
-        #video-grid.layout-1 { grid-template-columns: 1fr; }
-        #video-grid.layout-2 { grid-template-columns: 1fr 1fr; }
-        
+
         .video-card {
-            background: #111; border-radius: var(--radius-lg);
-            overflow: hidden; position: relative;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            transition: all 0.4s ease; border: 1px solid transparent;
-            display: flex; justify-content: center; align-items: center;
+            position: relative; overflow: hidden; background: #111;
+            border-radius: var(--radius-md); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        .video-card.speaking { border-color: var(--success); box-shadow: 0 0 20px rgba(46, 213, 115, 0.4); }
-        
         video { width: 100%; height: 100%; object-fit: cover; }
-        .video-card.local video { transform: scaleX(-1); } /* Mirror local */
+        .video-card.local video { transform: scaleX(-1); }
+
+        /* --- 1v1 Mode (Mobile Style) --- */
+        body.mode-1v1 #video-grid { padding: 0; gap: 0; display: block; }
         
-        .user-info {
-            position: absolute; bottom: 15px; left: 15px;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
-            padding: 6px 14px; border-radius: 30px; font-size: 14px;
-            display: flex; gap: 8px; align-items: center; z-index: 2;
-            border: 1px solid rgba(255,255,255,0.1);
+        body.mode-1v1 .video-card.remote {
+            position: absolute; inset: 0; width: 100% !important; height: 100% !important;
+            border-radius: 0; z-index: 1;
         }
         
-        .no-video-placeholder {
-            position: absolute; inset: 0; background: #1e1e2e;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1;
-        }
-        .placeholder-avatar {
-            width: 80px; height: 80px; border-radius: 50%; 
-            border: 2px solid var(--primary); padding: 3px;
-            object-fit: cover;
+        body.mode-1v1 .video-card.local {
+            position: absolute; 
+            width: 110px !important; height: 150px !important;
+            bottom: 100px; right: 20px; /* Default position */
+            z-index: 10;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: grab;
+            touch-action: none; /* Important for dragging */
         }
 
-        /* --- Floating Reactions --- */
-        .reaction-float {
-            position: absolute; bottom: 60px; right: 20px; font-size: 40px;
-            pointer-events: none; animation: emojiFloat 2s ease-out forwards; z-index: 10;
+        /* --- Grid Mode (3+ Users) --- */
+        body:not(.mode-1v1) .video-card {
+            flex: 1 1 300px;
+            max-width: 600px;
+            aspect-ratio: 16/9;
         }
 
-        /* --- Bottom Dock --- */
+        /* --- Controls (Toggleable) --- */
+        .ui-layer {
+            position: fixed; inset: 0; pointer-events: none; z-index: 100;
+            transition: opacity 0.3s ease;
+        }
+        body.ui-hidden .ui-layer { opacity: 0; }
+
+        .app-header {
+            position: absolute; top: 0; left: 0; width: 100%;
+            padding: 15px; display: flex; justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            pointer-events: auto;
+        }
+
         .dock-container {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 12px; z-index: 1000;
-            padding: 12px 20px; border-radius: 50px;
-            background: var(--glass-strong);
-            border: 1px solid rgba(255,255,255,0.15);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 15px; padding: 12px 25px;
+            background: var(--glass-strong); border-radius: 40px;
+            border: 1px solid var(--border);
+            pointer-events: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
 
         .ctrl-btn {
-            width: 50px; height: 50px; border-radius: 50%;
-            background: rgba(255,255,255,0.1); color: white; font-size: 20px;
-            position: relative; overflow: hidden;
+            width: 50px; height: 50px; border-radius: 50%; font-size: 20px;
+            background: rgba(255,255,255,0.1); color: white;
         }
-        .ctrl-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-3px); }
         .ctrl-btn.off { background: rgba(255,71,87,0.2); color: var(--danger); }
-        .ctrl-btn.off::after { content: ''; position: absolute; width: 100%; height: 2px; background: var(--danger); transform: rotate(45deg); }
-        .ctrl-btn.active { background: var(--primary); color: white; box-shadow: 0 0 15px var(--primary); }
-        .ctrl-btn.end-call { background: var(--danger); width: 60px; border-radius: 20px; }
-        
-        .badge { position: absolute; top: 0; right: 0; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; border: 2px solid #1e1e2e; display: none; }
+        .ctrl-btn.end { background: var(--danger); }
 
-        /* --- Side Panel (Chat) --- */
-        .side-panel {
-            position: fixed; top: 0; left: 0; height: 100%; width: 100%; max-width: 400px;
-            background: #0f0f1a; z-index: 1500;
-            transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            display: flex; flex-direction: column; border-right: 1px solid var(--border);
-        }
-        .side-panel.open { transform: translateX(0); }
-        
-        .panel-header {
-            padding: 20px; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.03);
+        /* --- User Info --- */
+        .user-tag {
+            position: absolute; bottom: 10px; left: 10px;
+            padding: 4px 10px; background: rgba(0,0,0,0.5);
+            border-radius: 12px; font-size: 12px; backdrop-filter: blur(4px);
+            z-index: 2; pointer-events: none;
         }
 
-        .chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .msg { padding: 12px 16px; border-radius: 18px; position: relative; font-size: 14px; max-width: 85%; animation: slideUp 0.3s; line-height: 1.5; }
-        .msg.mine { align-self: flex-end; background: linear-gradient(135deg, var(--primary), #8e2de2); border-bottom-left-radius: 4px; }
-        .msg.theirs { align-self: flex-start; background: #2a2a3d; border-bottom-right-radius: 4px; }
-        .msg-info { font-size: 11px; opacity: 0.7; margin-bottom: 4px; display: block; }
-        
-        .chat-footer { padding: 15px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.2); display: flex; gap: 10px; }
-        
-        /* --- Toast & Modal --- */
-        .toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: #fff; color: #000; padding: 12px 30px; border-radius: 50px;
-            font-weight: bold; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            transition: 0.4s; z-index: 3000; display: flex; align-items: center; gap: 10px;
-        }
-        .toast.show { transform: translateX(-50%) translateY(0); }
+        /* --- Dragging Helper --- */
+        .dragging { opacity: 0.8; transform: scale(1.05); box-shadow: 0 10px 30px rgba(108, 99, 255, 0.4); }
 
-        /* Mobile specific adjustments */
-        @media (max-width: 768px) {
-            .side-panel { width: 100%; max-width: 100%; transform: translateY(100%); border-right: none; }
-            .side-panel.open { transform: translateY(0); }
-            .dock-container { width: 95%; justify-content: space-around; padding: 10px; }
-            .ctrl-btn { width: 45px; height: 45px; }
-            .logo-text { font-size: 22px; }
-        }
     </style>
 </head>
 <body>
 
-    <!-- Login/Lobby Screen -->
+    <!-- Login Wizard -->
     <div id="login-screen">
-        <div class="login-card glass-panel">
-            <div class="logo-area">
-                <i class="fas fa-infinity logo-icon"></i>
-                <div class="logo-text">Infinity Call Ultra</div>
-                <p style="color: #a0a0b0; font-size: 14px; margin-top: 5px;">تجربة اتصال لا حدود لها</p>
-            </div>
+        <div class="wizard-card">
             
-            <!-- Camera Preview -->
-            <div class="preview-container">
-                <video id="lobby-video" autoplay playsinline muted></video>
-                <img id="lobby-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style="display:none">
-                <div class="upload-overlay" onclick="document.getElementById('file-in').click()">
-                    <i class="fas fa-camera" style="font-size: 30px; color: white;"></i>
-                    <input type="file" id="file-in" hidden accept="image/*" onchange="processAvatar(this)">
+            <!-- Step 1: Avatar -->
+            <div id="step-1" class="step-content active">
+                <h3 class="step-title">اختر صورتك</h3>
+                <div class="avatar-preview" onclick="document.getElementById('file-in').click()">
+                    <video id="preview-video" autoplay playsinline muted></video>
+                    <img id="preview-img" style="display:none">
+                    <div class="btn-upload"><i class="fas fa-camera"></i> تغيير</div>
                 </div>
+                <input type="file" id="file-in" hidden accept="image/*" onchange="handleFileSelect(this)">
+                <button class="btn btn-action" onclick="nextStep(2)">التالي <i class="fas fa-chevron-left" style="margin-right:8px"></i></button>
             </div>
-            
-            <div class="input-group">
-                <input type="text" id="username" class="inp-field" placeholder="اسمك">
-                <i class="fas fa-user"></i>
+
+            <!-- Step 2: Name -->
+            <div id="step-2" class="step-content">
+                <h3 class="step-title">ما هو اسمك؟</h3>
+                <input type="text" id="username" class="inp-field" placeholder="اكتب اسمك هنا">
+                <button class="btn btn-action" onclick="nextStep(3)">التالي</button>
+                <button class="btn btn-secondary" onclick="nextStep(1)">رجوع</button>
             </div>
-            
-            <div class="input-group">
-                <input type="text" id="room-code-inp" class="inp-field" placeholder="كود الغرفة (اختياري)">
-                <i class="fas fa-hashtag"></i>
+
+            <!-- Step 3: Room -->
+            <div id="step-3" class="step-content">
+                <h3 class="step-title">غرفة الاجتماع</h3>
+                <input type="text" id="room-code-inp" class="inp-field" placeholder="كود الغرفة (اتركه فارغاً لإنشاء جديد)">
+                <button class="btn btn-action" style="background: var(--success);" onclick="startApp()">
+                    <i class="fas fa-rocket" style="margin-left:8px"></i> انطلاق
+                </button>
+                <button class="btn btn-secondary" onclick="nextStep(2)">رجوع</button>
             </div>
-            
-            <button class="btn btn-start" onclick="startApp()">
-                <span>انضمام الآن</span>
-                <i class="fas fa-arrow-left" style="margin-right: 10px;"></i>
-            </button>
+
         </div>
     </div>
 
-    <!-- Main Application -->
+    <!-- Main App -->
     <div id="app-container" style="display:none;">
         
-        <!-- Header -->
-        <div class="glass-panel app-header">
-            <div class="room-badge" onclick="copyLink()" style="cursor: pointer;">
-                <i class="fas fa-copy" style="color: var(--accent);"></i>
-                <span>ID: <b id="display-room-id">...</b></span>
-            </div>
-            
-            <div class="rec-indicator" id="rec-status">
-                <div class="rec-dot"></div>
-                <span>تسجيل...</span>
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-                <button class="btn" style="color:white; font-size: 18px;" onclick="togglePiP()">
-                    <i class="fas fa-external-link-alt"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Video Grid -->
+        <!-- Video Layer -->
         <div id="video-grid">
-            <!-- Videos will be injected here -->
+            <!-- Videos injected here -->
         </div>
 
-        <!-- Controls Dock -->
-        <div class="dock-container glass-panel">
-            <button class="btn ctrl-btn" id="mic-btn" onclick="toggleAudio()" title="الميكروفون">
-                <i class="fas fa-microphone"></i>
-            </button>
-            <button class="btn ctrl-btn" id="cam-btn" onclick="toggleVideo()" title="الكاميرا">
-                <i class="fas fa-video"></i>
-            </button>
-            <button class="btn ctrl-btn" id="share-btn" onclick="shareScreen()" title="مشاركة الشاشة">
-                <i class="fas fa-desktop"></i>
-            </button>
-            <button class="btn ctrl-btn" id="rec-btn" onclick="toggleRecording()" title="تسجيل">
-                <i class="fas fa-record-vinyl"></i>
-            </button>
-            
-            <!-- Reactions Dropup (Simulated) -->
-            <button class="btn ctrl-btn" onclick="sendReaction('❤️')" title="أحببته"><i class="fas fa-heart" style="color: #ff4757;"></i></button>
-            <button class="btn ctrl-btn" onclick="sendReaction('👍')" title="ممتاز"><i class="fas fa-thumbs-up" style="color: #ffa502;"></i></button>
-
-            <button class="btn ctrl-btn" onclick="toggleChat()" title="المحادثة">
-                <i class="fas fa-comment-dots"></i>
-                <div class="badge" id="chat-badge"></div>
-            </button>
-            
-            <button class="btn ctrl-btn end-call" onclick="leaveRoom()" title="إنهاء">
-                <i class="fas fa-phone-slash"></i>
-            </button>
-        </div>
-
-        <!-- Side Panel -->
-        <div id="chat-panel" class="side-panel">
-            <div class="panel-header">
-                <h3>المحادثة</h3>
-                <button class="btn" style="color: white; width:30px; height:30px; background:rgba(255,255,255,0.1); border-radius:50%;" onclick="toggleChat()"><i class="fas fa-times"></i></button>
+        <!-- UI Layer (Header & Controls) -->
+        <div class="ui-layer">
+            <div class="app-header">
+                <div style="background:rgba(255,255,255,0.1); padding:5px 15px; border-radius:20px; display:flex; gap:10px; align-items:center;" onclick="copyLink()">
+                    <span style="color:var(--accent); font-weight:bold;">ID:</span>
+                    <span id="room-display">...</span>
+                    <i class="fas fa-copy" style="font-size:12px; opacity:0.7"></i>
+                </div>
+                <div id="status-indicator" style="width:10px; height:10px; background:#2ecc71; border-radius:50%; box-shadow:0 0 10px #2ecc71;"></div>
             </div>
-            <div id="chat-box" class="chat-body"></div>
-            <div class="chat-footer">
-                <input type="text" id="chat-msg" class="inp-field" style="margin:0; text-align: right;" placeholder="اكتب رسالة..." onkeypress="if(event.key==='Enter') sendChat()">
-                <button class="btn" style="width: 50px; background: var(--primary); border-radius: 12px; color: white;" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+
+            <div class="dock-container">
+                <button class="btn ctrl-btn" id="mic-btn" onclick="toggleAudio()"><i class="fas fa-microphone"></i></button>
+                <button class="btn ctrl-btn" id="cam-btn" onclick="toggleVideo()"><i class="fas fa-video"></i></button>
+                <button class="btn ctrl-btn end" onclick="leaveRoom()"><i class="fas fa-phone-slash"></i></button>
             </div>
         </div>
-    </div>
-    
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">
-        <i class="fas fa-check-circle" style="color: var(--success);"></i>
-        <span id="toast-msg">تم بنجاح</span>
+
+        <!-- Toast -->
+        <div id="toast" style="position:fixed; top:20px; left:50%; transform:translate(-50%, -100px); background:white; color:black; padding:10px 20px; border-radius:30px; transition:0.3s; z-index:5000; font-weight:bold;">تم النسخ!</div>
     </div>
 
-    <!-- Hidden audio element for notification sounds -->
-    <audio id="sound-msg" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3" preload="auto"></audio>
-    <audio id="sound-join" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
-
-    <!-- Firebase & Application Logic -->
+    <!-- Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, onValue, push, update, remove, onChildAdded, onChildRemoved, get, child, onDisconnect } 
+        import { getDatabase, ref, update, push, onChildAdded, onChildRemoved, onDisconnect, remove } 
         from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- Configuration ---
+        // Config
         const firebaseConfig = {
             apiKey: "AIzaSyAjE-2q6PONBkCin9ZN22gDp9Q8pAH9ZW8",
             authDomain: "story-97cf7.firebaseapp.com",
@@ -397,414 +290,285 @@
             messagingSenderId: "742801388214",
             appId: "1:742801388214:web:32a305a8057b0582c5ec17"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- State Variables ---
-        let user = { id: 'u_' + Math.random().toString(36).substr(2, 9), name: 'ضيف', avatar: 'https://cdn-icons-png.flaticon.com/512/149/149071.png', audio: true, video: true };
-        let roomId = new URLSearchParams(window.location.search).get('room');
-        let localStream;
-        let screenStream = null;
+        // State
+        let user = { id: 'u_' + Math.random().toString(36).substr(2, 6), name: '', avatar: null };
+        let roomId = null;
+        let localStream = null;
         let peers = {};
-        let mediaRecorder;
-        let recordedChunks = [];
-        const iceQueue = {}; // FIX: Queue for ICE candidates before connection is stable
-
-        // STUN Servers (Google Public)
-        const rtcConfig = {
-            iceServers: [
-                { urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"] }
-            ]
+        const rtcConfig = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+        
+        // --- Wizard Logic ---
+        window.nextStep = (step) => {
+            if(step === 2) {
+                // Ensure camera is ready or fallback
+                if(!localStream) initCamera();
+            }
+            if(step === 3) {
+                const name = document.getElementById('username').value.trim();
+                if(!name) return alert('الرجاء كتابة الاسم');
+                user.name = name;
+            }
+            
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
         };
 
-        // --- Initialization & Lobby ---
-        async function initLobby() {
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('lobby-video').srcObject = localStream;
-            } catch (e) {
-                console.error("Camera Error:", e);
-                showToast("تعذر الوصول للكاميرا، تأكد من الصلاحيات", true);
-            }
-        }
-        initLobby(); // Start preview immediately
-
-        window.processAvatar = (input) => {
-            if(input.files && input.files[0]){
+        window.handleFileSelect = (input) => {
+            if(input.files[0]){
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     user.avatar = e.target.result;
-                    document.getElementById('lobby-avatar').src = user.avatar;
-                    document.getElementById('lobby-avatar').style.display = 'block';
-                    document.getElementById('lobby-video').style.display = 'none';
+                    document.getElementById('preview-img').src = user.avatar;
+                    document.getElementById('preview-img').style.display = 'block';
+                    document.getElementById('preview-video').style.display = 'none';
+                    // Stop video track if image selected to save battery
+                    if(localStream) localStream.getVideoTracks().forEach(t => t.enabled = false);
                 };
                 reader.readAsDataURL(input.files[0]);
             }
         };
 
-        window.startApp = async () => {
-            const nameInp = document.getElementById('username').value;
-            if(nameInp) user.name = nameInp;
-            
-            const codeInp = document.getElementById('room-code-inp').value;
-            if(codeInp) roomId = codeInp;
-            if(!roomId) roomId = Math.random().toString(36).substr(2, 6).toUpperCase();
-
-            // Switch UI
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-container').style.display = 'flex';
-            document.getElementById('display-room-id').innerText = roomId;
-            window.history.pushState({}, '', `?room=${roomId}`);
-            
-            // Add Self to Grid
-            addVideoNode(user.id, localStream, true, user);
-            
-            // Join Firebase Room
-            joinRoom();
-        };
-
-        // --- Core WebRTC Logic (The Fix) ---
-        function joinRoom() {
-            const userRef = ref(db, `rooms/${roomId}/participants/${user.id}`);
-            update(userRef, user);
-            onDisconnect(userRef).remove();
-
-            // Listen for other users
-            onChildAdded(ref(db, `rooms/${roomId}/participants`), (snap) => {
-                const partner = snap.val();
-                if(partner.id === user.id) return;
-                
-                // Add placeholder
-                addVideoNode(partner.id, null, false, partner);
-                document.getElementById('sound-join').play().catch(()=>{});
-                
-                // INITIATOR LOGIC: Prevent collision by using ID comparison
-                // The user with the "Higher" ID will be the offerer
-                const isInitiator = user.id > partner.id;
-                initPeerConnection(partner.id, isInitiator);
-            });
-
-            onChildRemoved(ref(db, `rooms/${roomId}/participants`), (snap) => {
-                removePeer(snap.val().id);
-            });
-            
-            // Signals
-            onChildAdded(ref(db, `rooms/${roomId}/signals/${user.id}`), handleSignal);
-
-            // Chat & Reactions
-            onChildAdded(ref(db, `rooms/${roomId}/chat`), (snap) => renderMessage(snap.val()));
-            onChildAdded(ref(db, `rooms/${roomId}/reactions`), (snap) => showReactionAnim(snap.val()));
+        async function initCamera() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('preview-video').srcObject = localStream;
+            } catch(e) {
+                console.log("No Camera");
+            }
         }
 
-        async function initPeerConnection(partnerId, isInitiator) {
-            if(peers[partnerId]) return;
+        // --- App Start ---
+        window.startApp = async () => {
+            roomId = document.getElementById('room-code-inp').value || Math.random().toString(36).substr(2, 6).toUpperCase();
+            document.getElementById('room-display').innerText = roomId;
+            
+            // UI Switch
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+            
+            // Setup Local Video
+            addVideo(user.id, localStream, true);
+            
+            // Firebase Join
+            const userRef = ref(db, `rooms/${roomId}/participants/${user.id}`);
+            update(userRef, { ...user, avatar: user.avatar || 'https://via.placeholder.com/150' });
+            onDisconnect(userRef).remove();
 
+            // Listeners
+            onChildAdded(ref(db, `rooms/${roomId}/participants`), handleParticipantAdd);
+            onChildRemoved(ref(db, `rooms/${roomId}/participants`), handleParticipantRemove);
+            onChildAdded(ref(db, `rooms/${roomId}/signals/${user.id}`), handleSignal);
+            
+            // Double Tap Listener
+            setupDoubleTap();
+        };
+
+        // --- WebRTC Core ---
+        function handleParticipantAdd(snap) {
+            const p = snap.val();
+            if(p.id === user.id) return;
+            
+            addVideo(p.id, null, false);
+            
+            const isInitiator = user.id > p.id;
+            initPeer(p.id, isInitiator);
+        }
+
+        function handleParticipantRemove(snap) {
+            const id = snap.val().id;
+            if(peers[id]) { peers[id].close(); delete peers[id]; }
+            const el = document.getElementById(`wrap-${id}`);
+            if(el) el.remove();
+            checkLayout();
+        }
+
+        async function initPeer(partnerId, initiator) {
+            if(peers[partnerId]) return;
             const pc = new RTCPeerConnection(rtcConfig);
             peers[partnerId] = pc;
-            iceQueue[partnerId] = [];
 
-            // Add Tracks (FIX: Ensure tracks are added BEFORE offer)
-            if(localStream) {
-                localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-            }
+            if(localStream) localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
 
-            // Handle ICE Candidate
-            pc.onicecandidate = (event) => {
-                if (event.candidate) {
-                    push(ref(db, `rooms/${roomId}/signals/${partnerId}`), {
-                        type: 'candidate',
-                        candidate: JSON.parse(JSON.stringify(event.candidate)),
-                        sender: user.id
-                    });
-                }
+            pc.onicecandidate = e => {
+                if(e.candidate) sendSignal(partnerId, { type: 'candidate', candidate: JSON.stringify(e.candidate) });
             };
 
-            // Handle Remote Stream
-            pc.ontrack = (event) => {
+            pc.ontrack = e => {
                 const vid = document.getElementById(`vid-${partnerId}`);
-                if (vid && event.streams[0]) {
-                    vid.srcObject = event.streams[0];
-                    document.getElementById(`ovl-${partnerId}`).style.display = 'none'; // Hide placeholder
-                }
+                if(vid && e.streams[0]) vid.srcObject = e.streams[0];
             };
 
-            // Create Offer if Initiator
-            if (isInitiator) {
-                try {
-                    const offer = await pc.createOffer();
-                    await pc.setLocalDescription(offer);
-                    push(ref(db, `rooms/${roomId}/signals/${partnerId}`), {
-                        type: 'offer',
-                        offer: { type: offer.type, sdp: offer.sdp },
-                        sender: user.id
-                    });
-                } catch (err) {
-                    console.error("Offer Error", err);
-                }
+            if(initiator) {
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                sendSignal(partnerId, { type: 'offer', sdp: JSON.stringify(offer) });
             }
         }
 
         async function handleSignal(snap) {
             const data = snap.val();
-            const senderId = data.sender;
-            const pc = peers[senderId];
+            const pc = peers[data.sender];
+            if(!pc) return;
 
-            if (!pc) return; // Should not happen due to participant listener
-
-            try {
-                if (data.type === 'offer') {
-                    await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-                    
-                    // Add queued candidates now that remote desc is set
-                    if(iceQueue[senderId]) {
-                        iceQueue[senderId].forEach(c => pc.addIceCandidate(new RTCIceCandidate(c)));
-                        delete iceQueue[senderId];
-                    }
-
-                    const answer = await pc.createAnswer();
-                    await pc.setLocalDescription(answer);
-                    push(ref(db, `rooms/${roomId}/signals/${senderId}`), {
-                        type: 'answer',
-                        answer: { type: answer.type, sdp: answer.sdp },
-                        sender: user.id
-                    });
-
-                } else if (data.type === 'answer') {
-                    await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
-                    
-                     // Add queued candidates
-                     if(iceQueue[senderId]) {
-                        iceQueue[senderId].forEach(c => pc.addIceCandidate(new RTCIceCandidate(c)));
-                        delete iceQueue[senderId];
-                    }
-
-                } else if (data.type === 'candidate') {
-                    if (pc.remoteDescription) {
-                        await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-                    } else {
-                        // Queue if remote desc not ready
-                        if(!iceQueue[senderId]) iceQueue[senderId] = [];
-                        iceQueue[senderId].push(data.candidate);
-                    }
-                }
-            } catch (err) {
-                console.error("Signal Error", err);
+            if(data.type === 'offer') {
+                await pc.setRemoteDescription(JSON.parse(data.sdp));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                sendSignal(data.sender, { type: 'answer', sdp: JSON.stringify(answer) });
+            } else if(data.type === 'answer') {
+                await pc.setRemoteDescription(JSON.parse(data.sdp));
+            } else if(data.type === 'candidate') {
+                try { await pc.addIceCandidate(JSON.parse(data.candidate)); } catch(e){}
             }
-            // Clear signal
             remove(snap.ref);
         }
 
-        function removePeer(id) {
-            if(peers[id]) {
-                peers[id].close();
-                delete peers[id];
-            }
-            const el = document.getElementById(`card-${id}`);
-            if(el) el.remove();
-            updateGridLayout();
+        function sendSignal(to, data) {
+            push(ref(db, `rooms/${roomId}/signals/${to}`), { ...data, sender: user.id });
         }
 
-        // --- UI & Media Handling ---
-        function addVideoNode(id, stream, isLocal, userData) {
-            if(document.getElementById(`card-${id}`)) return;
-
-            const grid = document.getElementById('video-grid');
-            const card = document.createElement('div');
-            card.className = `video-card ${isLocal ? 'local' : ''}`;
-            card.id = `card-${id}`;
-            
-            card.innerHTML = `
+        // --- Layout & UI Logic ---
+        function addVideo(id, stream, isLocal) {
+            const div = document.createElement('div');
+            div.id = `wrap-${id}`;
+            div.className = `video-card ${isLocal ? 'local' : 'remote'}`;
+            div.innerHTML = `
                 <video id="vid-${id}" autoplay playsinline ${isLocal ? 'muted' : ''}></video>
-                <div class="no-video-placeholder" id="ovl-${id}" style="${stream ? 'display:none' : ''}">
-                    <img src="${userData.avatar}" class="placeholder-avatar">
-                </div>
-                <div class="user-info">
-                    <i class="fas fa-microphone" id="mic-stat-${id}"></i>
-                    <span>${userData.name} ${isLocal ? '(أنت)' : ''}</span>
-                </div>
-                <div id="reactions-${id}"></div>
+                <div class="user-tag">${isLocal ? 'أنت' : 'متصل'}</div>
             `;
-            
-            grid.appendChild(card);
+            document.getElementById('video-grid').appendChild(div);
             if(stream) document.getElementById(`vid-${id}`).srcObject = stream;
             
-            updateGridLayout();
+            if(isLocal) makeDraggable(div);
+            checkLayout();
         }
 
-        function updateGridLayout() {
+        function checkLayout() {
             const grid = document.getElementById('video-grid');
-            const count = grid.children.length;
-            grid.className = '';
-            if(count === 1) grid.classList.add('layout-1');
-            else if(count === 2) grid.classList.add('layout-2');
-        }
-
-        // --- Features: Share Screen ---
-        window.shareScreen = async () => {
-            if (screenStream) {
-                // Stop Sharing
-                screenStream.getTracks().forEach(t => t.stop());
-                screenStream = null;
-                replaceTrack(localStream.getVideoTracks()[0]);
-                document.getElementById('share-btn').classList.remove('active');
-                document.getElementById('vid-'+user.id).srcObject = localStream;
-                return;
-            }
-
-            try {
-                screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-                const screenTrack = screenStream.getVideoTracks()[0];
-                
-                replaceTrack(screenTrack);
-                document.getElementById('vid-'+user.id).srcObject = screenStream;
-                document.getElementById('share-btn').classList.add('active');
-
-                // Handle system stop sharing
-                screenTrack.onended = () => {
-                    window.shareScreen(); // Toggle back
-                };
-
-            } catch(e) { console.error("Screen Share Error", e); }
-        };
-
-        function replaceTrack(newTrack) {
-            // Replace for all peers
-            Object.values(peers).forEach(pc => {
-                const sender = pc.getSenders().find(s => s.track.kind === 'video');
-                if(sender) sender.replaceTrack(newTrack);
-            });
-        }
-
-        // --- Features: Recording ---
-        window.toggleRecording = () => {
-            const btn = document.getElementById('rec-btn');
-            const indicator = document.getElementById('rec-status');
+            const count = grid.children.length; // Local + Remote(s)
             
-            if (mediaRecorder && mediaRecorder.state === 'recording') {
-                mediaRecorder.stop();
-                btn.classList.remove('active');
-                indicator.style.display = 'none';
+            // Activate 1v1 Mode only if exactly 2 people
+            if(count === 2) {
+                document.body.classList.add('mode-1v1');
             } else {
-                // Record mixing (Local + Screen if active)
-                const streamToRecord = screenStream || localStream;
-                recordedChunks = [];
-                mediaRecorder = new MediaRecorder(streamToRecord, { mimeType: 'video/webm; codecs=vp9' });
-                
-                mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
-                mediaRecorder.onstop = saveRecording;
-                
-                mediaRecorder.start();
-                btn.classList.add('active');
-                indicator.style.display = 'flex';
-                showToast("بدأ التسجيل...");
+                document.body.classList.remove('mode-1v1');
             }
-        };
-
-        function saveRecording() {
-            const blob = new Blob(recordedChunks, { type: 'video/webm' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = `infinity-call-${Date.now()}.webm`;
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(url); }, 100);
-            showToast("تم حفظ التسجيل");
         }
 
-        // --- Features: Chat & Reactions ---
-        window.toggleChat = () => {
-            const p = document.getElementById('chat-panel');
-            p.classList.toggle('open');
-            document.getElementById('chat-badge').style.display = 'none';
-        };
-
-        window.sendChat = () => {
-            const inp = document.getElementById('chat-msg');
-            if(!inp.value.trim()) return;
-            push(ref(db, `rooms/${roomId}/chat`), {
-                sender: user.name, text: inp.value, id: user.id
-            });
-            inp.value = '';
-        };
-
-        window.sendReaction = (emoji) => {
-            push(ref(db, `rooms/${roomId}/reactions`), { emoji, id: user.id, time: Date.now() });
-            showReactionAnim({ emoji, id: user.id }); // Show local immediately
-        };
-
-        function showReactionAnim(data) {
-            const card = document.getElementById(`card-${data.id}`);
-            if(!card) return;
-            
-            const el = document.createElement('div');
-            el.className = 'reaction-float';
-            el.innerText = data.emoji;
-            card.appendChild(el);
-            setTimeout(() => el.remove(), 2000);
-        }
-
-        function renderMessage(msg) {
-            const box = document.getElementById('chat-box');
-            const d = document.createElement('div');
-            const isMe = msg.id === user.id;
-            d.className = `msg ${isMe ? 'mine' : 'theirs'}`;
-            d.innerHTML = `<span class="msg-info">${isMe ? 'أنت' : msg.sender}</span>${msg.text}`;
-            box.appendChild(d);
-            box.scrollTop = box.scrollHeight;
-            
-            if(!isMe) {
-                document.getElementById('sound-msg').play().catch(()=>{});
-                if(!document.getElementById('chat-panel').classList.contains('open')) {
-                    document.getElementById('chat-badge').style.display = 'block';
+        // --- Interactions: Double Tap & Drag ---
+        function setupDoubleTap() {
+            let lastTap = 0;
+            document.addEventListener('touchend', (e) => {
+                const now = Date.now();
+                if(now - lastTap < 300) {
+                    // Double Tap detected
+                    document.body.classList.toggle('ui-hidden');
                 }
-            }
+                lastTap = now;
+            });
+            // Desktop double click support
+            document.addEventListener('dblclick', () => {
+                document.body.classList.toggle('ui-hidden');
+            });
+        }
+
+        function makeDraggable(el) {
+            // Only allow dragging if we are in 1v1 mode (implied by class check inside handler if needed, 
+            // but here we just attach basic logic, constraints will be handled by layout CSS mostly, 
+            // but for movement we need JS)
+            
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
+
+            const startDrag = (e) => {
+                // Only drag local video in 1v1 mode
+                if(!document.body.classList.contains('mode-1v1')) return;
+                
+                isDragging = true;
+                el.classList.add('dragging');
+                
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                startX = clientX;
+                startY = clientY;
+                
+                const rect = el.getBoundingClientRect();
+                // Store offset from right/bottom or left/top based on computed style
+                // Simplest is to switch to top/left based positioning upon first drag
+                el.style.bottom = 'auto';
+                el.style.right = 'auto';
+                el.style.left = rect.left + 'px';
+                el.style.top = rect.top + 'px';
+            };
+
+            const drag = (e) => {
+                if(!isDragging) return;
+                e.preventDefault(); // Prevent scroll while dragging video
+                
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+                
+                const currentLeft = parseFloat(el.style.left);
+                const currentTop = parseFloat(el.style.top);
+                
+                el.style.left = `${currentLeft + dx}px`;
+                el.style.top = `${currentTop + dy}px`;
+                
+                startX = clientX;
+                startY = clientY;
+            };
+
+            const stopDrag = () => {
+                isDragging = false;
+                el.classList.remove('dragging');
+                
+                // Snap to bounds logic (optional, keeping it simple for "Anywhere")
+                const rect = el.getBoundingClientRect();
+                const winW = window.innerWidth;
+                const winH = window.innerHeight;
+                
+                // Keep inside screen
+                if(rect.left < 0) el.style.left = '10px';
+                if(rect.top < 0) el.style.top = '10px';
+                if(rect.right > winW) el.style.left = (winW - rect.width - 10) + 'px';
+                if(rect.bottom > winH) el.style.top = (winH - rect.height - 10) + 'px';
+            };
+
+            el.addEventListener('mousedown', startDrag);
+            el.addEventListener('touchstart', startDrag, {passive: false});
+            
+            window.addEventListener('mousemove', drag);
+            window.addEventListener('touchmove', drag, {passive: false});
+            
+            window.addEventListener('mouseup', stopDrag);
+            window.addEventListener('touchend', stopDrag);
         }
 
         // --- Controls ---
         window.toggleAudio = () => {
-            const track = localStream.getAudioTracks()[0];
-            track.enabled = !track.enabled;
-            const btn = document.getElementById('mic-btn');
-            btn.classList.toggle('off', !track.enabled);
-            btn.innerHTML = track.enabled ? '<i class="fas fa-microphone"></i>' : '<i class="fas fa-microphone-slash"></i>';
+            const t = localStream.getAudioTracks()[0];
+            t.enabled = !t.enabled;
+            document.getElementById('mic-btn').classList.toggle('off', !t.enabled);
         };
-
         window.toggleVideo = () => {
-            const track = localStream.getVideoTracks()[0];
-            track.enabled = !track.enabled;
-            const btn = document.getElementById('cam-btn');
-            btn.classList.toggle('off', !track.enabled);
-            btn.innerHTML = track.enabled ? '<i class="fas fa-video"></i>' : '<i class="fas fa-video-slash"></i>';
-            document.getElementById(`ovl-${user.id}`).style.display = track.enabled ? 'none' : 'flex';
+            const t = localStream.getVideoTracks()[0];
+            t.enabled = !t.enabled;
+            document.getElementById('cam-btn').classList.toggle('off', !t.enabled);
         };
-
-        window.togglePiP = async () => {
-            const video = document.getElementById(`vid-${user.id}`);
-            try {
-                if (document.pictureInPictureElement) await document.exitPictureInPicture();
-                else await video.requestPictureInPicture();
-            } catch(e) { console.error(e); }
-        };
-
-        window.leaveRoom = () => {
-            if(confirm('هل أنت متأكد من المغادرة؟')) window.location.reload();
-        };
-
+        window.leaveRoom = () => location.reload();
         window.copyLink = () => {
-            navigator.clipboard.writeText(window.location.href);
-            showToast("تم نسخ رابط الغرفة");
-        };
-
-        function showToast(txt, error=false) {
+            navigator.clipboard.writeText(location.href);
             const t = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = txt;
-            t.style.border = error ? '2px solid red' : 'none';
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
-        }
+            t.style.transform = "translate(-50%, 20px)";
+            setTimeout(() => t.style.transform = "translate(-50%, -100px)", 2000);
+        };
 
     </script>
 </body>
