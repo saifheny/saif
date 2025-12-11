@@ -2,574 +2,673 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Infinity Call Ultra | مكالمات فيديو</title>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts (Cairo for Arabic) -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f0c29">
+    <title>أثير كونيكت | Aether</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
+        /* --- RESET & BASICS --- */
         :root {
-            --bg-deep: #000000;
-            --primary: #6C63FF;
-            --accent: #00f2ff;
-            --danger: #ff4757;
-            --glass: rgba(20, 20, 20, 0.6);
-            --glass-strong: rgba(10, 10, 10, 0.9);
-            --border: rgba(255, 255, 255, 0.15);
+            --bg-grad: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --primary: #00f260;
+            --primary-grad: linear-gradient(to left, #0575E6, #021B79); /* Reversed for RTL feeling */
+            --danger: #ff416c;
             --text: #ffffff;
+            --font-main: 'Tajawal', sans-serif;
             --radius-lg: 24px;
             --radius-md: 16px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            background: var(--bg-deep);
-            color: var(--text);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            user-select: none; /* Prevent text selection */
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100dvh; overflow: hidden; font-family: var(--font-main); color: var(--text); background: var(--bg-grad); }
 
-        /* --- Animations --- */
-        @keyframes slideIn { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(108, 99, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(108, 99, 255, 0); } }
-
-        /* --- Common UI --- */
-        .btn {
-            border: none; outline: none; cursor: pointer;
-            transition: 0.2s active;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .btn:active { transform: scale(0.95); }
-
-        .glass-panel {
+        /* --- GLASSMORPHISM --- */
+        .glass {
             background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
+        .glass-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .glass-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.25); }
 
-        /* --- Login Wizard --- */
-        #login-screen {
-            position: fixed; inset: 0; z-index: 2000;
+        /* --- LAYOUT MANAGERS --- */
+        #app { width: 100%; height: 100%; position: relative; }
+        
+        .view {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+            padding: 2rem; opacity: 0; pointer-events: none; transform: scale(0.95);
+            transition: opacity 0.4s ease, transform 0.4s ease; z-index: 1;
+        }
+        .view.active { opacity: 1; pointer-events: all; transform: scale(1); z-index: 10; }
+
+        h1, h2 { margin: 0 0 1rem 0; font-weight: 700; text-align: center; }
+        p { color: #aaa; line-height: 1.6; margin-bottom: 1.5rem; text-align: center; max-width: 400px; }
+
+        /* --- INPUTS & BUTTONS --- */
+        input[type="text"] {
+            width: 100%; max-width: 320px; padding: 1rem;
+            background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md); color: white; font-size: 1rem;
+            margin-bottom: 1rem; text-align: center; font-family: var(--font-main);
+        }
+        .btn-main {
+            padding: 1rem 3rem; border-radius: 50px; border: none;
+            background: var(--primary-grad); color: white; font-weight: 700; font-size: 1.1rem;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(5, 117, 230, 0.4);
+            font-family: var(--font-main); display: flex; align-items: center; gap: 10px;
         }
 
-        .wizard-card {
-            width: 90%; max-width: 400px;
-            padding: 30px; border-radius: var(--radius-lg);
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border);
-            text-align: center; position: relative;
-            overflow: hidden; min-height: 400px;
-            display: flex; flex-direction: column; justify-content: center;
-        }
-
-        .step-content {
-            display: none;
-            animation: slideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            flex-direction: column; align-items: center; gap: 20px;
-            width: 100%;
-        }
-        .step-content.active { display: flex; }
-
-        .step-title { font-size: 24px; margin-bottom: 10px; color: var(--primary); }
+        /* --- ROOM LAYOUT (The Magic Part) --- */
+        #view-room { padding: 0; background: #000; }
         
-        /* Avatar Step */
-        .avatar-preview {
-            width: 140px; height: 140px; border-radius: 50%;
-            border: 4px solid var(--primary); overflow: hidden;
-            position: relative; margin: 10px auto;
-            background: #000;
-        }
-        .avatar-preview video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .btn-upload {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            background: rgba(0,0,0,0.7); color: white; padding: 5px;
-            font-size: 12px; cursor: pointer;
+        /* Container styles based on user count */
+        .video-grid {
+            width: 100%; height: 100%; position: relative;
+            transition: all 0.5s ease;
         }
 
-        /* Input Step */
-        .inp-field {
-            width: 100%; padding: 15px; border-radius: 12px;
-            background: rgba(255,255,255,0.1); border: 1px solid var(--border);
-            color: white; text-align: center; font-size: 18px;
-        }
-        .inp-field:focus { border-color: var(--primary); outline: none; }
-
-        .btn-action {
-            width: 100%; padding: 15px; border-radius: 12px;
-            background: var(--primary); color: white; font-weight: bold; font-size: 16px;
-            margin-top: 10px;
-        }
-        .btn-secondary { background: transparent; border: 1px solid var(--border); margin-top: 10px; }
-
-        /* --- Main App --- */
-        #app-container {
-            flex: 1; position: relative; width: 100%; height: 100%;
+        /* LAYOUT: 1 Person (Selfie Mode) */
+        .video-grid[data-layout="1"] .video-tile {
+            width: 100%; height: 100%; object-fit: cover;
         }
 
-        /* Video Grid & Layouts */
-        #video-grid {
-            width: 100%; height: 100%;
-            display: flex; flex-wrap: wrap;
-            align-content: center; justify-content: center;
-            gap: 10px; padding: 10px;
-            transition: all 0.3s ease;
+        /* LAYOUT: 2 People (PIP - Meet Style) */
+        /* Remote user fills screen */
+        .video-grid[data-layout="2"] .video-tile:not(.is-local) {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
         }
-
-        .video-card {
-            position: relative; overflow: hidden; background: #111;
-            border-radius: var(--radius-md); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        .video-card.local video { transform: scaleX(-1); }
-
-        /* --- 1v1 Mode (Mobile Style) --- */
-        body.mode-1v1 #video-grid { padding: 0; gap: 0; display: block; }
-        
-        body.mode-1v1 .video-card.remote {
-            position: absolute; inset: 0; width: 100% !important; height: 100% !important;
-            border-radius: 0; z-index: 1;
-        }
-        
-        body.mode-1v1 .video-card.local {
-            position: absolute; 
-            width: 110px !important; height: 150px !important;
-            bottom: 100px; right: 20px; /* Default position */
-            z-index: 10;
-            border-radius: 12px;
+        /* Local user is small floating box */
+        .video-grid[data-layout="2"] .video-tile.is-local {
+            position: absolute; bottom: 100px; left: 20px; /* Left for Arabic/RTL preference or swap based on logic */
+            width: 100px; height: 140px; 
+            border-radius: 12px; z-index: 10;
             box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.2);
-            cursor: grab;
-            touch-action: none; /* Important for dragging */
+            border: 2px solid rgba(255,255,255,0.2);
         }
 
-        /* --- Grid Mode (3+ Users) --- */
-        body:not(.mode-1v1) .video-card {
-            flex: 1 1 300px;
-            max-width: 600px;
-            aspect-ratio: 16/9;
+        /* LAYOUT: 3+ People (Grid) */
+        .video-grid[data-layout="grid"] {
+            display: grid; padding: 80px 10px 100px 10px; gap: 10px;
+            grid-template-columns: 1fr; 
+        }
+        /* 3 Users */
+        .video-grid[data-layout="grid"][data-count="3"] { grid-template-rows: 1fr 1fr 1fr; }
+        /* 4 Users */
+        .video-grid[data-layout="grid"][data-count="4"] { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+
+        /* Common Tile Styles */
+        .video-tile {
+            background: #1a1a1a; overflow: hidden; position: relative;
+            border-radius: 12px; display: flex; justify-content: center; align-items: center;
+        }
+        .video-tile video { width: 100%; height: 100%; object-fit: cover; }
+        /* Mirror local video */
+        .video-tile.is-local video { transform: scaleX(-1); }
+
+        .tile-name {
+            position: absolute; bottom: 10px; right: 10px; padding: 4px 12px;
+            background: rgba(0,0,0,0.6); border-radius: 20px; font-size: 0.8rem;
+            backdrop-filter: blur(4px); display: flex; align-items: center; gap: 5px; color: #fff; z-index: 2;
         }
 
-        /* --- Controls (Toggleable) --- */
+        /* --- UI CONTROLS & HIDE MODE --- */
         .ui-layer {
-            position: fixed; inset: 0; pointer-events: none; z-index: 100;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
-        body.ui-hidden .ui-layer { opacity: 0; }
-
-        .app-header {
-            position: absolute; top: 0; left: 0; width: 100%;
-            padding: 15px; display: flex; justify-content: space-between;
+        /* When hidden */
+        .ui-hidden .ui-layer {
+            opacity: 0; pointer-events: none; transform: translateY(20px);
+        }
+        
+        .room-header {
+            position: absolute; top: 0; width: 100%; padding: 1.5rem;
             background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-            pointer-events: auto;
+            display: flex; justify-content: space-between; align-items: center; z-index: 20;
         }
 
-        .dock-container {
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 15px; padding: 12px 25px;
-            background: var(--glass-strong); border-radius: 40px;
-            border: 1px solid var(--border);
-            pointer-events: auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        .controls-bar {
+            position: absolute; bottom: 2rem; width: 90%; max-width: 400px; left: 50%; transform: translateX(-50%);
+            height: 70px; border-radius: 35px; display: flex; justify-content: space-evenly; align-items: center;
+            z-index: 20; margin-bottom: env(safe-area-inset-bottom);
         }
 
-        .ctrl-btn {
-            width: 50px; height: 50px; border-radius: 50%; font-size: 20px;
-            background: rgba(255,255,255,0.1); color: white;
+        /* --- CHAT --- */
+        .chat-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 75%;
+            background: rgba(15, 12, 41, 0.98); border-radius: 24px 24px 0 0;
+            transform: translateY(110%); transition: transform 0.3s ease;
+            z-index: 50; padding: 1rem; display: flex; flex-direction: column;
+            border-top: 1px solid var(--glass-border);
         }
-        .ctrl-btn.off { background: rgba(255,71,87,0.2); color: var(--danger); }
-        .ctrl-btn.end { background: var(--danger); }
+        .chat-overlay.open { transform: translateY(0); }
+        .msg { padding: 0.8rem 1rem; border-radius: 12px; max-width: 80%; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .msg.mine { align-self: flex-end; background: var(--primary-grad); border-bottom-left-radius: 0; }
+        .msg.theirs { align-self: flex-start; background: rgba(255,255,255,0.1); border-bottom-right-radius: 0; }
 
-        /* --- User Info --- */
-        .user-tag {
-            position: absolute; bottom: 10px; left: 10px;
-            padding: 4px 10px; background: rgba(0,0,0,0.5);
-            border-radius: 12px; font-size: 12px; backdrop-filter: blur(4px);
-            z-index: 2; pointer-events: none;
-        }
-
-        /* --- Dragging Helper --- */
-        .dragging { opacity: 0.8; transform: scale(1.05); box-shadow: 0 10px 30px rgba(108, 99, 255, 0.4); }
-
+        /* --- HELPERS --- */
+        .avatar-preview { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #fff; color: #000; padding: 10px 20px; border-radius: 20px; z-index: 100; transition: 0.3s; font-weight: bold;}
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .immersive-hint { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px; pointer-events: none; opacity: 0; transition: 0.5s; z-index: 100; }
     </style>
 </head>
 <body>
 
-    <!-- Login Wizard -->
-    <div id="login-screen">
-        <div class="wizard-card">
+<div id="app">
+    <div id="toast" class="toast">إشعار</div>
+
+    <!-- ONBOARDING -->
+    <div id="view-onboarding" class="view active">
+        <div id="step-1" style="display:flex; flex-direction:column; align-items:center; width:100%;">
+            <h1>مرحباً بك في أثير</h1>
+            <p>تواصل بذكاء وسرعة. ابدأ بكتابة اسمك.</p>
+            <input type="text" id="input-name" placeholder="الاسم المستعار">
+            <button class="btn-main" onclick="app.nextStep(1)">
+                التالي <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+
+        <div id="step-2" style="display:none; flex-direction:column; align-items:center; width:100%;">
+            <h2>صورتك الرمزية</h2>
+            <p>اختر صورة لتعبر عنك</p>
+            <img src="" id="avatar-preview-img" class="avatar-preview" style="display:none; margin-bottom:1rem;">
+            <div id="avatar-placeholder" style="width:100px; height:100px; background:rgba(255,255,255,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:1rem;">
+                <i class="fas fa-user" style="font-size:40px;"></i>
+            </div>
             
-            <!-- Step 1: Avatar -->
-            <div id="step-1" class="step-content active">
-                <h3 class="step-title">اختر صورتك</h3>
-                <div class="avatar-preview" onclick="document.getElementById('file-in').click()">
-                    <video id="preview-video" autoplay playsinline muted></video>
-                    <img id="preview-img" style="display:none">
-                    <div class="btn-upload"><i class="fas fa-camera"></i> تغيير</div>
-                </div>
-                <input type="file" id="file-in" hidden accept="image/*" onchange="handleFileSelect(this)">
-                <button class="btn btn-action" onclick="nextStep(2)">التالي <i class="fas fa-chevron-left" style="margin-right:8px"></i></button>
-            </div>
+            <label class="glass-btn" style="padding:10px 25px; border-radius:20px; cursor:pointer;">
+                <i class="fas fa-camera"></i> رفع صورة
+                <input type="file" accept="image/*" style="display:none" onchange="app.handleImage(this)">
+            </label>
+            <div id="upload-status" style="margin:10px 0; font-size:0.8rem; color:var(--primary);"></div>
 
-            <!-- Step 2: Name -->
-            <div id="step-2" class="step-content">
-                <h3 class="step-title">ما هو اسمك؟</h3>
-                <input type="text" id="username" class="inp-field" placeholder="اكتب اسمك هنا">
-                <button class="btn btn-action" onclick="nextStep(3)">التالي</button>
-                <button class="btn btn-secondary" onclick="nextStep(1)">رجوع</button>
-            </div>
-
-            <!-- Step 3: Room -->
-            <div id="step-3" class="step-content">
-                <h3 class="step-title">غرفة الاجتماع</h3>
-                <input type="text" id="room-code-inp" class="inp-field" placeholder="كود الغرفة (اتركه فارغاً لإنشاء جديد)">
-                <button class="btn btn-action" style="background: var(--success);" onclick="startApp()">
-                    <i class="fas fa-rocket" style="margin-left:8px"></i> انطلاق
-                </button>
-                <button class="btn btn-secondary" onclick="nextStep(2)">رجوع</button>
-            </div>
-
+            <button class="btn-main" id="btn-finish-onboarding" disabled onclick="app.finishOnboarding()">
+                دخول <i class="fas fa-check"></i>
+            </button>
         </div>
     </div>
 
-    <!-- Main App -->
-    <div id="app-container" style="display:none;">
-        
-        <!-- Video Layer -->
-        <div id="video-grid">
-            <!-- Videos injected here -->
-        </div>
-
-        <!-- UI Layer (Header & Controls) -->
-        <div class="ui-layer">
-            <div class="app-header">
-                <div style="background:rgba(255,255,255,0.1); padding:5px 15px; border-radius:20px; display:flex; gap:10px; align-items:center;" onclick="copyLink()">
-                    <span style="color:var(--accent); font-weight:bold;">ID:</span>
-                    <span id="room-display">...</span>
-                    <i class="fas fa-copy" style="font-size:12px; opacity:0.7"></i>
+    <!-- DASHBOARD -->
+    <div id="view-dashboard" class="view">
+        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img id="dash-avatar" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary);">
+                <div style="text-align:right;">
+                    <div style="font-size:0.8rem; color:#aaa;">أهلاً،</div>
+                    <div id="dash-name" style="font-weight:bold;">مستخدم</div>
                 </div>
-                <div id="status-indicator" style="width:10px; height:10px; background:#2ecc71; border-radius:50%; box-shadow:0 0 10px #2ecc71;"></div>
             </div>
-
-            <div class="dock-container">
-                <button class="btn ctrl-btn" id="mic-btn" onclick="toggleAudio()"><i class="fas fa-microphone"></i></button>
-                <button class="btn ctrl-btn" id="cam-btn" onclick="toggleVideo()"><i class="fas fa-video"></i></button>
-                <button class="btn ctrl-btn end" onclick="leaveRoom()"><i class="fas fa-phone-slash"></i></button>
-            </div>
+            <i class="fas fa-cog glass-btn" style="width:40px; height:40px; display:flex; justify-content:center; align-items:center; border-radius:50%;"></i>
         </div>
 
-        <!-- Toast -->
-        <div id="toast" style="position:fixed; top:20px; left:50%; transform:translate(-50%, -100px); background:white; color:black; padding:10px 20px; border-radius:30px; transition:0.3s; z-index:5000; font-weight:bold;">تم النسخ!</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; width:100%;">
+            <div class="glass" style="padding:2rem; border-radius:20px; text-align:center; cursor:pointer;" onclick="app.createRoom()">
+                <i class="fas fa-video" style="font-size:2rem; color:var(--primary); margin-bottom:10px;"></i>
+                <div>غرفة جديدة</div>
+            </div>
+            <div class="glass" style="padding:2rem; border-radius:20px; text-align:center; cursor:pointer;" onclick="app.joinModal()">
+                <i class="fas fa-keyboard" style="font-size:2rem; color:var(--text); margin-bottom:10px;"></i>
+                <div>انضمام برمز</div>
+            </div>
+        </div>
     </div>
 
-    <!-- Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, update, push, onChildAdded, onChildRemoved, onDisconnect, remove } 
-        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    <!-- PRE-JOIN -->
+    <div id="view-prejoin" class="view">
+        <h2>تجهيز الكاميرا</h2>
+        <div style="width:100%; aspect-ratio:4/5; background:#000; border-radius:20px; overflow:hidden; position:relative; margin-bottom:1rem;">
+            <video id="prejoin-video" autoplay muted playsinline style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);"></video>
+            <div style="position:absolute; bottom:20px; left:50%; transform:translateX(-50%); display:flex; gap:15px;">
+                <button class="glass-btn" style="width:50px; height:50px; border-radius:50%;" onclick="app.toggleCam()"><i class="fas fa-video"></i></button>
+                <button class="glass-btn" style="width:50px; height:50px; border-radius:50%;" onclick="app.toggleMic()"><i class="fas fa-microphone"></i></button>
+            </div>
+        </div>
+        <button class="btn-main" id="btn-request-join" onclick="app.requestJoin()">طلب انضمام</button>
+        <button style="background:transparent; border:none; color:#aaa; margin-top:10px;" onclick="location.reload()">إلغاء</button>
+    </div>
 
-        // Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyAjE-2q6PONBkCin9ZN22gDp9Q8pAH9ZW8",
-            authDomain: "story-97cf7.firebaseapp.com",
-            databaseURL: "https://story-97cf7-default-rtdb.firebaseio.com",
-            projectId: "story-97cf7",
-            storageBucket: "story-97cf7.firebasestorage.app",
-            messagingSenderId: "742801388214",
-            appId: "1:742801388214:web:32a305a8057b0582c5ec17"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+    <!-- ROOM -->
+    <div id="view-room" class="view">
+        <!-- HEADER (Hidden in immersive) -->
+        <div class="room-header ui-layer">
+            <div style="background:rgba(255,255,255,0.2); padding:5px 15px; border-radius:15px; font-size:0.9rem;">
+                ID: <span id="room-id-disp">...</span>
+            </div>
+            <button class="glass-btn" style="width:40px; height:40px; border-radius:50%; background:var(--danger);" onclick="app.leaveRoom()">
+                <i class="fas fa-phone-slash"></i>
+            </button>
+        </div>
 
-        // State
-        let user = { id: 'u_' + Math.random().toString(36).substr(2, 6), name: '', avatar: null };
-        let roomId = null;
-        let localStream = null;
-        let peers = {};
-        const rtcConfig = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
-        
-        // --- Wizard Logic ---
-        window.nextStep = (step) => {
-            if(step === 2) {
-                // Ensure camera is ready or fallback
-                if(!localStream) initCamera();
-            }
-            if(step === 3) {
-                const name = document.getElementById('username').value.trim();
-                if(!name) return alert('الرجاء كتابة الاسم');
-                user.name = name;
-            }
-            
-            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
-            document.getElementById(`step-${step}`).classList.add('active');
-        };
+        <!-- VIDEO AREA -->
+        <div id="video-container" class="video-grid" data-layout="1" onclick="app.toggleUi()">
+            <!-- Local User (Always Here) -->
+            <div class="video-tile is-local" id="tile-local">
+                <video id="local-video" autoplay muted playsinline></video>
+                <div class="tile-name">أنت</div>
+            </div>
+            <!-- Remotes added via JS -->
+        </div>
 
-        window.handleFileSelect = (input) => {
-            if(input.files[0]){
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    user.avatar = e.target.result;
-                    document.getElementById('preview-img').src = user.avatar;
-                    document.getElementById('preview-img').style.display = 'block';
-                    document.getElementById('preview-video').style.display = 'none';
-                    // Stop video track if image selected to save battery
-                    if(localStream) localStream.getVideoTracks().forEach(t => t.enabled = false);
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        };
+        <!-- Immersive Hint -->
+        <div id="immersive-hint" class="immersive-hint">تم إخفاء الأدوات</div>
 
-        async function initCamera() {
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('preview-video').srcObject = localStream;
-            } catch(e) {
-                console.log("No Camera");
-            }
-        }
+        <!-- CONTROLS (Hidden in immersive) -->
+        <div class="controls-bar glass ui-layer">
+            <button class="glass-btn" style="width:50px; height:50px; border-radius:50%;" onclick="app.toggleMic()"><i class="fas fa-microphone" id="btn-mic"></i></button>
+            <button class="glass-btn" style="width:50px; height:50px; border-radius:50%;" onclick="app.toggleCam()"><i class="fas fa-video" id="btn-cam"></i></button>
+            <button class="glass-btn" style="width:50px; height:50px; border-radius:50%;" onclick="app.toggleUiManual()"><i class="fas fa-expand"></i></button>
+            <button class="glass-btn" style="width:50px; height:50px; border-radius:50%; position:relative;" onclick="app.toggleChat()">
+                <i class="fas fa-comment-alt"></i>
+                <div id="chat-badge" style="position:absolute; top:10px; right:10px; width:10px; height:10px; background:var(--danger); border-radius:50%; display:none;"></div>
+            </button>
+        </div>
 
-        // --- App Start ---
-        window.startApp = async () => {
-            roomId = document.getElementById('room-code-inp').value || Math.random().toString(36).substr(2, 6).toUpperCase();
-            document.getElementById('room-display').innerText = roomId;
-            
-            // UI Switch
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-container').style.display = 'flex';
-            
-            // Setup Local Video
-            addVideo(user.id, localStream, true);
-            
-            // Firebase Join
-            const userRef = ref(db, `rooms/${roomId}/participants/${user.id}`);
-            update(userRef, { ...user, avatar: user.avatar || 'https://via.placeholder.com/150' });
-            onDisconnect(userRef).remove();
+        <!-- CHAT -->
+        <div id="chat-overlay" class="chat-overlay glass">
+            <div style="display:flex; justify-content:space-between; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
+                <h3 style="margin:0;">الدردشة</h3>
+                <i class="fas fa-times" onclick="app.toggleChat()"></i>
+            </div>
+            <div id="chat-msgs" style="flex:1; overflow-y:auto; display:flex; flex-direction:column;"></div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <input type="text" id="chat-input" placeholder="اكتب رسالة..." style="margin:0; text-align:right;">
+                <button class="glass-btn" style="width:50px; border-radius:15px;" onclick="app.sendMsg()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
 
-            // Listeners
-            onChildAdded(ref(db, `rooms/${roomId}/participants`), handleParticipantAdd);
-            onChildRemoved(ref(db, `rooms/${roomId}/participants`), handleParticipantRemove);
-            onChildAdded(ref(db, `rooms/${roomId}/signals/${user.id}`), handleSignal);
-            
-            // Double Tap Listener
-            setupDoubleTap();
-        };
+        <!-- HOST APPROVAL MODAL -->
+        <div id="host-modal" class="glass" style="position:fixed; top:20%; left:5%; right:5%; padding:20px; border-radius:20px; z-index:200; display:none; flex-direction:column; align-items:center;">
+            <h3 id="host-msg">فلان يريد الانضمام</h3>
+            <div style="display:flex; gap:20px; margin-top:20px; width:100%;">
+                <button class="glass-btn" style="flex:1; background:var(--danger); padding:10px; border-radius:10px;" onclick="app.resolveJoin(false)">رفض</button>
+                <button class="glass-btn" style="flex:1; background:var(--primary); padding:10px; border-radius:10px;" onclick="app.resolveJoin(true)">قبول</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        // --- WebRTC Core ---
-        function handleParticipantAdd(snap) {
-            const p = snap.val();
-            if(p.id === user.id) return;
-            
-            addVideo(p.id, null, false);
-            
-            const isInitiator = user.id > p.id;
-            initPeer(p.id, isInitiator);
-        }
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, push, remove, onDisconnect, update } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-        function handleParticipantRemove(snap) {
-            const id = snap.val().id;
-            if(peers[id]) { peers[id].close(); delete peers[id]; }
-            const el = document.getElementById(`wrap-${id}`);
-            if(el) el.remove();
-            checkLayout();
-        }
+    // --- CONFIG ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyAjE-2q6PONBkCin9ZN22gDp9Q8pAH9ZW8",
+        authDomain: "story-97cf7.firebaseapp.com",
+        databaseURL: "https://story-97cf7-default-rtdb.firebaseio.com",
+        projectId: "story-97cf7", 
+        storageBucket: "story-97cf7.firebasestorage.app",
+        messagingSenderId: "742801388214",
+        appId: "1:742801388214:web:32a305a8057b0582c5ec17",
+        measurementId: "G-9DPPWX7CF0"
+    };
 
-        async function initPeer(partnerId, initiator) {
-            if(peers[partnerId]) return;
-            const pc = new RTCPeerConnection(rtcConfig);
-            peers[partnerId] = pc;
+    const fbApp = initializeApp(firebaseConfig);
+    const db = getDatabase(fbApp);
 
-            if(localStream) localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+    // --- APP LOGIC ---
+    window.app = {
+        user: JSON.parse(localStorage.getItem('ar_user')) || { id: 'u_'+Math.random().toString(36).substr(2,5), name: '', avatar: '' },
+        room: null,
+        isHost: false,
+        localStream: null,
+        pcs: {}, // PeerConnections
+        pendingUser: null, // For host approval
+        uiVisible: true,
 
-            pc.onicecandidate = e => {
-                if(e.candidate) sendSignal(partnerId, { type: 'candidate', candidate: JSON.stringify(e.candidate) });
-            };
-
-            pc.ontrack = e => {
-                const vid = document.getElementById(`vid-${partnerId}`);
-                if(vid && e.streams[0]) vid.srcObject = e.streams[0];
-            };
-
-            if(initiator) {
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                sendSignal(partnerId, { type: 'offer', sdp: JSON.stringify(offer) });
-            }
-        }
-
-        async function handleSignal(snap) {
-            const data = snap.val();
-            const pc = peers[data.sender];
-            if(!pc) return;
-
-            if(data.type === 'offer') {
-                await pc.setRemoteDescription(JSON.parse(data.sdp));
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-                sendSignal(data.sender, { type: 'answer', sdp: JSON.stringify(answer) });
-            } else if(data.type === 'answer') {
-                await pc.setRemoteDescription(JSON.parse(data.sdp));
-            } else if(data.type === 'candidate') {
-                try { await pc.addIceCandidate(JSON.parse(data.candidate)); } catch(e){}
-            }
-            remove(snap.ref);
-        }
-
-        function sendSignal(to, data) {
-            push(ref(db, `rooms/${roomId}/signals/${to}`), { ...data, sender: user.id });
-        }
-
-        // --- Layout & UI Logic ---
-        function addVideo(id, stream, isLocal) {
-            const div = document.createElement('div');
-            div.id = `wrap-${id}`;
-            div.className = `video-card ${isLocal ? 'local' : 'remote'}`;
-            div.innerHTML = `
-                <video id="vid-${id}" autoplay playsinline ${isLocal ? 'muted' : ''}></video>
-                <div class="user-tag">${isLocal ? 'أنت' : 'متصل'}</div>
-            `;
-            document.getElementById('video-grid').appendChild(div);
-            if(stream) document.getElementById(`vid-${id}`).srcObject = stream;
-            
-            if(isLocal) makeDraggable(div);
-            checkLayout();
-        }
-
-        function checkLayout() {
-            const grid = document.getElementById('video-grid');
-            const count = grid.children.length; // Local + Remote(s)
-            
-            // Activate 1v1 Mode only if exactly 2 people
-            if(count === 2) {
-                document.body.classList.add('mode-1v1');
-            } else {
-                document.body.classList.remove('mode-1v1');
-            }
-        }
-
-        // --- Interactions: Double Tap & Drag ---
-        function setupDoubleTap() {
-            let lastTap = 0;
-            document.addEventListener('touchend', (e) => {
-                const now = Date.now();
-                if(now - lastTap < 300) {
-                    // Double Tap detected
-                    document.body.classList.toggle('ui-hidden');
+        init: () => {
+            const params = new URLSearchParams(location.search);
+            if(params.get('room')) {
+                // If link clicked, check user then go pre-join
+                if(app.user.name) {
+                    app.show('view-prejoin');
+                    app.startCam();
+                } else {
+                    app.show('view-onboarding'); // Must register first
                 }
-                lastTap = now;
+            } else if(app.user.name) {
+                app.updateDash();
+                app.show('view-dashboard');
+            } else {
+                app.show('view-onboarding');
+            }
+        },
+
+        show: (id) => {
+            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        },
+
+        // --- ONBOARDING & IMG ---
+        nextStep: (s) => {
+            if(s===1) {
+                const n = document.getElementById('input-name').value;
+                if(!n) return alert('الرجاء كتابة الاسم');
+                app.user.name = n;
+                document.getElementById('step-1').style.display='none';
+                document.getElementById('step-2').style.display='flex';
+            }
+        },
+        handleImage: (input) => {
+            const f = input.files[0];
+            if(!f) return;
+            const r = new FileReader();
+            document.getElementById('upload-status').innerText = "جاري المعالجة...";
+            r.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const c = document.createElement('canvas');
+                    let w=img.width, h=img.height;
+                    if(w>100) { h*=100/w; w=100; } // Shrink for text storage
+                    c.width=w; c.height=h;
+                    c.getContext('2d').drawImage(img,0,0,w,h);
+                    const b64 = c.toDataURL('image/jpeg', 0.5);
+                    
+                    // Convert to numeric text
+                    const nums = [];
+                    for(let i=0; i<b64.length; i++) nums.push(b64.charCodeAt(i));
+                    app.user.avatar = nums.join(',');
+                    
+                    document.getElementById('avatar-preview-img').src = b64;
+                    document.getElementById('avatar-preview-img').style.display='block';
+                    document.getElementById('avatar-placeholder').style.display='none';
+                    document.getElementById('btn-finish-onboarding').disabled=false;
+                    document.getElementById('upload-status').innerText = "تم تحويل الصورة بنجاح";
+                };
+                img.src = e.target.result;
+            };
+            r.readAsDataURL(f);
+        },
+        finishOnboarding: () => {
+            localStorage.setItem('ar_user', JSON.stringify(app.user));
+            // Save simple profile
+            set(ref(db, `users/${app.user.id}`), app.user);
+            const params = new URLSearchParams(location.search);
+            if(params.get('room')) {
+                app.show('view-prejoin');
+                app.startCam();
+            } else {
+                app.updateDash();
+                app.show('view-dashboard');
+            }
+        },
+        updateDash: () => {
+            document.getElementById('dash-name').innerText = app.user.name;
+            if(app.user.avatar) document.getElementById('dash-avatar').src = app.decode(app.user.avatar);
+        },
+        decode: (str) => {
+            if(!str) return '';
+            const arr = str.split(',');
+            let s = '';
+            // Chunked processing
+            for(let i=0; i<arr.length; i++) s+=String.fromCharCode(parseInt(arr[i]));
+            return s;
+        },
+
+        // --- DASHBOARD ---
+        createRoom: async () => {
+            const rid = Math.floor(100000 + Math.random() * 900000); // 6 digits
+            app.isHost = true;
+            await set(ref(db, `rooms/${rid}/host`), app.user.id);
+            location.href = `?room=${rid}`;
+        },
+        joinModal: () => {
+            const c = prompt("أدخل كود الغرفة:");
+            if(c) location.href = `?room=${c}`;
+        },
+
+        // --- PREJOIN ---
+        startCam: async () => {
+            try {
+                const s = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+                app.localStream = s;
+                document.getElementById('prejoin-video').srcObject = s;
+                document.getElementById('local-video').srcObject = s;
+            } catch(e) { alert("يجب السماح بالكاميرا"); }
+        },
+        requestJoin: () => {
+            const rid = new URLSearchParams(location.search).get('room');
+            const btn = document.getElementById('btn-request-join');
+            btn.disabled = true; btn.innerText = "جاري الطلب...";
+            
+            // Send Request
+            const reqRef = ref(db, `rooms/${rid}/requests/${app.user.id}`);
+            set(reqRef, { name: app.user.name, status: 'pending' });
+            
+            // Listen for answer
+            onValue(reqRef, (s) => {
+                const v = s.val();
+                if(v && v.status === 'approved') app.enterRoom(rid);
+                if(v && v.status === 'rejected') { btn.innerText = "تم الرفض"; alert("رفض المضيف طلبك"); }
             });
-            // Desktop double click support
-            document.addEventListener('dblclick', () => {
-                document.body.classList.toggle('ui-hidden');
+        },
+
+        // --- ROOM & LAYOUT LOGIC ---
+        enterRoom: (rid) => {
+            app.room = rid;
+            document.getElementById('room-id-disp').innerText = rid;
+            app.show('view-room');
+            
+            // Register presence
+            const pRef = ref(db, `rooms/${rid}/participants/${app.user.id}`);
+            set(pRef, { name: app.user.name });
+            onDisconnect(pRef).remove();
+
+            // Host logic
+            // Check if I am host (re-verify for security in real app)
+            getDatabase(fbApp); // Just to ensure db ready
+            onValue(ref(db, `rooms/${rid}/host`), (s) => {
+                if(s.val() === app.user.id) {
+                    app.isHost = true;
+                    app.listenRequests(rid);
+                }
             });
-        }
 
-        function makeDraggable(el) {
-            // Only allow dragging if we are in 1v1 mode (implied by class check inside handler if needed, 
-            // but here we just attach basic logic, constraints will be handled by layout CSS mostly, 
-            // but for movement we need JS)
+            app.startSignaling(rid);
+            app.listenParticipants(rid);
+            app.listenChat(rid);
+        },
+
+        // The Layout Manager
+        updateLayout: (count) => {
+            const grid = document.getElementById('video-container');
+            // Logic: 
+            // 1 = Selfie
+            // 2 = PIP (User wants: Me small side, Other big)
+            // 3+ = Grid
             
-            let isDragging = false;
-            let startX, startY, initialLeft, initialTop;
+            if(count <= 1) {
+                grid.setAttribute('data-layout', '1');
+            } else if (count === 2) {
+                grid.setAttribute('data-layout', '2');
+            } else {
+                grid.setAttribute('data-layout', 'grid');
+                grid.setAttribute('data-count', count);
+            }
+        },
 
-            const startDrag = (e) => {
-                // Only drag local video in 1v1 mode
-                if(!document.body.classList.contains('mode-1v1')) return;
-                
-                isDragging = true;
-                el.classList.add('dragging');
-                
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                
-                startX = clientX;
-                startY = clientY;
-                
-                const rect = el.getBoundingClientRect();
-                // Store offset from right/bottom or left/top based on computed style
-                // Simplest is to switch to top/left based positioning upon first drag
-                el.style.bottom = 'auto';
-                el.style.right = 'auto';
-                el.style.left = rect.left + 'px';
-                el.style.top = rect.top + 'px';
-            };
+        listenParticipants: (rid) => {
+            onValue(ref(db, `rooms/${rid}/participants`), (s) => {
+                const parts = s.val() || {};
+                const count = Object.keys(parts).length;
+                app.updateLayout(count);
 
-            const drag = (e) => {
-                if(!isDragging) return;
-                e.preventDefault(); // Prevent scroll while dragging video
+                // WebRTC connection logic
+                Object.keys(parts).forEach(uid => {
+                    if(uid !== app.user.id && !app.pcs[uid]) {
+                        app.callUser(uid, rid);
+                    }
+                });
                 
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                
-                const dx = clientX - startX;
-                const dy = clientY - startY;
-                
-                const currentLeft = parseFloat(el.style.left);
-                const currentTop = parseFloat(el.style.top);
-                
-                el.style.left = `${currentLeft + dx}px`;
-                el.style.top = `${currentTop + dy}px`;
-                
-                startX = clientX;
-                startY = clientY;
-            };
+                // Cleanup removed users
+                document.querySelectorAll('.video-tile').forEach(el => {
+                    if(el.id !== 'tile-local') {
+                        const uid = el.id.replace('tile-', '');
+                        if(!parts[uid]) el.remove();
+                    }
+                });
+            });
+        },
 
-            const stopDrag = () => {
-                isDragging = false;
-                el.classList.remove('dragging');
-                
-                // Snap to bounds logic (optional, keeping it simple for "Anywhere")
-                const rect = el.getBoundingClientRect();
-                const winW = window.innerWidth;
-                const winH = window.innerHeight;
-                
-                // Keep inside screen
-                if(rect.left < 0) el.style.left = '10px';
-                if(rect.top < 0) el.style.top = '10px';
-                if(rect.right > winW) el.style.left = (winW - rect.width - 10) + 'px';
-                if(rect.bottom > winH) el.style.top = (winH - rect.height - 10) + 'px';
-            };
+        // --- WEBRTC ---
+        startSignaling: (rid) => {
+            const mySig = ref(db, `rooms/${rid}/signals/${app.user.id}`);
+            onValue(mySig, (s) => {
+                const msgs = s.val();
+                if(!msgs) return;
+                Object.entries(msgs).forEach(async ([key, msg]) => {
+                    const { sender, type, data } = msg;
+                    if(!app.pcs[sender]) app.createPC(sender, rid);
+                    const pc = app.pcs[sender];
+                    
+                    try {
+                        if(type === 'offer') {
+                            await pc.setRemoteDescription(data);
+                            const ans = await pc.createAnswer();
+                            await pc.setLocalDescription(ans);
+                            push(ref(db, `rooms/${rid}/signals/${sender}`), { sender: app.user.id, type: 'answer', data: ans });
+                        } else if (type === 'answer') {
+                            await pc.setRemoteDescription(data);
+                        } else if (type === 'candidate') {
+                            await pc.addIceCandidate(data);
+                        }
+                    } catch(e) {}
+                    remove(ref(db, `rooms/${rid}/signals/${app.user.id}/${key}`));
+                });
+            });
+        },
 
-            el.addEventListener('mousedown', startDrag);
-            el.addEventListener('touchstart', startDrag, {passive: false});
+        createPC: (target, rid) => {
+            const pc = new RTCPeerConnection({ iceServers: [{urls:'stun:stun.l.google.com:19302'}] });
+            app.pcs[target] = pc;
+            app.localStream.getTracks().forEach(t => pc.addTrack(t, app.localStream));
             
-            window.addEventListener('mousemove', drag);
-            window.addEventListener('touchmove', drag, {passive: false});
+            pc.onicecandidate = (e) => {
+                if(e.candidate) push(ref(db, `rooms/${rid}/signals/${target}`), { sender: app.user.id, type: 'candidate', data: JSON.parse(JSON.stringify(e.candidate)) });
+            };
             
-            window.addEventListener('mouseup', stopDrag);
-            window.addEventListener('touchend', stopDrag);
-        }
+            pc.ontrack = (e) => {
+                let div = document.getElementById(`tile-${target}`);
+                if(!div) {
+                    div = document.createElement('div');
+                    div.className = 'video-tile';
+                    div.id = `tile-${target}`;
+                    div.innerHTML = `<video autoplay playsinline></video><div class="tile-name">مستخدم</div>`;
+                    document.getElementById('video-container').appendChild(div);
+                }
+                div.querySelector('video').srcObject = e.streams[0];
+            };
+            return pc;
+        },
 
-        // --- Controls ---
-        window.toggleAudio = () => {
-            const t = localStream.getAudioTracks()[0];
+        callUser: async (target, rid) => {
+            // Simple mesh: to avoid collision, only "larger ID" calls "smaller ID" or just allow both to offer (collision needs handling but this is simple demo)
+            // Let's just create PC. If I'm the new joiner, I create offer.
+            // Simplified: Just wait for 'negotiationneeded'
+            const pc = app.createPC(target, rid);
+            const off = await pc.createOffer();
+            await pc.setLocalDescription(off);
+            push(ref(db, `rooms/${rid}/signals/${target}`), { sender: app.user.id, type: 'offer', data: off });
+        },
+
+        // --- UI ACTIONS ---
+        toggleUi: () => {
+            const body = document.body;
+            app.uiVisible = !app.uiVisible;
+            const roomHeader = document.querySelector('.room-header');
+            const controls = document.querySelector('.controls-bar');
+            
+            if(!app.uiVisible) {
+                roomHeader.parentElement.classList.add('ui-hidden');
+                // Show hint
+                const h = document.getElementById('immersive-hint');
+                h.style.opacity = 1;
+                setTimeout(() => h.style.opacity = 0, 1500);
+            } else {
+                roomHeader.parentElement.classList.remove('ui-hidden');
+            }
+        },
+        toggleUiManual: (e) => {
+            // Button specific trigger
+            if(event) event.stopPropagation();
+            app.toggleUi();
+        },
+        toggleMic: () => {
+            const t = app.localStream.getAudioTracks()[0];
             t.enabled = !t.enabled;
-            document.getElementById('mic-btn').classList.toggle('off', !t.enabled);
-        };
-        window.toggleVideo = () => {
-            const t = localStream.getVideoTracks()[0];
+            const i = t.enabled ? 'fa-microphone' : 'fa-microphone-slash';
+            document.querySelectorAll('.fa-microphone, .fa-microphone-slash').forEach(e => e.className = `fas ${i}`);
+        },
+        toggleCam: () => {
+            const t = app.localStream.getVideoTracks()[0];
             t.enabled = !t.enabled;
-            document.getElementById('cam-btn').classList.toggle('off', !t.enabled);
-        };
-        window.leaveRoom = () => location.reload();
-        window.copyLink = () => {
-            navigator.clipboard.writeText(location.href);
-            const t = document.getElementById('toast');
-            t.style.transform = "translate(-50%, 20px)";
-            setTimeout(() => t.style.transform = "translate(-50%, -100px)", 2000);
-        };
+            const i = t.enabled ? 'fa-video' : 'fa-video-slash';
+            document.querySelectorAll('.fa-video, .fa-video-slash').forEach(e => e.className = `fas ${i}`);
+        },
+        toggleChat: (e) => {
+            if(e) e.stopPropagation();
+            document.getElementById('chat-overlay').classList.toggle('open');
+            document.getElementById('chat-badge').style.display = 'none';
+        },
+        leaveRoom: () => {
+             if(confirm('هل تود المغادرة؟')) location.href = location.pathname;
+        },
 
-    </script>
+        // --- CHAT & HOST ---
+        sendMsg: () => {
+            const t = document.getElementById('chat-input').value;
+            if(!t) return;
+            push(ref(db, `rooms/${app.room}/chat`), { sender: app.user.id, name: app.user.name, text: t });
+            document.getElementById('chat-input').value = '';
+        },
+        listenChat: (rid) => {
+            onValue(ref(db, `rooms/${rid}/chat`), s => {
+                const div = document.getElementById('chat-msgs');
+                div.innerHTML = '';
+                const vals = s.val();
+                if(!vals) return;
+                Object.values(vals).forEach(m => {
+                    const el = document.createElement('div');
+                    el.className = `msg ${m.sender === app.user.id ? 'mine':'theirs'}`;
+                    el.innerText = `${m.name}: ${m.text}`;
+                    div.appendChild(el);
+                });
+                div.scrollTop = div.scrollHeight;
+            });
+        },
+        listenRequests: (rid) => {
+            onValue(ref(db, `rooms/${rid}/requests`), s => {
+                const reqs = s.val();
+                if(!reqs) return;
+                Object.entries(reqs).forEach(([uid, data]) => {
+                    if(data.status === 'pending') {
+                        app.pendingUser = uid;
+                        document.getElementById('host-msg').innerText = `${data.name} يطلب الانضمام`;
+                        document.getElementById('host-modal').style.display = 'flex';
+                    }
+                });
+            });
+        },
+        resolveJoin: (ok) => {
+            update(ref(db, `rooms/${app.room}/requests/${app.pendingUser}`), { status: ok?'approved':'rejected' });
+            document.getElementById('host-modal').style.display = 'none';
+        }
+    };
+
+    app.init();
+</script>
 </body>
 </html>
