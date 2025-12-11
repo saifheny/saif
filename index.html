@@ -2,448 +2,348 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Buz Pro V4 - Fixed & Enhanced</title>
-    
-    <!-- Libraries -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تطبيق الاجتماعات المطور</title>
+    <!-- مكتبة الأيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@200;300;400;500;700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.js"></script>
-
+    
     <style>
-        /* --- Core Variables --- */
         :root {
-            --primary: #CCFF00;
-            --primary-dim: #a3cc00;
-            --secondary: #7C3AED;
-            --accent: #00D4FF;
-            --dark-bg: #000000;
-            --glass: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --danger: #FF3B30;
-            --success: #30D158;
-            --warning: #FF9F0A;
+            --primary: #6C63FF;
+            --danger: #FF6584;
+            --success: #00E096;
+            --dark: #1F2029;
+            --darker: #15161C;
+            --glass: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.05);
         }
 
-        * { 
-            font-family: 'Tajawal', 'Alexandria', sans-serif; 
-            -webkit-tap-highlight-color: transparent; 
-            user-select: none; 
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background-color: var(--dark-bg);
+            background-color: var(--darker);
             color: white;
-            min-height: 100dvh;
+            height: 100vh;
             overflow: hidden;
-        }
-
-        /* --- Filters CSS --- */
-        .filter-none { filter: none; }
-        .filter-soft { filter: contrast(1.1) brightness(1.1) saturate(1.1) blur(0.5px); } /* تنعيم */
-        .filter-warm { filter: sepia(0.3) contrast(1.1) brightness(1.1); } /* دافئ */
-        .filter-glow { filter: brightness(1.2) contrast(1.1) saturate(1.3); } /* إضاءة */
-        .filter-bw { filter: grayscale(1) contrast(1.2); } /* أبيض وأسود */
-        .filter-cinema { filter: contrast(1.3) saturate(1.2) sepia(0.2); } /* سينمائي */
-
-        /* --- Scrollbar --- */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-
-        /* --- Button System --- */
-        .btn-primary {
-            background: var(--primary);
-            color: black;
-            font-weight: 800;
-            border-radius: 50px;
-            padding: 16px 32px;
-            transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(204, 255, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            border: none;
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
-        .btn-primary:active { transform: scale(0.96); }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.12);
-            color: white;
-            font-weight: 600;
-            border-radius: 50px;
-            padding: 16px 28px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
-
-        /* --- Inputs --- */
-        .floating-input {
-            width: 100%;
-            padding: 20px;
-            background: #1A1A1A;
-            border: 2px solid #333;
-            border-radius: 18px;
-            color: white;
-            font-size: 18px;
-            transition: 0.3s;
-            outline: none;
-        }
-        .floating-input:focus {
-            border-color: var(--primary);
-            background: #000;
-        }
-
-        /* --- Screen System --- */
-        .screen {
-            position: fixed;
-            inset: 0;
             display: flex;
             flex-direction: column;
-            background: var(--dark-bg);
-            z-index: 100;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            overflow-y: auto;
-            padding-bottom: env(safe-area-inset-bottom);
         }
-        .screen.hidden-screen { opacity: 0; pointer-events: none; transform: scale(0.95); z-index: 0; }
-        .screen.active-screen { opacity: 1; pointer-events: auto; transform: scale(1); z-index: 100; }
 
-        /* --- Video Grid (Fix for Mobile) --- */
-        .video-grid-container {
-            display: grid;
-            gap: 8px;
-            padding: 8px;
+        /* شاشات الدخول */
+        .full-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--darker);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: opacity 0.5s;
+        }
+
+        .hidden { display: none !important; }
+
+        .card {
+            background: var(--dark);
+            padding: 30px;
+            border-radius: 20px;
             width: 100%;
-            height: 100%;
-            align-content: center;
-            /* Important: Add padding at bottom so controls don't cover video */
-            padding-bottom: 140px; 
-            overflow-y: auto;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
         }
 
-        .grid-1 { grid-template-columns: 1fr; }
-        .grid-2 { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 10px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
         
-        @media (min-width: 768px) {
-            .grid-2 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr; }
+        button:active { transform: scale(0.98); }
+        .btn-danger { background: var(--danger); }
+        .btn-success { background: var(--success); color: #000; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); }
+
+        /* رفع الصورة */
+        .avatar-upload {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: var(--glass);
+            overflow: hidden;
+            border: 2px dashed var(--primary);
+            cursor: pointer;
+        }
+        .avatar-upload img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-upload i { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; color: var(--primary); }
+
+        /* واجهة الفيديو */
+        #main-interface {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            height: 100%;
+        }
+
+        /* شبكة الفيديوهات */
+        #video-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(45%, 1fr));
+            gap: 10px;
+            padding: 10px;
+            overflow-y: auto;
+            align-content: center;
         }
 
         .video-card {
-            position: relative;
-            background: #111;
-            border-radius: 20px;
+            background: #252630;
+            border-radius: 15px;
             overflow: hidden;
-            width: 100%;
-            height: 100%;
-            min-height: 200px;
-        }
-
-        .video-card video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: scaleX(-1); /* Mirror effect */
-        }
-
-        /* --- Controls --- */
-        .control-dock {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 15, 15, 0.9);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 20px;
-            border-radius: 40px;
-            display: flex;
-            gap: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            z-index: 1000;
-            width: 90%;
-            max-width: 400px;
-            justify-content: space-between;
-        }
-
-        .dock-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            transition: 0.2s;
-        }
-        .dock-btn:active { transform: scale(0.9); }
-        .dock-btn.off { background: rgba(255,255,255,0.05); color: #777; position: relative; }
-        .dock-btn.off::after { content:''; position: absolute; width: 100%; height: 2px; background: #777; transform: rotate(45deg); }
-        .dock-btn.danger { background: var(--danger); }
-        .dock-btn.accent { background: var(--primary); color: black; }
-
-        /* --- Large Preview in Lobby --- */
-        .lobby-preview-wrapper {
-            flex: 1;
-            width: 100%;
             position: relative;
-            border-radius: 30px;
-            overflow: hidden;
-            background: #111;
-            margin: 10px 0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .lobby-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: scaleX(-1);
-        }
-
-        /* Filter Selector */
-        .filters-scroll {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 10px 0;
-            margin-bottom: 10px;
+            aspect-ratio: 9/16; /* مناسب للموبايل */
+            max-height: 400px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         
-        .filter-btn {
-            min-width: 70px;
-            height: 70px;
-            border-radius: 12px;
-            border: 2px solid rgba(255,255,255,0.1);
-            background: #222;
-            color: #aaa;
-            font-size: 0.7rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-        .filter-btn.active {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: rgba(204, 255, 0, 0.1);
-        }
-        .filter-btn i { font-size: 1.2rem; }
+        /* إذا كان هناك مستخدم واحد فقط */
+        .video-card:only-child { aspect-ratio: auto; max-height: 80vh; }
 
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: #222;
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* مرآة */
+        }
+
+        /* حالة الفيديو المغلق */
+        .no-video-placeholder {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: #252630;
+            z-index: 1;
+        }
+        .no-video-placeholder img { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 10px; }
+
+        /* معلومات المستخدم فوق الفيديو */
+        .user-info {
+            position: absolute; bottom: 10px; left: 10px; right: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 2;
+        }
+        .user-name {
+            background: rgba(0,0,0,0.6);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            backdrop-filter: blur(5px);
+        }
+        .status-icons {
+            display: flex; gap: 5px;
+        }
+        .status-icon {
+            background: rgba(255, 69, 58, 0.8);
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px;
+        }
+
+        /* لوحة التحكم السفلية */
+        .controls-bar {
+            background: rgba(31, 32, 41, 0.95);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+        .control-btn {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: #333;
             color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            border: 1px solid #333;
-            z-index: 9999;
-            transition: 0.5s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
         }
-        .toast.show { transform: translateX(-50%) translateY(0); }
+        .control-btn.active { background: var(--primary); }
+        .control-btn.danger { background: var(--danger); }
 
-        /* Loading */
-        .loader {
-            width: 20px; 
-            height: 20px; 
-            border: 3px solid #fff; 
-            border-bottom-color: transparent; 
-            border-radius: 50%; 
-            display: inline-block; 
-            animation: rotation 1s linear infinite;
+        /* القوائم الجانبية (الشات والطلبات) */
+        .side-panel {
+            position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 80px);
+            background: var(--darker);
+            z-index: 50;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-in-out;
+            display: flex; flex-direction: column;
+            padding: 20px;
         }
-        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .side-panel.open { transform: translateY(0); }
+        
+        .panel-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+        }
 
+        /* الشات */
+        #chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+        .message { padding: 10px; border-radius: 10px; background: var(--dark); max-width: 80%; position: relative; }
+        .message.mine { align-self: flex-end; background: var(--primary); }
+        .msg-sender { font-size: 10px; opacity: 0.7; margin-bottom: 2px; display: block; }
+        .msg-text { font-size: 14px; }
+        .chat-input-area { display: flex; gap: 10px; }
+
+        /* قائمة الطلبات */
+        .request-item {
+            background: var(--dark); padding: 15px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+        }
+        .req-info { display: flex; align-items: center; gap: 10px; }
+        .req-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .req-actions { display: flex; gap: 5px; }
+
+        /* رسائل التنبيه */
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #333; padding: 10px 20px; border-radius: 20px;
+            z-index: 2000; font-size: 14px; opacity: 0; pointer-events: none; transition: 0.3s;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">
-        <i class="fa-solid fa-info-circle text-primary"></i>
-        <span id="toast-msg">رسالة النظام</span>
+    <!-- 1. شاشة تسجيل الدخول (تظهر مرة واحدة) -->
+    <div id="login-screen" class="full-screen">
+        <div class="card">
+            <h2>مرحباً بك</h2>
+            <p>سجل بياناتك للبدء</p>
+            
+            <div class="avatar-upload" onclick="document.getElementById('avatar-input').click()">
+                <img id="avatar-preview" src="" style="display:none">
+                <i id="avatar-icon" class="fas fa-camera"></i>
+            </div>
+            <input type="file" id="avatar-input" accept="image/*" hidden onchange="handleAvatarUpload(this)">
+            
+            <input type="text" id="username-input" placeholder="اسمك">
+            <button onclick="saveUserAndContinue()">متابعة</button>
+        </div>
     </div>
 
-    <!-- 1. SPLASH SCREEN -->
-    <div id="screen-splash" class="screen active-screen">
-        <div class="flex-1 flex flex-col items-center justify-center p-8 text-center">
-            <div class="w-32 h-32 bg-primary rounded-3xl flex items-center justify-center text-6xl text-black mb-6 shadow-[0_0_40px_rgba(204,255,0,0.3)]">
-                <i class="fa-solid fa-bolt"></i>
-            </div>
-            <h1 class="text-4xl font-black mb-2">Buz<span class="text-primary">Pro</span></h1>
-            <p class="text-gray-400 mb-12">تجربة تواصل أسرع وأوضح</p>
+    <!-- 2. شاشة اللوبي (اختيار الغرفة) -->
+    <div id="lobby-screen" class="full-screen hidden">
+        <div class="card">
+            <img id="user-avatar-display" src="" class="req-avatar" style="width: 80px; height: 80px; margin-bottom: 15px;">
+            <h3 id="welcome-msg">أهلاً</h3>
+            <button class="btn-success" onclick="createNewRoom()">إنشاء مكالمة جديدة</button>
+            <p style="margin: 15px 0; opacity: 0.5;">- أو -</p>
+            <input type="text" id="room-code-input" placeholder="رابط أو كود الغرفة">
+            <button class="btn-outline" onclick="joinRoomFromInput()">انضمام</button>
+        </div>
+    </div>
+
+    <!-- 3. شاشة الانتظار -->
+    <div id="waiting-screen" class="full-screen hidden">
+        <div class="card">
+            <i class="fas fa-hourglass-half fa-3x" style="color: var(--primary); margin-bottom: 20px;"></i>
+            <h3>في انتظار الموافقة...</h3>
+            <p>لقد أرسلت طلباً للمضيف. يرجى الانتظار.</p>
+        </div>
+    </div>
+
+    <!-- 4. واجهة المكالمة الرئيسية -->
+    <div id="main-interface" class="hidden">
+        <!-- شبكة الفيديو -->
+        <div id="video-grid">
+            <!-- سيتم إضافة الفيديوهات هنا ديناميكياً -->
+        </div>
+
+        <!-- الأزرار السفلية -->
+        <div class="controls-bar">
+            <button class="control-btn" onclick="toggleAudio()" id="mic-btn"><i class="fas fa-microphone"></i></button>
+            <button class="control-btn" onclick="toggleVideo()" id="cam-btn"><i class="fas fa-video"></i></button>
             
-            <button onclick="checkUserAndProceed()" class="btn-primary w-full max-w-sm">
-                ابدأ الآن <i class="fa-solid fa-arrow-left"></i>
+            <button class="control-btn danger" onclick="leaveRoom()"><i class="fas fa-phone-slash"></i></button>
+            
+            <button class="control-btn" onclick="togglePanel('chat')">
+                <i class="fas fa-comment-dots"></i>
             </button>
-        </div>
-    </div>
-
-    <!-- 2. NAME/PROFILE SCREEN -->
-    <div id="screen-setup" class="screen hidden-screen">
-        <div class="flex-1 flex flex-col p-6">
-            <h2 class="text-2xl font-bold mb-6">من أنت؟</h2>
             
-            <!-- Avatar -->
-            <div class="flex flex-col items-center mb-8">
-                <div class="relative w-32 h-32 mb-4">
-                    <img id="avatar-preview" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="w-full h-full rounded-full object-cover border-4 border-[#222]">
-                    <button onclick="document.getElementById('file-input').click()" class="absolute bottom-0 right-0 w-10 h-10 bg-primary rounded-full text-black flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-camera"></i>
-                    </button>
-                </div>
-                <input type="file" id="file-input" hidden accept="image/*" onchange="handleAvatar(event)">
-            </div>
-
-            <!-- Inputs -->
-            <div class="space-y-4">
-                <input type="text" id="user-name" class="floating-input" placeholder="اكتب اسمك هنا" dir="auto">
-            </div>
-
-            <div class="flex-1"></div>
-            
-            <button onclick="saveAndContinue()" class="btn-primary w-full mt-6">
-                استمرار <i class="fa-solid fa-check"></i>
+            <button class="control-btn" id="requests-btn" onclick="togglePanel('requests')" style="display:none">
+                <i class="fas fa-users-cog"></i>
+                <span id="req-badge" style="position:absolute; top:0; right:0; width:10px; height:10px; background:red; border-radius:50%; display:none;"></span>
             </button>
+            
+            <button class="control-btn" onclick="copyRoomLink()"><i class="fas fa-link"></i></button>
         </div>
-    </div>
 
-    <!-- 3. LOBBY SCREEN (Enhanced) -->
-    <div id="screen-lobby" class="screen hidden-screen">
-        <div class="flex flex-col h-full p-4">
-            <!-- Top Header -->
-            <div class="flex justify-between items-center mb-4">
-                <div class="flex items-center gap-3">
-                    <img id="lobby-avatar" src="" class="w-10 h-10 rounded-full border border-white/20">
-                    <div>
-                        <h3 id="lobby-name" class="font-bold text-sm">...</h3>
-                        <p class="text-[10px] text-primary">جاهز للاتصال</p>
-                    </div>
-                </div>
-                <button onclick="openFilters()" class="w-10 h-10 rounded-full bg-[#222] text-white flex items-center justify-center">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                </button>
+        <!-- لوحة الشات -->
+        <div id="chat-panel" class="side-panel">
+            <div class="panel-header">
+                <h3>المحادثة</h3>
+                <button class="control-btn" style="width:30px;height:30px" onclick="togglePanel('chat')"><i class="fas fa-times"></i></button>
             </div>
-
-            <!-- Large Preview Area -->
-            <div class="lobby-preview-wrapper shadow-2xl border border-white/10">
-                <video id="lobby-video" autoplay playsinline muted class="lobby-video"></video>
-                
-                <!-- Overlay Controls -->
-                <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-4">
-                    <button onclick="toggleLobbyMic()" id="btn-lobby-mic" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur text-white flex items-center justify-center">
-                        <i class="fa-solid fa-microphone"></i>
-                    </button>
-                    <button onclick="toggleLobbyCam()" id="btn-lobby-cam" class="w-12 h-12 rounded-full bg-white/20 backdrop-blur text-white flex items-center justify-center">
-                        <i class="fa-solid fa-video"></i>
-                    </button>
-                </div>
+            <div id="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="msg-input" placeholder="اكتب رسالة...">
+                <button style="width: 50px; margin: 10px 0;" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
             </div>
+        </div>
 
-            <!-- Filters Selection (Horizontal Scroll) -->
-            <div id="filters-area" class="filters-scroll">
-                <div class="filter-btn active" onclick="applyFilter('filter-none', this)">
-                    <i class="fa-solid fa-ban"></i>
-                    <span>طبيعي</span>
-                </div>
-                <div class="filter-btn" onclick="applyFilter('filter-soft', this)">
-                    <i class="fa-solid fa-spa"></i>
-                    <span>ناعم</span>
-                </div>
-                <div class="filter-btn" onclick="applyFilter('filter-glow', this)">
-                    <i class="fa-solid fa-lightbulb"></i>
-                    <span>إضاءة</span>
-                </div>
-                <div class="filter-btn" onclick="applyFilter('filter-warm', this)">
-                    <i class="fa-solid fa-sun"></i>
-                    <span>دافئ</span>
-                </div>
-                <div class="filter-btn" onclick="applyFilter('filter-cinema', this)">
-                    <i class="fa-solid fa-film"></i>
-                    <span>سينما</span>
-                </div>
-                <div class="filter-btn" onclick="applyFilter('filter-bw', this)">
-                    <i class="fa-solid fa-circle-half-stroke"></i>
-                    <span>أسود</span>
-                </div>
+        <!-- لوحة الطلبات (للمشرف فقط) -->
+        <div id="requests-panel" class="side-panel">
+            <div class="panel-header">
+                <h3>طلبات الدخول</h3>
+                <button class="control-btn" style="width:30px;height:30px" onclick="togglePanel('requests')"><i class="fas fa-times"></i></button>
             </div>
-
-            <!-- Join Controls -->
-            <div class="mt-2 space-y-3">
-                <div class="flex gap-2">
-                    <input type="text" id="room-code" class="floating-input text-center font-mono text-xl tracking-widest uppercase" placeholder="KOD-123" maxlength="6">
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="createRoom()" class="btn-secondary flex-1 text-sm">
-                        <i class="fa-solid fa-plus"></i> إنشاء
-                    </button>
-                    <button onclick="joinRoom()" class="btn-primary flex-[2]" id="join-btn">
-                        <i class="fa-solid fa-rocket"></i> انضمام
-                    </button>
-                </div>
+            <div id="requests-list">
+                <p style="text-align:center; opacity:0.5;">لا توجد طلبات جديدة</p>
             </div>
         </div>
     </div>
 
-    <!-- 4. CALL SCREEN -->
-    <div id="screen-call" class="screen hidden-screen">
-        <!-- Room ID Header -->
-        <div class="fixed top-4 left-4 z-50 bg-black/50 backdrop-blur px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
-            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            <span id="active-room-id" class="font-mono font-bold tracking-wider">...</span>
-            <button onclick="copyLink()" class="mr-2 text-gray-400 hover:text-primary"><i class="fa-regular fa-copy"></i></button>
-        </div>
+    <div id="toast" class="toast">تم نسخ الرابط</div>
 
-        <!-- Video Grid -->
-        <div id="video-grid" class="video-grid-container grid-1">
-            <!-- Videos injected here -->
-        </div>
-
-        <!-- Bottom Controls -->
-        <div class="control-dock">
-            <button onclick="toggleMic()" id="call-mic-btn" class="dock-btn"><i class="fa-solid fa-microphone"></i></button>
-            <button onclick="toggleCam()" id="call-cam-btn" class="dock-btn"><i class="fa-solid fa-video"></i></button>
-            <button onclick="switchCamera()" class="dock-btn"><i class="fa-solid fa-camera-rotate"></i></button>
-            <!-- Filter Toggle in Call -->
-            <button onclick="cycleFilters()" class="dock-btn"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
-            <button onclick="leaveCall()" class="dock-btn danger"><i class="fa-solid fa-phone-slash"></i></button>
-        </div>
-    </div>
-
-    <!-- Firebase SDK -->
+    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, onValue, push, update, remove, get, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, onValue, push, update, remove, onChildAdded, onChildRemoved, get, child } 
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Firebase Config
+        // إعدادات Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAjE-2q6PONBkCin9ZN22gDp9Q8pAH9ZW8",
             authDomain: "story-97cf7.firebaseapp.com",
@@ -451,364 +351,551 @@
             projectId: "story-97cf7",
             storageBucket: "story-97cf7.firebasestorage.app",
             messagingSenderId: "742801388214",
-            appId: "1:742801388214:web:32a305a8057b0582c5ec17"
+            appId: "1:742801388214:web:32a305a8057b0582c5ec17",
+            measurementId: "G-9DPPWX7CF0"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // State Variables
-        let myId = localStorage.getItem('buz_uid') || 'u_' + Math.random().toString(36).substr(2, 6);
-        localStorage.setItem('buz_uid', myId);
-        
+        // متغيرات عامة
         let localStream;
-        let myProfile = JSON.parse(localStorage.getItem('buz_profile')) || null;
-        let currentRoom = null;
+        let peerConnections = {}; 
+        let user = JSON.parse(localStorage.getItem('cal_user')) || null;
+        let roomId = null;
         let isHost = false;
-        let peers = {}; // RTC Connections
-        let currentFilter = 'filter-none';
         
-        // --- Navigation Logic ---
-        window.nextStep = (id) => {
-            document.querySelectorAll('.screen').forEach(s => {
-                s.classList.remove('active-screen');
-                s.classList.add('hidden-screen');
-            });
-            const target = document.getElementById(id);
-            target.classList.remove('hidden-screen');
-            target.classList.add('active-screen');
+        // إعدادات WebRTC
+        const servers = {
+            iceServers: [
+                { urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }
+            ]
         };
 
-        // --- 1. Startup Logic (Deep Link Fix) ---
-        window.onload = () => {
-            // Check for Room URL Parameter immediately
-            const urlParams = new URLSearchParams(window.location.search);
-            const roomParam = urlParams.get('room');
-            if(roomParam) {
-                // Save to Session Storage so it survives the name setup
-                sessionStorage.setItem('pending_room', roomParam);
-            }
-        };
-
-        window.checkUserAndProceed = () => {
-            if(myProfile) {
-                initLobby();
-            } else {
-                nextStep('screen-setup');
-            }
-        };
-
-        // --- 2. Profile Setup ---
-        window.handleAvatar = (e) => {
-            const file = e.target.files[0];
-            if(file) {
+        // ======================================================
+        // 1. إدارة المستخدم والصور
+        // ======================================================
+        
+        window.handleAvatarUpload = (input) => {
+            if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = (ev) => document.getElementById('avatar-preview').src = ev.target.result;
-                reader.readAsDataURL(file);
-            }
-        };
-
-        window.saveAndContinue = () => {
-            const name = document.getElementById('user-name').value.trim();
-            if(!name) return showToast("الرجاء كتابة اسمك");
-
-            myProfile = {
-                name: name,
-                avatar: document.getElementById('avatar-preview').src,
-                id: myId
-            };
-            localStorage.setItem('buz_profile', JSON.stringify(myProfile));
-            initLobby();
-        };
-
-        // --- 3. Lobby Logic (Enhanced) ---
-        async function initLobby() {
-            nextStep('screen-lobby');
-            document.getElementById('lobby-name').textContent = myProfile.name;
-            document.getElementById('lobby-avatar').src = myProfile.avatar;
-
-            // Start Camera
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } }, 
-                    audio: true 
-                });
-                const vid = document.getElementById('lobby-video');
-                vid.srcObject = localStream;
-                vid.classList.add(currentFilter); // Apply saved filter
-            } catch(e) {
-                showToast("تعذر الوصول للكاميرا");
-            }
-
-            // CHECK FOR PENDING JOIN (The Fix)
-            const pendingRoom = sessionStorage.getItem('pending_room');
-            if(pendingRoom) {
-                document.getElementById('room-code').value = pendingRoom;
-                showToast("تم اكتشاف رابط دعوة، اضغط انضمام");
-                // Optional: Automatically click join if you prefer
-                // joinRoom(); 
+                reader.onload = function(e) {
+                    // ضغط الصورة قبل الحفظ لتجنب امتلاء الذاكرة
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const maxWidth = 150; // تصغير الصورة
+                        const scaleSize = maxWidth / img.width;
+                        canvas.width = maxWidth;
+                        canvas.height = img.height * scaleSize;
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        const compressedData = canvas.toDataURL('image/jpeg', 0.7);
+                        document.getElementById('avatar-preview').src = compressedData;
+                        document.getElementById('avatar-preview').style.display = 'block';
+                        document.getElementById('avatar-icon').style.display = 'none';
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
-        // --- 4. Join/Create Logic ---
-        window.createRoom = () => {
-            const roomId = Math.random().toString(36).substr(2, 6).toUpperCase();
-            currentRoom = roomId;
+        window.saveUserAndContinue = () => {
+            const name = document.getElementById('username-input').value;
+            const avatar = document.getElementById('avatar-preview').src;
+            
+            if (!name) return alert('الرجاء كتابة الاسم');
+            
+            const userId = 'user_' + Math.floor(Math.random() * 1000000);
+            user = { 
+                id: userId, 
+                name: name, 
+                avatar: avatar || 'https://via.placeholder.com/150', // صورة افتراضية
+                videoOn: true,
+                audioOn: true
+            };
+            
+            localStorage.setItem('cal_user', JSON.stringify(user));
+            checkLoginStatus();
+        }
+
+        function checkLoginStatus() {
+            if (user) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('lobby-screen').classList.remove('hidden');
+                document.getElementById('welcome-msg').innerText = `أهلاً، ${user.name}`;
+                document.getElementById('user-avatar-display').src = user.avatar;
+                
+                // التحقق مما إذا كان هناك رابط غرفة في URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlRoomId = urlParams.get('room');
+                if (urlRoomId) {
+                    roomId = urlRoomId;
+                    joinRoomLogic();
+                }
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+            }
+        }
+        
+        // تشغيل عند البدء
+        checkLoginStatus();
+
+        // ======================================================
+        // 2. إدارة الغرف والدخول
+        // ======================================================
+
+        window.createNewRoom = async () => {
+            roomId = Math.random().toString(36).substring(2, 9);
             isHost = true;
             
-            // Create in DB
-            set(ref(db, `rooms/${roomId}`), {
-                host: myId,
+            // إنشاء الغرفة في قاعدة البيانات
+            await set(ref(db, `rooms/${roomId}`), {
+                host: user.id,
                 created: Date.now()
             });
-
-            enterCall();
-        };
-
-        window.joinRoom = () => {
-            const roomId = document.getElementById('room-code').value.trim().toUpperCase();
-            if(roomId.length < 3) return showToast("كود الغرفة غير صحيح");
             
-            const btn = document.getElementById('join-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="loader"></span> جاري الطلب...';
-
-            currentRoom = roomId;
-            isHost = false;
-
-            // 1. Send Request
-            const reqRef = ref(db, `rooms/${roomId}/requests/${myId}`);
-            set(reqRef, {
-                name: myProfile.name,
-                avatar: myProfile.avatar,
-                status: 'pending',
-                timestamp: Date.now()
-            });
-
-            // 2. Listen for Response (Fixing the "Not Joining" bug)
-            onValue(reqRef, (snapshot) => {
-                const data = snapshot.val();
-                if(!data) return; // Removed or null
-
-                if(data.status === 'accepted') {
-                    // Success! Remove listener and join
-                    btn.innerHTML = originalText;
-                    enterCall();
-                    // Clean up request
-                    remove(reqRef);
-                } else if (data.status === 'rejected') {
-                    btn.innerHTML = originalText;
-                    showToast("تم رفض طلب الانضمام", true);
-                }
-            });
-
-            // Timeout fallback
-            setTimeout(() => {
-                if(document.getElementById('screen-lobby').classList.contains('active-screen')) {
-                    btn.innerHTML = originalText;
-                    // Keep waiting or tell user?
-                }
-            }, 10000);
+            startMeeting();
         };
 
-        // --- 5. Call Logic ---
-        async function enterCall() {
-            nextStep('screen-call');
-            document.getElementById('active-room-id').textContent = currentRoom;
+        window.joinRoomFromInput = () => {
+            const input = document.getElementById('room-code-input').value;
+            if (!input) return;
+            // استخراج كود الغرفة لو كان رابطاً
+            roomId = input.includes('room=') ? input.split('room=')[1] : input;
+            joinRoomLogic();
+        };
 
-            // Add Myself to Grid
-            addVideoTile(myId, localStream, myProfile.name, true);
+        async function joinRoomLogic() {
+            // التحقق من وجود الغرفة
+            const snapshot = await get(ref(db, `rooms/${roomId}`));
+            if (!snapshot.exists()) {
+                alert("الغرفة غير موجودة!");
+                return;
+            }
 
-            // Register in Participants
-            const pRef = ref(db, `rooms/${currentRoom}/participants/${myId}`);
-            set(pRef, {
-                name: myProfile.name,
-                avatar: myProfile.avatar,
-                online: true
-            });
-            onDisconnect(pRef).remove();
-
-            // Initialize WebRTC (Simplified for brevity - Mesh Topology)
-            initWebRTC();
-
-            if(isHost) {
-                // Host listens for requests
-                onValue(ref(db, `rooms/${currentRoom}/requests`), (snap) => {
-                    const reqs = snap.val() || {};
-                    Object.entries(reqs).forEach(([uid, info]) => {
-                        if(info.status === 'pending') {
-                            if(confirm(`هل تقبل انضمام ${info.name}؟`)) {
-                                update(ref(db, `rooms/${currentRoom}/requests/${uid}`), { status: 'accepted' });
-                            } else {
-                                update(ref(db, `rooms/${currentRoom}/requests/${uid}`), { status: 'rejected' });
-                            }
-                        }
-                    });
+            const roomData = snapshot.val();
+            if (roomData.host === user.id) {
+                isHost = true;
+                startMeeting();
+            } else {
+                // إرسال طلب انضمام
+                document.getElementById('lobby-screen').classList.add('hidden');
+                document.getElementById('waiting-screen').classList.remove('hidden');
+                
+                await set(ref(db, `rooms/${roomId}/requests/${user.id}`), {
+                    name: user.name,
+                    avatar: user.avatar,
+                    id: user.id
+                });
+                
+                // الاستماع لقبول الطلب
+                onValue(ref(db, `rooms/${roomId}/participants/${user.id}`), (snapshot) => {
+                    if (snapshot.exists()) {
+                        document.getElementById('waiting-screen').classList.add('hidden');
+                        startMeeting();
+                    }
                 });
             }
         }
 
-        // --- UI Functions ---
-        function addVideoTile(uid, stream, name, isMe = false) {
-            if(document.getElementById(`vid-container-${uid}`)) return;
+        // ======================================================
+        // 3. منطق الاجتماع و WebRTC
+        // ======================================================
 
-            const div = document.createElement('div');
-            div.id = `vid-container-${uid}`;
-            div.className = 'video-card animate__animated animate__zoomIn';
-            div.innerHTML = `
-                <video id="vid-${uid}" autoplay playsinline ${isMe ? 'muted' : ''} class="${isMe ? currentFilter : ''}"></video>
-                <div class="absolute bottom-2 right-2 bg-black/60 px-2 py-1 rounded-lg text-xs backdrop-blur">
-                    ${name} ${isMe ? '(أنت)' : ''}
+        async function startMeeting() {
+            document.getElementById('lobby-screen').classList.add('hidden');
+            document.getElementById('main-interface').classList.remove('hidden');
+            
+            // تحديث العنوان
+            window.history.pushState({}, '', `?room=${roomId}`);
+
+            // 1. الحصول على الميديا
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                addVideoStream(user.id, localStream, true, user);
+            } catch (err) {
+                console.error("Error media", err);
+                // التعامل مع عدم وجود كاميرا
+                localStream = new MediaStream(); // تيار فارغ
+            }
+            
+            // 2. تسجيل الدخول في قائمة المشاركين
+            const userRef = ref(db, `rooms/${roomId}/participants/${user.id}`);
+            update(userRef, {
+                id: user.id,
+                name: user.name,
+                avatar: user.avatar,
+                videoOn: true,
+                audioOn: true
+            });
+            
+            // التعامل عند الخروج
+            onDisconnect(userRef).remove();
+
+            // 3. إعداد المستمعين (Listeners)
+            setupRoomListeners();
+
+            // 4. إذا كنت المضيف، استمع للطلبات
+            if (isHost) {
+                document.getElementById('requests-btn').style.display = 'block';
+                setupRequestListeners();
+            }
+        }
+
+        function setupRoomListeners() {
+            // عند دخول شخص جديد
+            onChildAdded(ref(db, `rooms/${roomId}/participants`), async (snapshot) => {
+                const newUser = snapshot.val();
+                if (newUser.id === user.id) return;
+                
+                // بدء الاتصال (WebRTC)
+                // القاعدة: الأحدث ينشئ العرض (Offer) للأقدم لتقليل التصادم
+                // هنا سنستخدم نهجاً بسيطاً: المضيف ومن معه يتصلون بالجديد
+                
+                createPeerConnection(newUser.id, true); // Initiator
+            });
+            
+            // عند خروج شخص
+            onChildRemoved(ref(db, `rooms/${roomId}/participants`), (snapshot) => {
+                const leftUser = snapshot.val();
+                removeVideoStream(leftUser.id);
+                if (peerConnections[leftUser.id]) {
+                    peerConnections[leftUser.id].close();
+                    delete peerConnections[leftUser.id];
+                }
+            });
+
+            // الاستماع لحالة الميكروفون والكاميرا للآخرين
+            onValue(ref(db, `rooms/${roomId}/participants`), (snapshot) => {
+                const users = snapshot.val();
+                for (let id in users) {
+                    updateUserUIStatus(id, users[id]);
+                }
+            });
+
+            // الاستماع لإشارات WebRTC (Offer/Answer/Ice)
+            onChildAdded(ref(db, `rooms/${roomId}/signals/${user.id}`), async (snapshot) => {
+                const data = snapshot.val();
+                const senderId = data.sender;
+                
+                if (!peerConnections[senderId]) {
+                    createPeerConnection(senderId, false);
+                }
+                
+                const pc = peerConnections[senderId];
+                
+                if (data.type === 'offer') {
+                    await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+                    const answer = await pc.createAnswer();
+                    await pc.setLocalDescription(answer);
+                    
+                    push(ref(db, `rooms/${roomId}/signals/${senderId}`), {
+                        type: 'answer',
+                        answer: answer,
+                        sender: user.id
+                    });
+                } else if (data.type === 'answer') {
+                    await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+                } else if (data.type === 'candidate') {
+                    try {
+                        await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+                    } catch (e) { console.error("Error adding ice", e); }
+                }
+                
+                // حذف الإشارة بعد معالجتها
+                remove(ref(db, `rooms/${roomId}/signals/${user.id}/${snapshot.key}`));
+            });
+
+            // الاستماع للشات
+            onChildAdded(ref(db, `rooms/${roomId}/chat`), (snapshot) => {
+                appendMessage(snapshot.val(), snapshot.key);
+            });
+        }
+
+        function createPeerConnection(targetId, isInitiator) {
+            if (peerConnections[targetId]) return;
+            
+            const pc = new RTCPeerConnection(servers);
+            peerConnections[targetId] = pc;
+            
+            // إضافة المسارات المحلية
+            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+            
+            // عند استقبال مسار (فيديو/صوت)
+            pc.ontrack = (event) => {
+                // التأكد من وجود عنصر الفيديو
+                const remoteStream = event.streams[0];
+                // نحتاج لجلب بيانات المستخدم لعرض الاسم والصورة
+                get(ref(db, `rooms/${roomId}/participants/${targetId}`)).then((snap) => {
+                    if (snap.exists()) {
+                        addVideoStream(targetId, remoteStream, false, snap.val());
+                    }
+                });
+            };
+            
+            // عند وجود مرشح ICE
+            pc.onicecandidate = (event) => {
+                if (event.candidate) {
+                    push(ref(db, `rooms/${roomId}/signals/${targetId}`), {
+                        type: 'candidate',
+                        candidate: event.candidate.toJSON(),
+                        sender: user.id
+                    });
+                }
+            };
+
+            if (isInitiator) {
+                pc.onnegotiationneeded = async () => {
+                    try {
+                        const offer = await pc.createOffer();
+                        await pc.setLocalDescription(offer);
+                        push(ref(db, `rooms/${roomId}/signals/${targetId}`), {
+                            type: 'offer',
+                            offer: offer,
+                            sender: user.id
+                        });
+                    } catch (err) { console.error(err); }
+                };
+            }
+            
+            return pc;
+        }
+
+        // ======================================================
+        // 4. دوال واجهة المستخدم (UI)
+        // ======================================================
+
+        function addVideoStream(userId, stream, isLocal, userData) {
+            const grid = document.getElementById('video-grid');
+            if (document.getElementById(`vid-wrap-${userId}`)) return; // موجود بالفعل
+
+            const wrap = document.createElement('div');
+            wrap.className = 'video-card';
+            wrap.id = `vid-wrap-${userId}`;
+            
+            // عنصر الفيديو
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.autoplay = true;
+            video.playsInline = true;
+            if (isLocal) video.muted = true; // كتم الصوت المحلي
+            
+            // طبقة "الفيديو مغلق"
+            const placeholder = document.createElement('div');
+            placeholder.className = 'no-video-placeholder';
+            placeholder.id = `place-${userId}`;
+            placeholder.style.display = 'none'; // مخفي افتراضياً
+            placeholder.innerHTML = `
+                <img src="${userData.avatar}">
+                <p>${userData.name}</p>
+            `;
+
+            // معلومات المستخدم
+            const info = document.createElement('div');
+            info.className = 'user-info';
+            info.innerHTML = `
+                <span class="user-name">${isLocal ? 'أنت' : userData.name}</span>
+                <div class="status-icons">
+                    <div id="mic-stat-${userId}" class="status-icon" style="display:none"><i class="fas fa-microphone-slash"></i></div>
                 </div>
             `;
-            document.getElementById('video-grid').appendChild(div);
             
-            const vidObj = document.getElementById(`vid-${uid}`);
-            vidObj.srcObject = stream;
+            // أزرار التحكم للإدمن (طرد، كتم) على فيديو الآخرين
+            if (isHost && !isLocal) {
+                const adminControls = document.createElement('div');
+                adminControls.style.cssText = "position:absolute; top:10px; left:10px; z-index:10;";
+                adminControls.innerHTML = `
+                    <button onclick="kickUser('${userId}')" style="background:red; color:white; border:none; border-radius:5px; padding:2px 5px; font-size:10px;">طرد</button>
+                `;
+                wrap.appendChild(adminControls);
+            }
 
-            updateGridClass();
+            wrap.appendChild(video);
+            wrap.appendChild(placeholder);
+            wrap.appendChild(info);
+            grid.appendChild(wrap);
+            
+            updateUserUIStatus(userId, userData);
         }
 
-        function updateGridClass() {
-            const container = document.getElementById('video-grid');
-            const count = container.children.length;
-            container.className = `video-grid-container grid-${count > 1 ? '2' : '1'}`;
+        function removeVideoStream(userId) {
+            const el = document.getElementById(`vid-wrap-${userId}`);
+            if (el) el.remove();
         }
 
-        // --- Filter System ---
-        window.applyFilter = (filterName, btnElement) => {
-            currentFilter = filterName;
+        function updateUserUIStatus(userId, data) {
+            if (!data) return;
+            const micIcon = document.getElementById(`mic-stat-${userId}`);
+            const placeholder = document.getElementById(`place-${userId}`);
             
-            // Update UI buttons
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            if(btnElement) btnElement.classList.add('active');
-
-            // Apply to Lobby Video
-            const lobbyVid = document.getElementById('lobby-video');
-            if(lobbyVid) lobbyVid.className = `lobby-video ${filterName}`;
-
-            // Apply to Call Video (if active)
-            const myCallVid = document.getElementById(`vid-${myId}`);
-            if(myCallVid) myCallVid.className = filterName;
-        };
-
-        const filtersList = ['filter-none', 'filter-soft', 'filter-glow', 'filter-warm', 'filter-cinema', 'filter-bw'];
-        window.cycleFilters = () => {
-            let idx = filtersList.indexOf(currentFilter);
-            idx = (idx + 1) % filtersList.length;
-            const nextFilter = filtersList[idx];
-            currentFilter = nextFilter;
+            // تحديث أيقونة المايك
+            if (micIcon) micIcon.style.display = data.audioOn ? 'none' : 'flex';
             
-            const myCallVid = document.getElementById(`vid-${myId}`);
-            if(myCallVid) myCallVid.className = nextFilter;
-            showToast("تم تغيير الفلتر");
-        };
-
-        // --- Simple WebRTC Signaling (Essential) ---
-        function initWebRTC() {
-            // Listen for other participants
-            onValue(ref(db, `rooms/${currentRoom}/participants`), (snap) => {
-                const users = snap.val() || {};
-                Object.keys(users).forEach(uid => {
-                    if(uid !== myId && !peers[uid]) {
-                        initConnection(uid);
-                    }
-                });
-                // Remove left users
-                Object.keys(peers).forEach(pId => {
-                    if(!users[pId]) {
-                        document.getElementById(`vid-container-${pId}`)?.remove();
-                        peers[pId].close();
-                        delete peers[pId];
-                        updateGridClass();
-                    }
-                });
-            });
-
-            // Listen for signals
-            onValue(ref(db, `rooms/${currentRoom}/signals/${myId}`), (snap) => {
-                const msgs = snap.val() || {};
-                Object.entries(msgs).forEach(async ([key, msg]) => {
-                    if(msg.type === 'offer') {
-                        await handleOffer(msg);
-                    } else if (msg.type === 'answer') {
-                        await peers[msg.sender].setRemoteDescription(JSON.parse(msg.sdp));
-                    } else if (msg.type === 'candidate') {
-                        try { await peers[msg.sender].addIceCandidate(JSON.parse(msg.candidate)); } catch(e){}
-                    }
-                    remove(ref(db, `rooms/${currentRoom}/signals/${myId}/${key}`));
-                });
-            });
+            // تحديث عرض الفيديو (إذا الفيديو مغلق تظهر الصورة)
+            if (placeholder) placeholder.style.display = data.videoOn ? 'none' : 'flex';
         }
 
-        async function initConnection(targetId) {
-            const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-            peers[targetId] = pc;
+        // ======================================================
+        // 5. أدوات التحكم (أزرار)
+        // ======================================================
 
-            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-            pc.ontrack = (e) => addVideoTile(targetId, e.streams[0], "مشترك");
-
-            pc.onicecandidate = (e) => {
-                if(e.candidate) {
-                    push(ref(db, `rooms/${currentRoom}/signals/${targetId}`), {
-                        type: 'candidate', sender: myId, candidate: JSON.stringify(e.candidate)
-                    });
-                }
-            };
-
-            // If I am the older ID (or logic to prevent duplicate offers), create offer
-            if(myId > targetId) {
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                push(ref(db, `rooms/${currentRoom}/signals/${targetId}`), {
-                    type: 'offer', sender: myId, sdp: JSON.stringify(offer)
-                });
+        window.toggleAudio = () => {
+            const track = localStream.getAudioTracks()[0];
+            if (track) {
+                track.enabled = !track.enabled;
+                const btn = document.getElementById('mic-btn');
+                btn.innerHTML = track.enabled ? '<i class="fas fa-microphone"></i>' : '<i class="fas fa-microphone-slash"></i>';
+                btn.classList.toggle('danger', !track.enabled);
+                
+                update(ref(db, `rooms/${roomId}/participants/${user.id}`), { audioOn: track.enabled });
             }
         }
 
-        async function handleOffer(msg) {
-            const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-            peers[msg.sender] = pc;
-            
-            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-            pc.ontrack = (e) => addVideoTile(msg.sender, e.streams[0], "مشترك");
-            pc.onicecandidate = (e) => {
-                if(e.candidate) push(ref(db, `rooms/${currentRoom}/signals/${msg.sender}`), { type: 'candidate', sender: myId, candidate: JSON.stringify(e.candidate) });
-            };
+        window.toggleVideo = () => {
+            const track = localStream.getVideoTracks()[0];
+            if (track) {
+                track.enabled = !track.enabled;
+                const btn = document.getElementById('cam-btn');
+                btn.innerHTML = track.enabled ? '<i class="fas fa-video"></i>' : '<i class="fas fa-video-slash"></i>';
+                btn.classList.toggle('danger', !track.enabled);
+                
+                update(ref(db, `rooms/${roomId}/participants/${user.id}`), { videoOn: track.enabled });
+            }
+        }
 
-            await pc.setRemoteDescription(JSON.parse(msg.sdp));
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
+        window.leaveRoom = () => {
+            if (confirm("هل تريد مغادرة المكالمة؟")) {
+                window.location.href = window.location.pathname; // إعادة تحميل الصفحة
+            }
+        };
+
+        window.copyRoomLink = () => {
+            const url = window.location.origin + window.location.pathname + '?room=' + roomId;
+            navigator.clipboard.writeText(url);
+            const toast = document.getElementById('toast');
+            toast.style.opacity = 1;
+            setTimeout(() => toast.style.opacity = 0, 2000);
+        };
+
+        window.togglePanel = (type) => {
+            const panel = document.getElementById(type === 'chat' ? 'chat-panel' : 'requests-panel');
+            panel.classList.toggle('open');
+        };
+
+        // ======================================================
+        // 6. إدارة الشات
+        // ======================================================
+
+        window.sendMessage = () => {
+            const input = document.getElementById('msg-input');
+            const txt = input.value;
+            if (!txt) return;
             
-            push(ref(db, `rooms/${currentRoom}/signals/${msg.sender}`), {
-                type: 'answer', sender: myId, sdp: JSON.stringify(answer)
+            push(ref(db, `rooms/${roomId}/chat`), {
+                sender: user.name,
+                senderId: user.id,
+                text: txt,
+                time: Date.now()
+            });
+            input.value = '';
+        };
+
+        function appendMessage(msg, key) {
+            const box = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            const isMe = msg.senderId === user.id;
+            div.className = `message ${isMe ? 'mine' : ''}`;
+            
+            // زر الحذف للمضيف
+            let deleteBtn = '';
+            if (isHost) {
+                deleteBtn = `<span onclick="deleteMsg('${key}')" style="color:red; cursor:pointer; float:left; margin-right:5px;">&times;</span>`;
+            }
+
+            div.innerHTML = `
+                ${deleteBtn}
+                <span class="msg-sender">${isMe ? 'أنت' : msg.sender}</span>
+                <span class="msg-text">${msg.text}</span>
+            `;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        window.deleteMsg = (key) => {
+            if(isHost) remove(ref(db, `rooms/${roomId}/chat/${key}`));
+            // ملاحظة: لإزالة الرسالة من الشاشة فورياً يحتاج الأمر لمستمع onChildRemoved منفصل للشات
+            // للتبسيط، سيتم حذفها من قاعدة البيانات، ولن تختفي من شاشات المستخدمين الحاليين حتى إعادة التحميل
+            // أو يمكن إضافة مستمع remove ببساطة.
+            document.querySelectorAll('.message').forEach(el => {
+                if (el.innerHTML.includes(`deleteMsg('${key}')`)) el.remove();
+            });
+        };
+
+        // ======================================================
+        // 7. إدارة الطلبات (Admin Only)
+        // ======================================================
+
+        function setupRequestListeners() {
+            onChildAdded(ref(db, `rooms/${roomId}/requests`), (snapshot) => {
+                const req = snapshot.val();
+                const list = document.getElementById('requests-list');
+                document.getElementById('req-badge').style.display = 'block';
+                
+                // إزالة رسالة "لا توجد طلبات"
+                if(list.children[0]?.tagName === 'P') list.innerHTML = '';
+
+                const div = document.createElement('div');
+                div.className = 'request-item';
+                div.id = `req-${req.id}`;
+                div.innerHTML = `
+                    <div class="req-info">
+                        <img src="${req.avatar}" class="req-avatar">
+                        <span>${req.name}</span>
+                    </div>
+                    <div class="req-actions">
+                        <button class="btn-success" style="padding:5px 10px; width:auto;" onclick="acceptUser('${req.id}', '${snapshot.key}')"><i class="fas fa-check"></i></button>
+                        <button class="btn-danger" style="padding:5px 10px; width:auto;" onclick="rejectUser('${req.id}', '${snapshot.key}')"><i class="fas fa-times"></i></button>
+                    </div>
+                `;
+                list.appendChild(div);
             });
         }
 
-        // --- Helpers ---
-        window.toggleMic = () => {
-            const enabled = localStream.getAudioTracks()[0].enabled = !localStream.getAudioTracks()[0].enabled;
-            document.getElementById('call-mic-btn').classList.toggle('off', !enabled);
-        };
-        window.toggleCam = () => {
-            const enabled = localStream.getVideoTracks()[0].enabled = !localStream.getVideoTracks()[0].enabled;
-            document.getElementById('call-cam-btn').classList.toggle('off', !enabled);
-        };
-        window.leaveCall = () => location.reload();
-        window.copyLink = () => {
-            const link = `${location.origin}${location.pathname}?room=${currentRoom}`;
-            navigator.clipboard.writeText(link);
-            showToast("تم نسخ الرابط");
+        window.acceptUser = (userId, reqKey) => {
+            // نقل البيانات من requests إلى participants
+            get(ref(db, `rooms/${roomId}/requests/${userId}`)).then((snap) => {
+                const data = snap.val();
+                update(ref(db, `rooms/${roomId}/participants/${userId}`), {
+                    id: data.id,
+                    name: data.name,
+                    avatar: data.avatar,
+                    videoOn: true,
+                    audioOn: true
+                });
+                remove(ref(db, `rooms/${roomId}/requests/${userId}`));
+                document.getElementById(`req-${userId}`).remove();
+            });
         };
 
-        window.showToast = (msg, error = false) => {
-            const t = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = msg;
-            t.classList.add('show');
-            if(error) t.style.borderColor = 'red';
-            setTimeout(() => t.classList.remove('show'), 3000);
+        window.rejectUser = (userId, reqKey) => {
+            remove(ref(db, `rooms/${roomId}/requests/${userId}`));
+            document.getElementById(`req-${userId}`).remove();
         };
+
+        window.kickUser = (userId) => {
+            if(confirm("هل أنت متأكد من طرد هذا المستخدم؟")) {
+                remove(ref(db, `rooms/${roomId}/participants/${userId}`));
+                // إجبار المستخدم على الخروج عبر إشارة خاصة أو الاعتماد على onChildRemoved لديه
+                // هنا سنعتمد على removeVideo لديه ولكن لإجباره فعلياً نحتاج تحديث حالته
+            }
+        };
+        
+        // مساعدة لـ onDisconnect في Firebase القديم (غير متوفرة مباشرة في v9 modular بنفس الطريقة السهلة بدون استيراد)
+        import { onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
     </script>
 </body>
 </html>
