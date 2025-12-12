@@ -2,429 +2,389 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoiceConnect - Ultra Modern Call App</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VoiceConnect Elite V2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary: #6C63FF;
-            --secondary: #2A2D3E;
-            --accent: #00f2ff;
-            --glass: rgba(255, 255, 255, 0.05);
+            --bg-dark: #050505;
+            --bg-panel: rgba(20, 20, 20, 0.75);
+            --primary: #8b5cf6; /* بنفسجي عصري */
+            --primary-glow: rgba(139, 92, 246, 0.5);
+            --accent: #f472b6;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --success: #10b981;
+            --danger: #ef4444;
             --glass-border: rgba(255, 255, 255, 0.1);
-            --text: #ffffff;
-            --danger: #ff4b4b;
-            --success: #00d26a;
+            --blur: 25px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Tajawal', sans-serif;
+            font-family: 'Alexandria', sans-serif;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            outline: none;
         }
 
         body {
-            background: #0f0c29;
-            background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
         }
 
-        /* Animated Background Particles */
-        .bg-animation {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            overflow: hidden;
+        /* خلفية متحركة */
+        .ambient-light {
+            position: absolute; width: 100%; height: 100%; z-index: -1; overflow: hidden;
         }
         .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.6;
-            animation: float 10s infinite ease-in-out;
+            position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.5;
+            animation: float 12s ease-in-out infinite;
         }
-        .orb-1 { width: 300px; height: 300px; background: var(--primary); top: -50px; left: -50px; }
-        .orb-2 { width: 200px; height: 200px; background: var(--accent); bottom: -50px; right: -50px; animation-delay: -5s; }
+        .orb-1 { width: 400px; height: 400px; background: var(--primary); top: -100px; left: -100px; }
+        .orb-2 { width: 300px; height: 300px; background: var(--accent); bottom: -50px; right: -50px; animation-delay: -6s; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(40px, 60px); } }
 
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(30px, 50px); }
-        }
-
-        /* Container */
-        .app-container {
-            width: 100%;
-            max-width: 480px; /* Mobile First logic but looks good on desktop */
-            min-height: 100vh;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+        /* حاوية التطبيق */
+        .app-shell {
+            width: 100%; height: 100%; max-width: 480px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
             border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.5s ease;
+            position: relative; overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
         }
 
         @media (min-width: 768px) {
-            .app-container {
-                min-height: 85vh;
-                height: auto;
-                border-radius: 30px;
-                max-width: 400px;
-            }
-            /* Grid view expansion */
-            .app-container.expanded {
-                max-width: 900px;
-                min-height: 80vh;
-            }
+            .app-shell { height: 90vh; border-radius: 40px; }
+            .app-shell.wide-mode { max-width: 1000px; }
         }
 
-        /* Screens Management */
-        .screen {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.95);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* الشاشات */
+        .view {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            padding: 30px;
+            opacity: 0; pointer-events: none;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex; flex-direction: column;
+            z-index: 1;
         }
-
-        .screen.active {
-            opacity: 1;
-            pointer-events: all;
-            transform: scale(1);
+        .view.active {
+            opacity: 1; pointer-events: all;
+            transform: scale(1) translateY(0);
             z-index: 10;
         }
 
-        /* Typography & Elements */
-        h1 { font-weight: 900; font-size: 2rem; margin-bottom: 0.5rem; background: linear-gradient(to right, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        p { color: #aaa; margin-bottom: 2rem; text-align: center; line-height: 1.6; }
+        h1, h2 { font-weight: 800; background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px; line-height: 1.5; }
 
-        .input-group {
-            width: 100%;
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 15px 20px;
-            background: rgba(255,255,255,0.07);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 15px;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .input-field:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(108, 99, 255, 0.3);
-        }
-
-        .btn-main {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--primary), #4a40d4);
-            border: none;
-            border-radius: 15px;
-            color: white;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-main:active { transform: scale(0.98); }
-        .btn-main:hover { filter: brightness(1.2); }
-
-        /* Photo Upload */
-        .photo-upload-container {
-            width: 120px; height: 120px;
-            border-radius: 50%;
-            border: 3px dashed rgba(255,255,255,0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            margin-bottom: 2rem;
-            overflow: hidden;
-            position: relative;
-            transition: 0.3s;
-        }
-        .photo-upload-container:hover { border-color: var(--accent); }
-        .photo-upload-container img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .photo-upload-container i { font-size: 2rem; color: #aaa; }
-
-        /* Dashboard */
-        .dash-header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            position: absolute; top: 20px; left: 0; padding: 0 20px;
-        }
-        .user-mini { display: flex; align-items: center; gap: 10px; }
-        .user-mini img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent); }
-        
-        .card-menu {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            width: 100%;
-        }
-        .card-opt {
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
+        /* المدخلات */
+        .input-group { margin-bottom: 20px; }
+        .modern-input {
+            width: 100%; padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
             border-radius: 20px;
-            cursor: pointer;
-            transition: 0.3s;
-            border: 1px solid transparent;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .card-opt:hover { background: rgba(255,255,255,0.1); border-color: var(--primary); transform: translateY(-5px); }
-        .icon-box {
-            width: 50px; height: 50px;
-            background: rgba(108, 99, 255, 0.2);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; color: var(--primary);
-        }
-
-        /* Call Room */
-        .call-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-            width: 100%;
-            height: 60%;
-            overflow-y: auto;
-            padding: 10px;
-        }
-
-        .participant {
-            background: rgba(0,0,0,0.3);
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            position: relative;
-            aspect-ratio: 1/1;
+            color: white; font-size: 1rem;
             transition: 0.3s;
         }
-        
-        /* Speaking Animation */
-        .participant.speaking { border: 2px solid var(--success); box-shadow: 0 0 15px var(--success); }
-        .participant img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; object-fit: cover; }
-        .participant span { font-size: 0.8rem; font-weight: bold; }
-        
-        .controls-bar {
-            position: absolute; bottom: 30px;
-            display: flex; gap: 20px;
-            background: rgba(0,0,0,0.5);
-            padding: 15px 30px;
-            border-radius: 50px;
-            backdrop-filter: blur(10px);
+        .modern-input:focus { border-color: var(--primary); background: rgba(139, 92, 246, 0.05); box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1); }
+
+        /* الأزرار */
+        .btn-primary {
+            width: 100%; padding: 18px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            border: none; border-radius: 20px;
+            color: white; font-weight: 700; font-size: 1rem;
+            cursor: pointer; margin-top: auto;
+            box-shadow: 0 10px 30px -10px var(--primary-glow);
+            transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        
-        .ctrl-btn {
-            width: 50px; height: 50px;
+        .btn-primary:active { transform: scale(0.97); }
+
+        /* تحميل الصورة */
+        .avatar-container {
+            width: 130px; height: 130px; margin: 0 auto 20px;
             border-radius: 50%;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.03);
+            border: 2px dashed rgba(255,255,255,0.2);
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; overflow: hidden; position: relative;
             transition: 0.3s;
         }
-        .btn-mute { background: #333; color: white; }
-        .btn-mute.muted { background: white; color: #333; }
-        .btn-end { background: var(--danger); color: white; }
-        .btn-approve { background: var(--success); color: white; animation: pulse 1.5s infinite; }
+        .avatar-container:hover { border-color: var(--primary); background: rgba(255,255,255,0.05); }
+        .avatar-container img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .avatar-container i { font-size: 2rem; color: rgba(255,255,255,0.4); }
 
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 210, 106, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(0, 210, 106, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 210, 106, 0); } }
+        /* السياسة والشروط */
+        .policy-box {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px; padding: 15px;
+            margin-bottom: 20px; border: 1px solid var(--glass-border);
+        }
+        .policy-text { font-size: 0.75rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 15px; }
+        .checkbox-wrapper { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .custom-checkbox {
+            width: 24px; height: 24px; border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.3);
+            display: flex; justify-content: center; align-items: center;
+            transition: 0.3s; background: transparent;
+        }
+        .checkbox-wrapper input:checked + .custom-checkbox {
+            background: var(--primary); border-color: var(--primary);
+        }
+        .checkbox-wrapper span { font-size: 0.85rem; font-weight: 600; }
 
-        /* Toast Notification */
+        /* الشبكة والمشاركين */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .user-badge { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--glass-border); }
+        .user-badge img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+
+        .card-btn {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            padding: 25px; border-radius: 24px; margin-bottom: 15px;
+            border: 1px solid var(--glass-border); cursor: pointer;
+            display: flex; align-items: center; gap: 20px; transition: 0.3s;
+        }
+        .card-btn:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .icon-sq { width: 50px; height: 50px; background: rgba(139, 92, 246, 0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.4rem; }
+
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; flex: 1; overflow-y: auto; padding: 5px; align-content: start; }
+        
+        .p-card {
+            background: rgba(0,0,0,0.3); border-radius: 24px;
+            aspect-ratio: 1; position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            overflow: hidden; border: 1px solid transparent; transition: 0.3s;
+        }
+        .p-card img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; z-index: 2; border: 3px solid transparent; transition: 0.2s; }
+        .p-card .name { z-index: 2; margin-top: 10px; font-size: 0.85rem; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .p-card.speaking { border-color: var(--success); box-shadow: 0 0 25px rgba(16, 185, 129, 0.2); }
+        .p-card.speaking img { border-color: var(--success); transform: scale(1.1); }
+
+        /* أزرار التحكم بالشخص */
+        .participant-controls {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            z-index: 10; display: flex; gap: 10px; justify-content: center; align-items: center;
+            opacity: 0; transition: 0.3s; pointer-events: none;
+        }
+        .p-card:active .participant-controls, .p-card:hover .participant-controls { opacity: 1; pointer-events: all; }
+        
+        .mini-btn { width: 40px; height: 40px; border-radius: 12px; border: none; font-size: 1.1rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .mb-kick { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .mb-kick:hover { background: var(--danger); color: white; }
+        .mb-mute { background: rgba(255,255,255,0.1); color: white; }
+        .mb-mute:hover { background: white; color: black; }
+
+        /* شريط التحكم السفلي */
+        .controls-bar { display: flex; justify-content: center; gap: 20px; padding-top: 20px; }
+        .c-btn { width: 65px; height: 65px; border-radius: 24px; border: none; font-size: 1.4rem; cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.08); color: white; display: flex; align-items: center; justify-content: center; }
+        .c-btn:hover { background: rgba(255,255,255,0.15); transform: translateY(-5px); }
+        .c-btn.active { background: white; color: var(--bg-dark); box-shadow: 0 0 20px rgba(255,255,255,0.3); }
+        .c-btn.hangup { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .c-btn.hangup:hover { background: var(--danger); color: white; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
+
+        /* التنبيهات المخصصة (Custom Alerts/Modals) */
+        .custom-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            z-index: 1000; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: 0.4s;
+        }
+        .custom-overlay.show { opacity: 1; pointer-events: all; }
+        
+        .alert-box {
+            background: #1a1a1a; border: 1px solid var(--glass-border);
+            width: 90%; max-width: 350px; padding: 25px; border-radius: 24px;
+            text-align: center; transform: scale(0.9); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .custom-overlay.show .alert-box { transform: scale(1); }
+        
+        .alert-icon { font-size: 3rem; margin-bottom: 15px; display: inline-block; }
+        .alert-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .a-btn { flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
+        .ab-primary { background: var(--primary); color: white; }
+        .ab-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .ab-cancel { background: rgba(255,255,255,0.05); color: white; }
+
+        /* التوست (الإشعارات الصغيرة) */
         .toast {
-            position: absolute; top: 20px; left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: rgba(255,255,255,0.95);
-            color: #333;
-            padding: 10px 20px;
-            border-radius: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: 0.4s;
-            z-index: 100;
-            display: flex; align-items: center; gap: 10px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            width: 90%;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: rgba(20,20,20,0.95); border: 1px solid var(--glass-border);
+            padding: 12px 20px; border-radius: 50px;
+            display: flex; align-items: center; gap: 12px;
+            z-index: 2000; transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: max-content; max-width: 90%;
         }
         .toast.show { transform: translateX(-50%) translateY(0); }
 
-        /* Hidden Canvas for compression */
         canvas { display: none; }
+        .req-list-badge { position: absolute; top: -5px; right: -5px; width: 20px; height: 20px; background: var(--accent); border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-    <div class="bg-animation">
+    <div class="ambient-light">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">
-        <i class="fas fa-info-circle" style="color: var(--primary)"></i>
-        <span id="toast-msg">رسالة تنبيه</span>
-    </div>
+    <!-- الأصوات -->
+    <audio id="sound-pop" src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..."></audio> <!-- سيتم توليده بالكود -->
 
-    <div class="app-container" id="app">
+    <div class="app-shell" id="appShell">
         
-        <!-- STEP 1: Name -->
-        <div class="screen active" id="screen-name">
-            <h1>أهلاً بك</h1>
-            <p>للبدء، أخبرنا باسمك</p>
+        <!-- الخطوة 1: الاسم -->
+        <div class="view active" id="view-step-1">
+            <h2 style="margin-top: 40px;">مرحباً بك</h2>
+            <p class="subtitle">لنبدأ بتعريف هويتك للعالم</p>
+            
             <div class="input-group">
-                <input type="text" id="fname" class="input-field" placeholder="الاسم الأول">
+                <input type="text" id="reg-fname" class="modern-input" placeholder="الاسم الأول">
             </div>
             <div class="input-group">
-                <input type="text" id="lname" class="input-field" placeholder="اسم العائلة">
+                <input type="text" id="reg-lname" class="modern-input" placeholder="اسم العائلة">
             </div>
-            <button class="btn-main" onclick="goToPhoto()">
+
+            <button class="btn-primary" onclick="goToStep2()">
                 التالي <i class="fas fa-arrow-left"></i>
             </button>
         </div>
 
-        <!-- STEP 2: Photo & Terms -->
-        <div class="screen" id="screen-photo">
-            <h1>صورتك الشخصية</h1>
-            <p>اجعل أصدقاءك يتعرفون عليك</p>
-            
-            <label for="file-upload" class="photo-upload-container" id="photo-preview-box">
-                <i class="fas fa-camera"></i>
-                <img id="preview-img" src="" alt="Avatar">
+        <!-- الخطوة 2: الصورة والسياسة -->
+        <div class="view" id="view-step-2">
+            <h2>اللمسات الأخيرة</h2>
+            <p class="subtitle">صورة شخصية وموافقة سريعة</p>
+
+            <label class="avatar-container">
+                <img id="avatar-preview" src="">
+                <i class="fas fa-camera" id="camera-icon"></i>
+                <input type="file" id="file-input" hidden accept="image/*">
             </label>
-            <input type="file" id="file-upload" accept="image/*" hidden onchange="handleImageUpload(event)">
-            <canvas id="canvas"></canvas>
+            <canvas id="compressor"></canvas>
 
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; width: 100%;">
-                <input type="checkbox" id="terms" style="accent-color: var(--primary); transform: scale(1.2);">
-                <label for="terms" style="font-size: 0.8rem; color: #ccc;">أوافق على الشروط وسياسة الاستخدام</label>
+            <div class="policy-box">
+                <div class="policy-text">
+                    لحماية مجتمعنا، نطلب منك استخدام اسم حقيقي وصورة لائقة. بضغطك على تسجيل الدخول، أنت توافق على شروط الاستخدام وسياسة الخصوصية الخاصة بنا. نحن لا نشارك بياناتك مع أي طرف ثالث.
+                </div>
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="policy-check" hidden>
+                    <div class="custom-checkbox"><i class="fas fa-check" style="font-size: 0.7rem; color: white;"></i></div>
+                    <span>قرأت ووافقت على الشروط</span>
+                </label>
             </div>
 
-            <button class="btn-main" onclick="finishRegistration()">
-                إتمام التسجيل <i class="fas fa-check"></i>
+            <button class="btn-primary" onclick="finishRegistration()">
+                إنهاء ودخول <i class="fas fa-check-circle"></i>
+            </button>
+            <button class="btn-primary" onclick="backToStep1()" style="margin-top: 10px; background: transparent; border: 1px solid var(--glass-border); box-shadow: none;">
+                رجوع
             </button>
         </div>
 
-        <!-- STEP 3: Dashboard -->
-        <div class="screen" id="screen-dashboard">
-            <div class="dash-header">
-                <div class="user-mini">
-                    <img id="dash-avatar" src="" alt="">
-                    <div>
-                        <h4 id="dash-name" style="margin:0; font-size: 0.9rem;">اسم المستخدم</h4>
-                        <span style="font-size: 0.7rem; color: var(--success);">● متصل</span>
-                    </div>
+        <!-- لوحة التحكم -->
+        <div class="view" id="view-dash">
+            <div class="dashboard-header">
+                <div>
+                    <h1>الرئيسية</h1>
+                    <p style="color:var(--text-muted); font-size:0.85rem">متصل الآن</p>
                 </div>
-                <i class="fas fa-cog" style="font-size: 1.2rem; cursor: pointer;"></i>
+                <div class="user-badge">
+                    <img id="dash-img" src="">
+                    <span id="dash-name" style="font-weight:600; font-size:0.9rem"></span>
+                </div>
             </div>
 
-            <h2 style="margin-bottom: 20px;">ابدأ مكالمة</h2>
+            <div class="card-btn" onclick="createCall('single')">
+                <div class="icon-sq"><i class="fas fa-user"></i></div>
+                <div>
+                    <h3>مكالمة فردية</h3>
+                    <span style="font-size:0.8rem; color:var(--text-muted)">غرفة خاصة لشخصين</span>
+                </div>
+            </div>
 
-            <div class="card-menu">
-                <div class="card-opt" onclick="startCall('individual')">
-                    <div class="icon-box"><i class="fas fa-user"></i></div>
-                    <div>
-                        <h3>مكالمة فردية</h3>
-                        <span style="font-size: 0.8rem; color: #aaa;">تحدث مع شخص واحد بجودة عالية</span>
-                    </div>
+            <div class="card-btn" onclick="createCall('group')">
+                <div class="icon-sq"><i class="fas fa-users"></i></div>
+                <div>
+                    <h3>مجموعة صوتية</h3>
+                    <span style="font-size:0.8rem; color:var(--text-muted)">مساحة للأصدقاء</span>
                 </div>
-                <div class="card-opt" onclick="startCall('group')">
-                    <div class="icon-box"><i class="fas fa-users"></i></div>
-                    <div>
-                        <h3>مكالمة جماعية</h3>
-                        <span style="font-size: 0.8rem; color: #aaa;">غرفة تتسع لـ 6 أشخاص</span>
-                    </div>
-                </div>
+            </div>
+
+            <!-- زر العودة لمكالمة -->
+            <div id="rejoin-banner" style="display:none; background: rgba(16,185,129,0.1); border:1px solid var(--success); padding:15px; border-radius:16px; margin-top:20px; cursor:pointer; text-align:center;" onclick="rejoinSession()">
+                <span style="color:var(--success); font-weight:bold;"><i class="fas fa-sync-alt fa-spin"></i> لديك جلسة نشطة، اضغط للعودة</span>
             </div>
         </div>
 
-        <!-- STEP 4: Join/Waiting -->
-        <div class="screen" id="screen-join">
-            <div class="photo-upload-container" style="border:none; width: 100px; height: 100px; margin-bottom: 10px;">
-                <img id="join-host-img" src="" style="display:block">
+        <!-- الانتظار -->
+        <div class="view" id="view-wait">
+            <div style="text-align: center; margin-top: 40%;">
+                <div class="avatar-container" style="width:100px; height:100px; border:none; margin-bottom:15px; cursor:default;">
+                    <img id="host-img" src="" style="display:block">
+                </div>
+                <h3 id="host-name"></h3>
+                <p class="subtitle">يدعوك للانضمام...</p>
+                <div style="color:var(--primary); margin-top:20px;"><i class="fas fa-circle-notch fa-spin fa-2x"></i></div>
+                <p style="font-size:0.8rem; margin-top:10px; color:var(--text-muted)">في انتظار موافقة المضيف</p>
             </div>
-            <h3 id="join-host-name">اسم المضيف</h3>
-            <p>يدعوك لمكالمة صوتية</p>
-            <button class="btn-main" onclick="joinRoomAction()">
-                انضمام للمكالمة <i class="fas fa-phone"></i>
-            </button>
         </div>
 
-        <!-- STEP 5: Call Room -->
-        <div class="screen" id="screen-call">
-            <div style="position: absolute; top: 20px; width: 100%; text-align: center;">
-                <span id="call-timer" style="background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 15px; font-family: monospace;">00:00</span>
-                <!-- Host Only: Link Copy -->
-                <div id="copy-link-btn" onclick="copyLink()" style="margin-top: 10px; font-size: 0.8rem; color: var(--accent); cursor: pointer;">
-                    <i class="fas fa-copy"></i> نسخ رابط الدعوة
-                </div>
+        <!-- الغرفة -->
+        <div class="view" id="view-room">
+            <div class="dashboard-header" style="margin-bottom:15px;">
+                <div style="background: rgba(255,255,255,0.08); padding:5px 12px; border-radius:20px; font-family:monospace; font-weight:bold;" id="timer">00:00</div>
+                <button id="btn-requests" onclick="showRequestsModal()" style="display:none; position:relative; background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;">
+                    <i class="fas fa-user-clock"></i>
+                    <div class="req-list-badge" id="req-count" style="display:none">0</div>
+                </button>
             </div>
 
-            <!-- Participants Grid -->
-            <div class="call-grid" id="participants-grid">
-                <!-- Added dynamically -->
-            </div>
-
-            <!-- Incoming Request (Host Only) -->
-            <div id="approval-area" style="position: absolute; bottom: 100px; width: 90%; display: none;">
-                <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
-                    <span id="requester-name" style="font-size: 0.9rem;">شخص يريد الانضمام...</span>
-                    <button class="ctrl-btn btn-approve" onclick="approveJoin()" style="width: 35px; height: 35px; font-size: 0.9rem;"><i class="fas fa-check"></i></button>
-                </div>
-            </div>
+            <div class="grid-container" id="grid"></div>
 
             <div class="controls-bar">
-                <button class="ctrl-btn btn-mute" onclick="toggleMute(this)"><i class="fas fa-microphone"></i></button>
-                <button class="ctrl-btn btn-end" onclick="endCall()"><i class="fas fa-phone-slash"></i></button>
+                <button class="c-btn" id="btn-mic" onclick="toggleMic()"><i class="fas fa-microphone"></i></button>
+                <button class="c-btn hangup" onclick="confirmLeave()"><i class="fas fa-phone-slash"></i></button>
+                <button class="c-btn" onclick="copyLink()" style="font-size:1.1rem;"><i class="fas fa-link"></i></button>
             </div>
         </div>
-
     </div>
 
-    <!-- Firebase Logic -->
+    <!-- نظام التنبيهات المخصص (Custom Modal) -->
+    <div class="custom-overlay" id="custom-modal">
+        <div class="alert-box">
+            <div class="alert-icon" id="m-icon"></div>
+            <h3 id="m-title" style="margin-bottom:10px"></h3>
+            <p id="m-text" style="color:var(--text-muted); font-size:0.9rem;"></p>
+            <div class="alert-btns" id="m-btns"></div>
+        </div>
+    </div>
+
+    <!-- التوست (Toast) -->
+    <div class="toast" id="toast">
+        <div id="t-icon"></div>
+        <span id="t-msg" style="font-size:0.9rem; font-weight:600;"></span>
+    </div>
+
+    <!-- Firebase & Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, update, push, remove, get } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, update, remove, push, get, child, onDisconnect } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAjE-2q6PONBkCin9ZN22gDp9Q8pAH9ZW8",
@@ -440,419 +400,476 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- GLOBAL STATE ---
-        let currentUser = { id: null, fname: '', lname: '', avatar: '' };
-        let currentCallId = null;
+        // --- المتغيرات العامة ---
+        let currentUser = JSON.parse(localStorage.getItem('vc_user')) || { fname:'', lname:'', img:'' };
+        let activeCallId = localStorage.getItem('vc_call_id');
         let localStream = null;
-        let peerConnections = {}; // Map of userId -> RTCPeerConnection
+        let peerConnections = {};
         let isHost = false;
-        let pendingUser = null; // For host approval
+        let audioCtx, osc;
+        let timerInt;
+        let pendingReqs = [];
 
-        // WebRTC Config (STUN servers)
-        const rtcConfig = {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
-            ]
+        // --- نظام التنبيهات المخصص (بديل الـ alert/confirm) ---
+        window.showToast = (msg, type='info') => {
+            const t = document.getElementById('toast');
+            const icon = document.getElementById('t-icon');
+            const txt = document.getElementById('t-msg');
+            
+            icon.innerHTML = type === 'error' ? '<i class="fas fa-exclamation-circle" style="color:var(--danger)"></i>' : 
+                             type === 'success' ? '<i class="fas fa-check-circle" style="color:var(--success)"></i>' : 
+                             '<i class="fas fa-info-circle" style="color:var(--primary)"></i>';
+            txt.innerText = msg;
+            
+            t.classList.add('show');
+            playSound('notify');
+            setTimeout(() => t.classList.remove('show'), 3000);
         };
 
-        // --- UI NAVIGATION ---
-        window.goToPhoto = () => {
-            const fname = document.getElementById('fname').value;
-            const lname = document.getElementById('lname').value;
-            if(!fname || !lname) return showToast('الرجاء إدخال الاسم كاملاً');
-            currentUser.fname = fname;
-            currentUser.lname = lname;
-            switchScreen('screen-photo');
+        window.showModal = (title, text, iconHTML, buttonsHTML) => {
+            const m = document.getElementById('custom-modal');
+            document.getElementById('m-title').innerText = title;
+            document.getElementById('m-text').innerText = text;
+            document.getElementById('m-icon').innerHTML = iconHTML;
+            document.getElementById('m-btns').innerHTML = buttonsHTML;
+            m.classList.add('show');
+        };
+
+        window.closeModal = () => {
+            document.getElementById('custom-modal').classList.remove('show');
+        };
+
+        // --- الصوتيات ---
+        function playSound(type) {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+
+            if(type === 'notify') {
+                o.frequency.setValueAtTime(500, audioCtx.currentTime);
+                o.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.1);
+                g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                o.start(); o.stop(audioCtx.currentTime + 0.3);
+            }
         }
 
-        window.handleImageUpload = (e) => {
+        // --- التنقل بين الشاشات ---
+        function switchView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'view-room') document.querySelector('.app-shell').classList.add('wide-mode');
+            else document.querySelector('.app-shell').classList.remove('wide-mode');
+        }
+
+        // --- منطق التسجيل (خطوتين) ---
+        window.goToStep2 = () => {
+            const f = document.getElementById('reg-fname').value.trim();
+            const l = document.getElementById('reg-lname').value.trim();
+            if(!f || !l) return showToast('الرجاء إدخال الاسم كاملاً', 'error');
+            
+            currentUser.fname = f;
+            currentUser.lname = l;
+            switchView('view-step-2');
+        };
+
+        window.backToStep1 = () => switchView('view-step-1');
+
+        // معالجة الصورة
+        document.getElementById('file-input').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(file) {
                 const reader = new FileReader();
-                reader.onload = (event) => {
+                reader.onload = (ev) => {
                     const img = new Image();
                     img.onload = () => {
-                        // Compress image using Canvas
-                        const canvas = document.getElementById('canvas');
-                        const ctx = canvas.getContext('2d');
-                        canvas.width = 100; // Small size for DB
-                        canvas.height = 100;
+                        const cvs = document.getElementById('compressor');
+                        const ctx = cvs.getContext('2d');
+                        cvs.width = 100; cvs.height = 100;
                         ctx.drawImage(img, 0, 0, 100, 100);
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                        currentUser.avatar = dataUrl;
-                        
-                        document.getElementById('preview-img').src = dataUrl;
-                        document.getElementById('preview-img').style.display = 'block';
-                    }
-                    img.src = event.target.result;
-                }
+                        const data = cvs.toDataURL('image/jpeg', 0.7);
+                        document.getElementById('avatar-preview').src = data;
+                        document.getElementById('avatar-preview').style.display = 'block';
+                        document.getElementById('camera-icon').style.display = 'none';
+                        currentUser.img = data;
+                    };
+                    img.src = ev.target.result;
+                };
                 reader.readAsDataURL(file);
             }
-        }
+        });
 
         window.finishRegistration = () => {
-            if(!currentUser.avatar) return showToast('الرجاء اختيار صورة');
-            if(!document.getElementById('terms').checked) return showToast('يجب الموافقة على الشروط');
+            if(!currentUser.img) return showToast('الرجاء اختيار صورة شخصية', 'error');
+            if(!document.getElementById('policy-check').checked) return showToast('يجب الموافقة على الشروط للمتابعة', 'error');
+
+            if(!currentUser.id) currentUser.id = 'u_' + Date.now() + Math.random().toString(36).substr(2, 5);
             
-            // Create user ID or use existing if local storage
-            let storedId = localStorage.getItem('vc_uid');
-            if(!storedId) {
-                storedId = 'user_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('vc_uid', storedId);
-            }
-            currentUser.id = storedId;
+            localStorage.setItem('vc_user', JSON.stringify(currentUser));
+            set(ref(db, `users/${currentUser.id}`), currentUser);
 
-            // Save to DB (Optional, mostly we just keep local state for this demo)
-            set(ref(db, 'users/' + currentUser.id), {
-                fname: currentUser.fname,
-                lname: currentUser.lname,
-                avatar: currentUser.avatar
-            });
+            const params = new URLSearchParams(location.search);
+            if(params.get('call')) joinCallSequence(params.get('call'));
+            else initDashboard();
+        };
 
-            // Set Dashboard info
-            document.getElementById('dash-avatar').src = currentUser.avatar;
-            document.getElementById('dash-name').textContent = currentUser.fname + ' ' + currentUser.lname;
+        // --- التهيئة ---
+        window.addEventListener('load', () => {
+            if(currentUser.id) initDashboard();
+            else switchView('view-step-1');
 
-            // Check if joining a link
-            const urlParams = new URLSearchParams(window.location.search);
-            const callId = urlParams.get('call');
+            const params = new URLSearchParams(location.search);
+            if(params.get('call') && currentUser.id) joinCallSequence(params.get('call'));
+        });
 
-            if (callId) {
-                currentCallId = callId;
-                checkRoom(callId);
-            } else {
-                switchScreen('screen-dashboard');
+        function initDashboard() {
+            document.getElementById('dash-name').innerText = currentUser.fname;
+            document.getElementById('dash-img').src = currentUser.img;
+            switchView('view-dash');
+            
+            if(activeCallId) {
+                get(ref(db, `calls/${activeCallId}`)).then(s => {
+                    if(s.exists()) document.getElementById('rejoin-banner').style.display = 'block';
+                    else localStorage.removeItem('vc_call_id');
+                });
             }
         }
 
-        // --- CALL LOGIC ---
+        window.rejoinSession = () => joinCallSequence(activeCallId, true);
 
-        window.startCall = (type) => {
+        // --- إدارة المكالمات ---
+        window.createCall = (type) => {
+            const cid = Date.now().toString(36);
             isHost = true;
-            currentCallId = Math.random().toString(36).substr(2, 9);
-            
-            // Setup DB for Call
-            set(ref(db, 'calls/' + currentCallId), {
-                type: type,
-                host: currentUser.id,
-                status: 'active',
-                created: Date.now()
+            activeCallId = cid;
+            localStorage.setItem('vc_call_id', cid);
+
+            set(ref(db, `calls/${cid}`), {
+                host: currentUser.id, type: type, status: 'active', created: Date.now()
             });
+            // المضيف ينضم تلقائياً
+            set(ref(db, `calls/${cid}/participants/${currentUser.id}`), {
+                info: currentUser, status: 'joined', audio: true
+            }).then(() => enterRoom());
+        };
 
-            // Add self to participants
-            set(ref(db, `calls/${currentCallId}/participants/${currentUser.id}`), {
-                info: currentUser,
-                status: 'joined' // Host is auto-joined
-            });
+        function joinCallSequence(cid, isRejoin=false) {
+            activeCallId = cid;
+            localStorage.setItem('vc_call_id', cid);
 
-            startRoomLogic();
-        }
-
-        function checkRoom(callId) {
-            get(ref(db, `calls/${callId}`)).then((snapshot) => {
-                if(snapshot.exists()) {
-                    // Show Join Screen
-                    get(ref(db, `users/${snapshot.val().host}`)).then((hostSnap) => {
-                        const hostData = hostSnap.val();
-                        document.getElementById('join-host-name').textContent = hostData ? hostData.fname : 'مستخدم';
-                        if(hostData) document.getElementById('join-host-img').src = hostData.avatar;
-                        switchScreen('screen-join');
-                    });
+            get(ref(db, `calls/${cid}`)).then(s => {
+                if(!s.exists()) {
+                    showToast('المكالمة انتهت', 'error');
+                    setTimeout(() => location.href = location.pathname, 2000);
+                    return;
+                }
+                const data = s.val();
+                if(data.host === currentUser.id || isRejoin) {
+                    isHost = (data.host === currentUser.id);
+                    enterRoom();
                 } else {
-                    showToast('المكالمة انتهت أو غير موجودة');
-                    switchScreen('screen-dashboard');
+                    // شاشة الانتظار
+                    get(ref(db, `users/${data.host}`)).then(u => {
+                        const h = u.val();
+                        document.getElementById('host-name').innerText = h.fname + ' ' + h.lname;
+                        document.getElementById('host-img').src = h.img;
+                        switchView('view-wait');
+                    });
+                    
+                    set(ref(db, `calls/${cid}/participants/${currentUser.id}`), {
+                        info: currentUser, status: 'waiting'
+                    });
+
+                    onValue(ref(db, `calls/${cid}/participants/${currentUser.id}/status`), sn => {
+                        const st = sn.val();
+                        if(st === 'joined') enterRoom();
+                        else if(st === 'kicked') showKickedAlert();
+                    });
                 }
             });
         }
 
-        window.joinRoomAction = () => {
-            // Add self as "waiting"
-            set(ref(db, `calls/${currentCallId}/participants/${currentUser.id}`), {
-                info: currentUser,
-                status: 'waiting'
-            });
-
-            // Listen for status change (Approval)
-            const statusRef = ref(db, `calls/${currentCallId}/participants/${currentUser.id}/status`);
-            onValue(statusRef, (snapshot) => {
-                const status = snapshot.val();
-                if(status === 'joined') {
-                    startRoomLogic(); // Approved!
-                } else if (status === 'kicked') {
-                    alert('تم رفض طلبك أو طردك من المكالمة');
-                    location.reload();
-                }
-            });
-
-            showToast('في انتظار موافقة المضيف...');
-        }
-
-        // --- ROOM & WEBRTC CORE ---
-
-        async function startRoomLogic() {
-            switchScreen('screen-call');
+        async function enterRoom() {
+            switchView('view-room');
             startTimer();
+            if(isHost) document.getElementById('btn-requests').style.display = 'block';
 
-            // 1. Get Local Audio
             try {
-                localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-                addParticipantToGrid(currentUser.id, currentUser, true); // Add Self
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                detectVoice(currentUser.id, localStream);
+            } catch(e) {
+                showToast('المايكروفون غير متاح', 'error');
+            }
+
+            // إضافة نفسي
+            addParticipantCard(currentUser.id, currentUser, true);
+
+            // مراقبة المشاركين
+            onValue(ref(db, `calls/${activeCallId}/participants`), snap => {
+                const parts = snap.val() || {};
                 
-                // Expand container for grid view
-                document.querySelector('.app-container').classList.add('expanded');
-
-                // 2. Listen for Participants
-                const partsRef = ref(db, `calls/${currentCallId}/participants`);
-                onValue(partsRef, (snapshot) => {
-                    const parts = snapshot.val();
-                    if(!parts) return;
-
-                    Object.keys(parts).forEach(uid => {
-                        if (uid === currentUser.id) return; // Skip self
-
-                        const pData = parts[uid];
-
-                        // HOST LOGIC: Check waiting users
-                        if(isHost && pData.status === 'waiting') {
-                            pendingUser = uid;
-                            document.getElementById('requester-name').textContent = `${pData.info.fname} يريد الانضمام`;
-                            document.getElementById('approval-area').style.display = 'flex';
-                            playNotificationSound();
-                        }
-
-                        // Connected users Logic
-                        if(pData.status === 'joined') {
-                            // If user is new to UI, add to grid
-                            if(!document.getElementById(`p-${uid}`)) {
-                                addParticipantToGrid(uid, pData.info, false);
-                                // Initiate WebRTC connection if we don't have one
-                                if(!peerConnections[uid]) {
-                                    initiateConnection(uid, isHost); // Simplistic: Host initiates to everyone else
-                                }
-                            }
-                        }
-                    });
-
-                    // Remove users who left
-                    const currentDivs = document.querySelectorAll('.participant');
-                    currentDivs.forEach(div => {
-                        const uid = div.id.replace('p-', '');
-                        if(!parts[uid] && uid !== currentUser.id) {
-                            div.remove();
-                            if(peerConnections[uid]) {
-                                peerConnections[uid].close();
-                                delete peerConnections[uid];
-                            }
-                        }
-                    });
+                // تنظيف القائمة
+                document.querySelectorAll('.p-card').forEach(c => {
+                    const uid = c.id.replace('p-', '');
+                    if(!parts[uid] || parts[uid].status !== 'joined') {
+                        c.remove();
+                        if(peerConnections[uid]) { peerConnections[uid].close(); delete peerConnections[uid]; }
+                    }
                 });
 
-                // Listen for Signals (Offer/Answer/Ice)
-                listenForSignals();
+                // إضافة الجدد ومعالجة الطلبات
+                pendingReqs = [];
+                Object.keys(parts).forEach(uid => {
+                    const p = parts[uid];
+                    if(isHost && p.status === 'waiting') pendingReqs.push({id: uid, ...p.info});
+                    
+                    if(p.status === 'joined') {
+                        if(!document.getElementById(`p-${uid}`)) {
+                            addParticipantCard(uid, p.info, uid === currentUser.id);
+                            if(uid !== currentUser.id) connectP2P(uid);
+                        }
+                        updateAudioState(uid, p.audio);
+                    }
+                });
 
-            } catch (err) {
-                console.error(err);
-                showToast('لم يتم العثور على ميكروفون');
-            }
-        }
+                updateRequestsBadge();
 
-        // --- WEBRTC SIGNALING ---
-        // Warning: Full Mesh for group calls is complex. 
-        // This is a simplified version where signals are exchanged via DB paths unique to user pairs.
-        
-        function initiateConnection(remoteUid, shouldOffer) {
-            // Signal Path: calls/{callId}/signals/{recipientId}/{senderId}
-            const pc = new RTCPeerConnection(rtcConfig);
-            peerConnections[remoteUid] = pc;
-
-            // Add local tracks
-            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-            // On Ice Candidate
-            pc.onicecandidate = (event) => {
-                if(event.candidate) {
-                    push(ref(db, `calls/${currentCallId}/signals/${remoteUid}/${currentUser.id}`), {
-                        type: 'candidate',
-                        candidate: JSON.parse(JSON.stringify(event.candidate))
-                    });
-                }
-            };
-
-            // On Track (Remote Audio)
-            pc.ontrack = (event) => {
-                const audio = document.createElement('audio');
-                audio.srcObject = event.streams[0];
-                audio.autoplay = true;
-                document.body.appendChild(audio);
-                
-                // Visualize audio
-                visualizeAudio(remoteUid, event.streams[0]);
-            };
-
-            if(shouldOffer) {
-                // Determine who offers based on string comparison to avoid collision or logic (Host offers to Joiner)
-                // Actually, let's keep it simpler: Any new joined user, we try to connect. 
-                // To avoid double offers, let's say: ID string comparison.
-                if (currentUser.id > remoteUid) {
-                    createOffer(pc, remoteUid);
-                }
-            }
-        }
-
-        async function createOffer(pc, remoteUid) {
-            const offer = await pc.createOffer();
-            await pc.setLocalDescription(offer);
-            push(ref(db, `calls/${currentCallId}/signals/${remoteUid}/${currentUser.id}`), {
-                type: 'offer',
-                sdp: JSON.stringify(offer)
+                // التحقق من الطرد
+                if(parts[currentUser.id] && parts[currentUser.id].status === 'kicked') showKickedAlert();
             });
+
+            // إشارات الحضور
+            onDisconnect(ref(db, `calls/${activeCallId}/participants/${currentUser.id}`)).remove();
         }
 
-        function listenForSignals() {
-            const mySignalsRef = ref(db, `calls/${currentCallId}/signals/${currentUser.id}`);
-            onValue(mySignalsRef, (snapshot) => {
-                const senders = snapshot.val();
-                if(!senders) return;
-
-                Object.keys(senders).forEach(senderId => {
-                    const messages = senders[senderId];
-                    Object.keys(messages).forEach(async key => {
-                        const msg = messages[key];
-                        // If we haven't processed this message yet (you'd normally need a way to mark processed, 
-                        // here we just rely on Firebase events being triggered. Real apps delete processed signals).
-                        
-                        if(!peerConnections[senderId]) {
-                            initiateConnection(senderId, false);
-                        }
-                        
-                        const pc = peerConnections[senderId];
-
-                        if(msg.type === 'offer') {
-                            if(pc.signalingState !== "stable") return; // Prevent glare
-                            await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(msg.sdp)));
-                            const answer = await pc.createAnswer();
-                            await pc.setLocalDescription(answer);
-                            push(ref(db, `calls/${currentCallId}/signals/${senderId}/${currentUser.id}`), {
-                                type: 'answer',
-                                sdp: JSON.stringify(answer)
-                            });
-                            // Remove processed offer
-                            remove(ref(db, `calls/${currentCallId}/signals/${currentUser.id}/${senderId}/${key}`));
-                        } 
-                        else if (msg.type === 'answer') {
-                            if(pc.signalingState === "have-local-offer") {
-                                await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(msg.sdp)));
-                                remove(ref(db, `calls/${currentCallId}/signals/${currentUser.id}/${senderId}/${key}`));
-                            }
-                        } 
-                        else if (msg.type === 'candidate') {
-                            try {
-                                await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
-                                remove(ref(db, `calls/${currentCallId}/signals/${currentUser.id}/${senderId}/${key}`));
-                            } catch(e) {}
-                        }
-                    });
-                });
-            });
-        }
-
-        // --- HOST ACTIONS ---
-        window.approveJoin = () => {
-            if(pendingUser) {
-                update(ref(db, `calls/${currentCallId}/participants/${pendingUser}`), {
-                    status: 'joined'
-                });
-                document.getElementById('approval-area').style.display = 'none';
-                pendingUser = null;
+        // --- واجهة الغرفة ---
+        function addParticipantCard(uid, info, isMe) {
+            if(document.getElementById(`p-${uid}`)) return;
+            const grid = document.getElementById('grid');
+            const div = document.createElement('div');
+            div.className = 'p-card';
+            div.id = `p-${uid}`;
+            
+            // أزرار التحكم للمضيف فوق المشارك
+            let controlsHTML = '';
+            if(isHost && !isMe) {
+                controlsHTML = `
+                    <div class="participant-controls">
+                        <button class="mini-btn mb-kick" onclick="confirmKick('${uid}')"><i class="fas fa-ban"></i></button>
+                        <button class="mini-btn mb-mute" onclick="forceMute('${uid}')"><i class="fas fa-microphone-slash"></i></button>
+                    </div>
+                `;
             }
+
+            div.innerHTML = `
+                ${controlsHTML}
+                <img src="${info.img}">
+                <div class="name">${isMe ? 'أنت' : info.fname}</div>
+                <div id="mic-st-${uid}" style="position:absolute; bottom:10px; right:10px; font-size:0.8rem; color:white; opacity:0.8"><i class="fas fa-microphone"></i></div>
+            `;
+            grid.appendChild(div);
+            playSound('notify');
+        }
+
+        // --- التحكم بالأعضاء (للمضيف) ---
+        window.confirmKick = (uid) => {
+            showModal(
+                'طرد مشترك',
+                'هل أنت متأكد من رغبتك في إخراج هذا الشخص من المكالمة؟',
+                '<i class="fas fa-user-slash" style="color:var(--danger)"></i>',
+                `<button class="a-btn ab-cancel" onclick="closeModal()">إلغاء</button>
+                 <button class="a-btn ab-danger" onclick="doKick('${uid}')">نعم، طرد</button>`
+            );
+        };
+
+        window.doKick = (uid) => {
+            update(ref(db, `calls/${activeCallId}/participants/${uid}`), { status: 'kicked' });
+            closeModal();
+            showToast('تم طرد المستخدم', 'success');
+        };
+
+        window.forceMute = (uid) => {
+            update(ref(db, `calls/${activeCallId}/participants/${uid}`), { audio: false });
+            showToast('تم كتم الصوت', 'info');
+        };
+
+        // --- طلبات الانضمام ---
+        function updateRequestsBadge() {
+            const b = document.getElementById('req-count');
+            if(pendingReqs.length > 0) {
+                b.style.display = 'flex';
+                b.innerText = pendingReqs.length;
+                // إظهار تنبيه إذا كان هناك طلب جديد
+                showToast(`${pendingReqs[0].fname} يريد الانضمام`, 'info');
+            } else {
+                b.style.display = 'none';
+            }
+        }
+
+        window.showRequestsModal = () => {
+            if(pendingReqs.length === 0) return showToast('لا توجد طلبات انتظار', 'info');
+            
+            const req = pendingReqs[0]; // التعامل مع أول واحد كمثال للتبسيط
+            showModal(
+                'طلب انضمام',
+                `${req.fname} ${req.lname} يرغب بالدخول للمكالمة.`,
+                `<img src="${req.img}" style="width:60px; height:60px; border-radius:50%;">`,
+                `<button class="a-btn ab-danger" onclick="handleReq('${req.id}', false)">رفض</button>
+                 <button class="a-btn ab-primary" onclick="handleReq('${req.id}', true)">قبول</button>`
+            );
+        };
+
+        window.handleReq = (uid, approve) => {
+            update(ref(db, `calls/${activeCallId}/participants/${uid}`), { 
+                status: approve ? 'joined' : 'kicked' 
+            });
+            closeModal();
+        };
+
+        // --- الخروج والطرد ---
+        window.confirmLeave = () => {
+            showModal(
+                'مغادرة المكالمة',
+                'هل تريد حقاً الخروج؟ يمكنك العودة لاحقاً إذا لم تنته المكالمة.',
+                '<i class="fas fa-sign-out-alt" style="color:var(--accent)"></i>',
+                `<button class="a-btn ab-cancel" onclick="closeModal()">بقاء</button>
+                 <button class="a-btn ab-danger" onclick="doLeave()">مغادرة</button>`
+            );
+        };
+
+        window.doLeave = () => {
+            if(localStream) localStream.getTracks().forEach(t => t.stop());
+            remove(ref(db, `calls/${activeCallId}/participants/${currentUser.id}`));
+            localStorage.removeItem('vc_call_id');
+            location.href = location.pathname;
+        };
+
+        function showKickedAlert() {
+            showModal(
+                'تم استبعادك',
+                'قام المضيف بإخراجك من هذه المكالمة.',
+                '<i class="fas fa-ban" style="color:var(--danger)"></i>',
+                `<button class="a-btn ab-primary" onclick="location.href=location.pathname">حسناً</button>`
+            );
+            if(localStream) localStream.getTracks().forEach(t => t.stop());
+        }
+
+        // --- أدوات التحكم الشخصية ---
+        window.toggleMic = () => {
+            const track = localStream.getAudioTracks()[0];
+            track.enabled = !track.enabled;
+            const btn = document.getElementById('btn-mic');
+            
+            if(track.enabled) {
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="fas fa-microphone"></i>';
+            } else {
+                btn.classList.add('active'); // اللون الأبيض للكتم
+                btn.innerHTML = '<i class="fas fa-microphone-slash" style="color:black"></i>';
+            }
+            
+            update(ref(db, `calls/${activeCallId}/participants/${currentUser.id}`), { audio: track.enabled });
+        };
+
+        function updateAudioState(uid, isActive) {
+            const el = document.getElementById(`mic-st-${uid}`);
+            if(el) el.innerHTML = isActive ? 
+                '<i class="fas fa-microphone"></i>' : 
+                '<i class="fas fa-microphone-slash" style="color:var(--danger)"></i>';
         }
 
         window.copyLink = () => {
-            const url = window.location.origin + window.location.pathname + '?call=' + currentCallId;
-            navigator.clipboard.writeText(url).then(() => showToast('تم نسخ الرابط!'));
-        }
+            const url = `${location.origin}${location.pathname}?call=${activeCallId}`;
+            navigator.clipboard.writeText(url);
+            showToast('تم نسخ رابط الدعوة', 'success');
+        };
 
-        // --- UTILS ---
-        function switchScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
+        // --- WebRTC & Audio Visualizer (مبسط) ---
+        function detectVoice(uid, stream) {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const src = audioCtx.createMediaStreamSource(stream);
+            const anlz = audioCtx.createAnalyser();
+            src.connect(anlz); anlz.fftSize = 64;
+            const buf = new Uint8Array(anlz.frequencyBinCount);
 
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
-        }
-
-        function addParticipantToGrid(uid, info, isSelf) {
-            const grid = document.getElementById('participants-grid');
-            const div = document.createElement('div');
-            div.className = 'participant';
-            div.id = `p-${uid}`;
-            div.innerHTML = `
-                <img src="${info.avatar}" alt="user">
-                <span>${isSelf ? 'أنت' : info.fname}</span>
-            `;
-            grid.appendChild(div);
-            
-            // Host can kick (simple UI logic)
-            if(isHost && !isSelf) {
-                // Add kick button logic here if needed
-            }
-        }
-
-        window.toggleMute = (btn) => {
-            const track = localStream.getAudioTracks()[0];
-            track.enabled = !track.enabled;
-            btn.classList.toggle('muted');
-            btn.innerHTML = track.enabled ? '<i class="fas fa-microphone"></i>' : '<i class="fas fa-microphone-slash"></i>';
-        }
-
-        window.endCall = () => {
-            // Remove self
-            remove(ref(db, `calls/${currentCallId}/participants/${currentUser.id}`));
-            if(localStream) localStream.getTracks().forEach(t => t.stop());
-            location.href = window.location.origin + window.location.pathname; // Reload to fresh start
-        }
-
-        let seconds = 0;
-        function startTimer() {
-            setInterval(() => {
-                seconds++;
-                const mins = Math.floor(seconds / 60);
-                const secs = seconds % 60;
-                document.getElementById('call-timer').innerText = 
-                    `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-            }, 1000);
-        }
-
-        function playNotificationSound() {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.frequency.value = 500;
-            gain.gain.value = 0.1;
-            osc.start();
-            setTimeout(() => osc.stop(), 200);
-        }
-
-        // Fake visualizer (animation based on audio presence)
-        function visualizeAudio(uid, stream) {
-            // In a real app, use WebAudioAPI AnalyzerNode. 
-            // For this single-file demo to keep performance high:
-            // We just add a class periodically if audio track is enabled.
-            const el = document.getElementById(`p-${uid}`);
-            if(!el) return;
-            
-            // Simple simulation
-            setInterval(() => {
-                if(Math.random() > 0.5) el.classList.add('speaking');
+            const loop = () => {
+                const el = document.getElementById(`p-${uid}`);
+                if(!el) return;
+                anlz.getByteFrequencyData(buf);
+                const avg = buf.reduce((a,b)=>a+b) / buf.length;
+                if(avg > 25) el.classList.add('speaking');
                 else el.classList.remove('speaking');
-            }, 200);
+                requestAnimationFrame(loop);
+            };
+            loop();
+        }
+
+        function connectP2P(remoteUid) {
+            if(peerConnections[remoteUid]) return;
+            const pc = new RTCPeerConnection({ iceServers: [{urls:'stun:stun.l.google.com:19302'}] });
+            peerConnections[remoteUid] = pc;
+            
+            localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+            
+            pc.onicecandidate = e => {
+                if(e.candidate) push(ref(db, `calls/${activeCallId}/signals/${remoteUid}`), {
+                    from: currentUser.id, type: 'ice', data: JSON.stringify(e.candidate)
+                });
+            };
+
+            pc.ontrack = e => {
+                const aud = new Audio();
+                aud.srcObject = e.streams[0];
+                aud.play();
+                detectVoice(remoteUid, e.streams[0]);
+            };
+
+            // بدء العرض (الأبجدية لتجنب التصادم)
+            if(currentUser.id < remoteUid) {
+                pc.createOffer().then(o => pc.setLocalDescription(o)).then(() => {
+                    push(ref(db, `calls/${activeCallId}/signals/${remoteUid}`), {
+                        from: currentUser.id, type: 'offer', data: JSON.stringify(pc.localDescription)
+                    });
+                });
+            }
+
+            // استقبال الإشارات
+            onValue(ref(db, `calls/${activeCallId}/signals/${currentUser.id}`), snap => {
+                const msgs = snap.val();
+                if(!msgs) return;
+                Object.entries(msgs).forEach(([k, m]) => {
+                    if(m.from === remoteUid) {
+                        if(m.type === 'offer') {
+                            pc.setRemoteDescription(JSON.parse(m.data))
+                                .then(() => pc.createAnswer())
+                                .then(a => pc.setLocalDescription(a))
+                                .then(() => {
+                                    push(ref(db, `calls/${activeCallId}/signals/${remoteUid}`), {
+                                        from: currentUser.id, type: 'answer', data: JSON.stringify(pc.localDescription)
+                                    });
+                                    remove(child(ref(db, `calls/${activeCallId}/signals/${currentUser.id}`), k));
+                                });
+                        } else if (m.type === 'answer') {
+                            pc.setRemoteDescription(JSON.parse(m.data));
+                            remove(child(ref(db, `calls/${activeCallId}/signals/${currentUser.id}`), k));
+                        } else if (m.type === 'ice') {
+                            pc.addIceCandidate(JSON.parse(m.data));
+                            remove(child(ref(db, `calls/${activeCallId}/signals/${currentUser.id}`), k));
+                        }
+                    }
+                });
+            });
+        }
+
+        function startTimer() {
+            let s = 0;
+            clearInterval(timerInt);
+            timerInt = setInterval(() => {
+                s++;
+                document.getElementById('timer').innerText = 
+                    `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+            }, 1000);
         }
 
     </script>
