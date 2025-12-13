@@ -1,498 +1,454 @@
-<!doctype html>
-
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Vocabulary Quiz — 5 Questions</title>
-  <style>
-    /* 🎨 Variables and Global Reset */
-    :root {
-      --bg: #07090f; /* Darker Background */
-      --card: #151d29; /* Card background */
-      --accent: #38bdf8; /* Brighter, more modern blue accent */
-      --accent-light: #7dd3fc;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --glass: rgba(255, 255, 255, 0.05);
-      --success: #34d399; /* Green */
-      --error: #f87171; /* Red */
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Vocab Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50; /* لون داكن أكثر للجدية */
+            --accent-color: #e67e22; /* لون برتقالي للتمييز */
+            --bg-color: #ecf0f1;
+            --correct-color: #27ae60;
+            --wrong-color: #c0392b;
+        }
 
-    /* ************************************************************ */
-    /* 💡 Basic Layout & Typography */
-    /* ************************************************************ */
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--primary-color);
+        }
 
-    * { box-sizing: border-box; }
-    
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Noto Sans', Arial, sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, var(--bg) 0%, #0c1523 100%);
-      color: var(--text);
-      line-height: 1.6;
-    }
+        .container {
+            background: white;
+            width: 90%;
+            max-width: 650px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            overflow: hidden;
+            position: relative;
+        }
 
-    .wrap {
-      width: 100%;
-      max-width: 900px;
-      padding: 28px;
-    }
+        .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
 
-    .card {
-      background: var(--card);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-      transition: all 0.3s ease;
-    }
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 900;
+        }
+        
+        .header p {
+            margin: 5px 0 0;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
 
-    h1 {
-      margin: 0 0 8px;
-      font-size: 24px;
-      color: var(--accent-light);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      padding-bottom: 10px;
-    }
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            margin-top: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
 
-    p.lead {
-      margin: 0 0 20px;
-      color: var(--muted);
-      font-size: 15px;
-    }
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
 
-    /* ************************************************************ */
-    /* 🎯 Question Styling */
-    /* ************************************************************ */
+        .quiz-body {
+            padding: 40px 30px;
+        }
 
-    .q {
-      margin-bottom: 24px;
-      padding: 18px;
-      border-radius: 12px;
-      background: var(--glass);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      display: block;
-      transition: box-shadow 0.3s ease;
-    }
+        .question-box {
+            background-color: #f8f9fa;
+            border-left: 5px solid var(--accent-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
 
-    .q:hover {
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
-    }
+        .question-text {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            font-weight: bold;
+            color: #34495e;
+            text-align: left; /* الجمل إنجليزية فتكون يسار */
+            direction: ltr;
+        }
 
-    .q strong {
-      display: block;
-      margin-bottom: 12px;
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text);
-    }
+        .blank-space {
+            color: var(--accent-color);
+            text-decoration: underline;
+            font-weight: 900;
+        }
 
-    /* ************************************************************ */
-    /* ✅ Options (Radio Button/Label) Styling */
-    /* ************************************************************ */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            direction: ltr; /* الخيارات إنجليزية */
+        }
 
-    label.option {
-      display: flex;
-      align-items: center;
-      padding: 12px;
-      border-radius: 10px;
-      margin: 8px 0;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.2s ease;
-      background: rgba(255, 255, 255, 0.02);
-    }
+        .option-btn {
+            background: white;
+            border: 2px solid #bdc3c7;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--primary-color);
+            transition: all 0.2s;
+        }
 
-    label.option:hover {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(255, 255, 255, 0.1);
-    }
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary-color);
+            background-color: #f0f3f4;
+            transform: translateY(-2px);
+        }
 
-    /* Styling the Radio Input */
-    input[type=radio] {
-      margin-right: 12px;
-      /* Custom Radio Button Look */
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      border: 2px solid var(--muted);
-      border-radius: 50%;
-      outline: none;
-      transition: all 0.2s ease;
-      position: relative;
-      cursor: pointer;
-    }
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            border-color: var(--correct-color);
+            color: white;
+        }
 
-    /* Checked State */
-    input[type=radio]:checked {
-      border-color: var(--accent);
-      background-color: var(--accent);
-    }
+        .option-btn.wrong {
+            background-color: var(--wrong-color);
+            border-color: var(--wrong-color);
+            color: white;
+        }
 
-    input[type=radio]:checked::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 6px;
-      height: 6px;
-      background: var(--card); /* Inner dot */
-      border-radius: 50%;
-    }
+        .feedback-section {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+            text-align: right; /* الشرح بالعربي */
+            direction: rtl;
+            animation: slideUp 0.4s;
+        }
 
-    /* 💡 Highlighting the selected label */
-    input[type=radio]:checked + label.option {
-      background: rgba(56, 189, 248, 0.2);
-      border-color: var(--accent);
-    }
+        .feedback-section.success { background-color: #d5f5e3; color: #1e8449; }
+        .feedback-section.error { background-color: #fadbd8; color: #943126; }
 
-    /* ************************************************************ */
-    /* 🚀 Controls and Buttons */
-    /* ************************************************************ */
+        .next-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-family: 'Tajawal', sans-serif;
+            cursor: pointer;
+            margin-top: 20px;
+            display: none;
+        }
 
-    .controls {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin-top: 20px;
-    }
+        .next-btn:hover { background: #34495e; }
 
-    button {
-      background: var(--accent);
-      border: 0;
-      padding: 12px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      color: #0b1220;
-      font-weight: 700;
-      font-size: 15px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
-    }
+        .result-screen {
+            text-align: center;
+            padding: 50px 20px;
+            display: none;
+        }
 
-    button:hover {
-      background: var(--accent-light);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
-    }
+        .score-display {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
 
-    button.ghost {
-      background: transparent;
-      border: 1px solid var(--muted);
-      color: var(--muted);
-      box-shadow: none;
-    }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    button.ghost:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text);
-      border-color: var(--text);
-      transform: translateY(-1px);
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      box-shadow: none;
-      transform: none;
-    }
-
-    small.hint {
-      color: var(--muted);
-      display: block;
-      margin-top: 6px;
-      font-size: 13px;
-    }
-
-    /* ************************************************************ */
-    /* 💯 Result Styling */
-    /* ************************************************************ */
-
-    .result {
-      margin-top: 24px;
-      padding: 20px;
-      border-radius: 12px;
-      background: rgba(25, 33, 49, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: var(--text);
-      /* Simple Fade-in Animation */
-      animation: fadeIn 0.5s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .result h2 {
-      color: var(--accent-light);
-      margin-top: 0;
-      font-size: 22px;
-      padding-bottom: 10px;
-      border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
-    }
-
-    .detail {
-      margin-top: 15px;
-      padding: 15px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.03);
-      font-size: 14px;
-    }
-
-    .detail p {
-      margin-bottom: 15px;
-      border-bottom: 1px dotted rgba(255, 255, 255, 0.04);
-      padding-bottom: 10px;
-    }
-
-    .detail p:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .correct {
-      color: var(--success);
-      font-weight: 700;
-      font-size: 16px;
-    }
-
-    .wrong {
-      color: var(--error);
-      font-weight: 700;
-      font-size: 16px;
-    }
-
-    .arabic {
-      direction: rtl;
-      text-align: right;
-      font-family: 'Noto Sans Arabic', system-ui, sans-serif; /* Specify Arabic font */
-    }
-
-    @media (max-width: 640px) {
-      .wrap { padding: 18px; }
-      .card { padding: 20px; }
-      .controls { flex-direction: column; align-items: stretch; }
-      button { width: 100%; }
-      small.hint { margin-top: 12px; text-align: center; }
-    }
-  </style>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+        @media (max-width: 500px) {
+            .options-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>📚 Vocabulary Quiz — 5 Questions</h1>
-      <p class="lead">Choose the best word to fill each blank. بعد الانتهاء سيظهر لك نتيجتك وشرح بالألمـ/العربية لِماذا كانت الإجابات الخاطئة خاطئة.</p><form id="quiz">
 
-    <div class="q" data-index="0">
-      <strong>1. "The moment felt like a beautiful coincidence… pure ____ ."</strong>
-      <label class="option" for="q0_a"><input type="radio" name="q0" id="q0_a" value="Ephemeral">A) Ephemeral</label>
-      <label class="option" for="q0_b"><input type="radio" name="q0" id="q0_b" value="Serendipity">B) Serendipity</label>
-      <label class="option" for="q0_c"><input type="radio" name="q0" id="q0_c" value="Melancholy">C) Melancholy</label>
-      <label class="option" for="q0_d"><input type="radio" name="q0" id="q0_d" value="Vigilant">D) Vigilant</label>
+<div class="container">
+    <div class="header">
+        <h1>Advanced Challenge</h1>
+        <p>املأ الفراغ بالكلمة المناسبة</p>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
     </div>
 
-    <div class="q" data-index="1">
-      <strong>2. "Her smile was soft and glowing, almost ____ ."</strong>
-      <label class="option" for="q1_a"><input type="radio" name="q1" id="q1_a" value="Luminous">A) Luminous</label>
-      <label class="option" for="q1_b"><input type="radio" name="q1" id="q1_b" value="Ambiguous">B) Ambiguous</label>
-      <label class="option" for="q1_c"><input type="radio" name="q1" id="q1_c" value="Solitude">C) Solitude</label>
-      <label class="option" for="q1_d"><input type="radio" name="q1" id="q1_d" value="Resilient">D) Resilient</label>
+    <div class="quiz-body" id="quiz-screen">
+        <div class="question-box">
+            <div class="question-text" id="question-text">
+                Loading...
+            </div>
+        </div>
+
+        <div class="options-grid" id="options-container">
+            </div>
+
+        <div class="feedback-section" id="feedback">
+            <h3 id="feedback-title" style="margin: 0 0 10px 0;"></h3>
+            <p id="feedback-meaning" style="font-weight: bold;"></p>
+            <p id="feedback-text"></p>
+        </div>
+
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question</button>
     </div>
 
-    <div class="q" data-index="2">
-      <strong>3. "The beauty of the scene was so delicate and heavenly, it felt ____ ."</strong>
-      <label class="option" for="q2_a"><input type="radio" name="q2" id="q2_a" value="Ethereal">A) Ethereal</label>
-      <label class="option" for="q2_b"><input type="radio" name="q2" id="q2_b" value="Meticulous">B) Meticulous</label>
-      <label class="option" for="q2_c"><input type="radio" name="q2" id="q2_c" value="Nebulous">C) Nebulous</label>
-      <label class="option" for="q2_d"><input type="radio" name="q2" id="q2_d" value="Quintessential">D) Quintessential</label>
+    <div class="result-screen" id="result-screen">
+        <div class="score-display" id="final-score">0/5</div>
+        <h2 id="result-title"></h2>
+        <p id="result-msg" style="font-size: 1.1rem; color: #7f8c8d;"></p>
+        <button class="next-btn" style="display:inline-block; width: auto; padding: 10px 40px;" onclick="restartQuiz()">Play Again</button>
     </div>
-
-    <div class="q" data-index="3">
-      <strong>4. "He went through many hardships, yet he stood strong again. He is truly ____ ."</strong>
-      <label class="option" for="q3_a"><input type="radio" name="q3" id="q3_a" value="Ineffable">A) Ineffable</label>
-      <label class="option" for="q3_b"><input type="radio" name="q3" id="q3_b" value="Resilient">B) Resilient</label>
-      <label class="option" for="q3_c"><input type="radio" name="q3" id="q3_c" value="Elusive">C) Elusive</label>
-      <label class="option" for="q3_d"><input type="radio" name="q3" id="q3_d" value="Ephemeral">D) Ephemeral</label>
-    </div>
-
-    <div class="q" data-index="4">
-      <strong>5. "His message wasn’t clear and could be understood in different ways. It was ____ ."</strong>
-      <label class="option" for="q4_a"><input type="radio" name="q4" id="q4_a" value="Ambiguous">A) Ambiguous</label>
-      <label class="option" for="q4_b"><input type="radio" name="q4" id="q4_b" value="Euphoria">B) Euphoria</label>
-      <label class="option" for="q4_c"><input type="radio" name="q4" id="q4_c" value="Solitude">C) Solitude</label>
-      <label class="option" for="q4_d"><input type="radio" name="q4" id="q4_d" value="Luminous">D) Luminous</label>
-    </div>
-
-    <div class="controls">
-      <button type="button" id="submitBtn">Submit / صحح الاختبار ✨</button>
-      <button type="button" id="resetBtn" class="ghost">Reset / إعادة 🔄</button>
-      <small class="hint">You can change answers before submitting. بعد التصحيح ستظهر أسباب الأخطاء بالعربية.</small>
-    </div>
-
-  </form>
-
-  <div id="result" class="result" style="display:none"></div>
-
 </div>
 
-  </div>  <script>
-    const correctAnswers = [
-      'Serendipity', // 1
-      'Luminous',    // 2
-      'Ethereal',    // 3
-      'Resilient',   // 4
-      'Ambiguous'    // 5
+<script>
+    // قاعدة البيانات المحدثة: جمل بدلاً من مجرد معاني
+    const advancedDatabase = [
+        { 
+            word: "Serendipity", 
+            sentence: "Finding my favorite book in a small shop in Tokyo was pure _______.", 
+            meaning: "صدفة جميلة",
+            explanation: "لأن الجملة تتحدث عن العثور على شيء محبوب بالصدفة في مكان غير متوقع."
+        },
+        { 
+            word: "Ephemeral", 
+            sentence: "Fashion trends are usually _______; they don't last very long.", 
+            meaning: "قصير العمر / لحظي",
+            explanation: "سياق الجملة يتحدث عن أشياء لا تدوم طويلاً (don't last long)."
+        },
+        { 
+            word: "Luminous", 
+            sentence: "The full moon was so _______ that we could see clearly at night.", 
+            meaning: "مضيء / مشع",
+            explanation: "الكلمة تصف القمر الذي يسمح بالرؤية في الليل بسبب ضوئه."
+        },
+        { 
+            word: "Quintessential", 
+            sentence: "He is the _______ gentleman; polite, kind, and well-dressed.", 
+            meaning: "جوهري / المثال الأمثل",
+            explanation: "الجملة تصف شخصاً يجمع كل صفات الرجل النبيل المثالية."
+        },
+        { 
+            word: "Euphoria", 
+            sentence: "Winning the championship filled the team with a sense of _______.", 
+            meaning: "سعادة شديدة",
+            explanation: "الفوز بالبطولة يسبب شعوراً غامراً بالسعادة."
+        },
+        { 
+            word: "Nebulous", 
+            sentence: "His plans for the future are still _______; nothing is decided yet.", 
+            meaning: "غامض / غير واضح",
+            explanation: "بما أن لا شيء مقرر (nothing is decided)، فالخطط غامضة."
+        },
+        { 
+            word: "Ineffable", 
+            sentence: "The beauty of the sunset was _______; words could not describe it.", 
+            meaning: "لا يوصف بالكلام",
+            explanation: "الجملة تقول صراحة أن الكلمات لا يمكنها وصفه."
+        },
+        { 
+            word: "Ethereal", 
+            sentence: "The dancer moved with an _______ grace, looking almost like an angel.", 
+            meaning: "رقيق جداً / سماوي",
+            explanation: "وصف الحركة بأنها تشبه الملائكة (angel) يدل على الرقة والسماوية."
+        },
+        { 
+            word: "Solitude", 
+            sentence: "He went to the mountains to enjoy the peace and _______.", 
+            meaning: "عزلة هادئة",
+            explanation: "الذهاب للجبال بحثاً عن السلام (peace) يرتبط بالعزلة الإيجابية."
+        },
+        { 
+            word: "Resilient", 
+            sentence: "Children are often very _______; they bounce back quickly from illness.", 
+            meaning: "مرن / يتخطى الصعاب",
+            explanation: "عبارة (bounce back) هي المفتاح وتعني التعافي بسرعة."
+        },
+        { 
+            word: "Melancholy", 
+            sentence: "The rainy weather put him in a state of quiet _______.", 
+            meaning: "كآبة خفيفة / شجن",
+            explanation: "الجو الممطر والهادئ غالباً يرتبط بالشعور بالحزن الخفيف."
+        },
+        { 
+            word: "Ambiguous", 
+            sentence: "The ending of the movie was _______; no one knew what really happened.", 
+            meaning: "غامض / ملتبس",
+            explanation: "عدم معرفة ما حدث يعني أن النهاية تحتمل أكثر من تفسير."
+        },
+        { 
+            word: "Vigilant", 
+            sentence: "Security guards must remain _______ at all times to prevent theft.", 
+            meaning: "يقظ / منتبه",
+            explanation: "الحراسة ومنع السرقة يتطلبان الانتباه الدائم."
+        },
+        { 
+            word: "Elusive", 
+            sentence: "The solution to this math problem remains _______ to me.", 
+            meaning: "صعب الفهم أو الإمساك به",
+            explanation: "عندما يكون الحل صعب المنال أو الفهم."
+        },
+        { 
+            word: "Meticulous", 
+            sentence: "She is very _______ about her work; she checks every detail twice.", 
+            meaning: "شديد الدقة",
+            explanation: "فحص كل التفاصيل مرتين يدل على الدقة الشديدة."
+        }
     ];
 
-    const explanationsAR = [
-      // Q1
-      {
-        correct: 'Serendipity = صدفة جميلة / حظ حلو.',
-        whyWrong: {
-          'Ephemeral': 'Ephemeral تعني "قصير العمر" — لا تصلح لوصف "صدفة جميلة".',
-          'Melancholy': 'Melancholy تعني "كآبة خفيفة/حزن" — لا معنى لها في الجملة.',
-          'Vigilant': 'Vigilant تعني "يقظ" أو "منتبه" — غير مناسب للسياق.'
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
-      },
-      // Q2
-      {
-        correct: 'Luminous = مضيء / مشع — يعبر عن "soft and glowing".',
-        whyWrong: {
-          'Ambiguous': 'Ambiguous = غامض / له أكتر من معنى — لا علاقة للنور هنا.',
-          'Solitude': 'Solitude = عزلة هادية — لا يصف ابتسامة مضيئة.',
-          'Resilient': 'Resilient = مرن/قادر يتخطى الصعاب — وصف للشخص، مش لابتسامة مضيئة.'
-        }
-      },
-      // Q3
-      {
-        correct: 'Ethereal = رقيق جدًا / سماوي — يناسب "delicate and heavenly".',
-        whyWrong: {
-          'Meticulous': 'Meticulous = دقيق جدًا/بيهتم بالتفاصيل — لا يصف جمال سماوي.',
-          'Nebulous': 'Nebulous = غامض/غير واضح — لا يتوافق مع وصف "delicate".',
-          'Quintessential': 'Quintessential = جوهري/مثالي جدًا — معنى مختلف.'
-        }
-      },
-      // Q4
-      {
-        correct: 'Resilient = قادر يتخطى الصعاب / مرن — مناسب لوصف شخص يصمد.',
-        whyWrong: {
-          'Ineffable': 'Ineffable = لا يوصف بالكلام — لا يطابق معنى الثبات والصمود.',
-          'Elusive': 'Elusive = صعب تمسكه أو تفهمه — لا علاقة له بالتحمل.',
-          'Ephemeral': 'Ephemeral = قصير العمر — عكس فكرة الوقوف بعد الصعاب.'
-        }
-      },
-      // Q5
-      {
-        correct: 'Ambiguous = غامض / له أكثر من معنى — يصف رسالة غير واضحة.',
-        whyWrong: {
-          'Euphoria': 'Euphoria = سعادة شديدة — ليس وصفًا لعدم الوضوح.',
-          'Solitude': 'Solitude = عزلة هادية — لا يناسب معنى الرسالة المبهمة.',
-          'Luminous': 'Luminous = مضيء/مشع — معنى مختلف تمامًا.'
-        }
-      }
-    ];
-
-    const submitBtn = document.getElementById('submitBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const resultDiv = document.getElementById('result');
-
-    function gradeQuiz(){
-      const form = document.getElementById('quiz');
-      const formData = new FormData(form);
-      const answers = [];
-      for(let i=0;i<5;i++){
-        answers.push(formData.get('q'+i));
-      }
-
-      // check unanswered
-      const unanswered = answers.map((a,i)=>a?null:i).filter(x=>x!==null);
-      if(unanswered.length>0){
-        // Changed alert to a smoother visual feedback, but keeping alert as a fallback
-        // For simplicity, sticking to alert in this single HTML file
-        alert('Please answer all questions قبل التصحيح. الرجاء الإجابة على كل الأسئلة.');
-        return;
-      }
-
-      let score = 0;
-      const details = [];
-
-      answers.forEach((ans,i)=>{
-        const correct = correctAnswers[i];
-        const isCorrect = ans === correct;
-        if(isCorrect) score++;
-        const detail = {
-          index: i+1,
-          selected: ans,
-          correct,
-          isCorrect,
-          explanationAR: explanationsAR[i]
-        };
-        details.push(detail);
-      });
-
-      // build result HTML
-      let scoreText;
-      let scoreColor;
-      let scoreEmoji;
-
-      if (score === 5) {
-        scoreText = 'ممتاز! كل الإجابات صحيحة 🎉';
-        scoreColor = 'var(--success)';
-        scoreEmoji = '✨';
-      } else if (score >= 3) {
-        scoreText = `جيد! لديك ${5-score} إجابة خاطئة.`;
-        scoreColor = 'var(--accent-light)';
-        scoreEmoji = '👍';
-      } else {
-        scoreText = `تحتاج لبعض المراجعة، لديك ${5-score} إجابات خاطئة.`;
-        scoreColor = 'var(--error)';
-        scoreEmoji = '🤔';
-      }
-
-
-      let html = `<div class=\"arabic\"><h2>${scoreEmoji} درجتك: ${score} / 5</h2>`;
-      html += `<p style="color: ${scoreColor}; font-weight: 700;">${scoreText} — تحتها توضيح بالعربية ليه كانت خاطئة.</p>`;
-      
-
-      html += '<div class="detail">';
-      details.forEach(d=>{
-        if(d.isCorrect){
-          html += `<p><strong>السؤال ${d.index} — <span class=\"correct\">إجابتك صحيحة ✅</span></strong><br><span class=\"arabic\">الإجابة الصحيحة: ${d.correct} — ${d.explanationAR.correct}</span></p>`;
-        } else {
-          // explanation for wrong: include why selected is wrong if available
-          const whyWrong = d.explanationAR.whyWrong[d.selected] ? d.explanationAR.whyWrong[d.selected] : 'الخيار الذي اخترته لا يناسب السياق.';
-          html += `<p><strong>السؤال ${d.index} — <span class=\"wrong\">إجابتك: ${d.selected} (خاطئ ❌)</span></strong><br><span class=\"arabic\">الإجابة الصحيحة: ${d.correct} — ${d.explanationAR.correct}</span><br><span class=\"arabic\">لماذا ${d.selected} خطأ: ${whyWrong}</span></p>`;
-        }
-      });
-      html += '</div></div>';
-
-      resultDiv.innerHTML = html;
-      resultDiv.style.display = 'block';
-      // Disable submit and scroll to result
-      submitBtn.disabled = true;
-      submitBtn.style.opacity = 0.6;
-      resultDiv.scrollIntoView({ behavior: 'smooth' });
+        return array;
     }
 
-    submitBtn.addEventListener('click', gradeQuiz);
-    resetBtn.addEventListener('click', ()=>{
-      document.getElementById('quiz').reset();
-      resultDiv.style.display = 'none';
-      resultDiv.innerHTML = '';
-      submitBtn.disabled = false;
-      submitBtn.style.opacity = 1;
-    });
+    function startQuiz() {
+        let shuffledDb = shuffleArray([...advancedDatabase]);
+        currentQuestions = shuffledDb.slice(0, 5);
+        currentQuestionIndex = 0;
+        score = 0;
+        
+        document.getElementById('quiz-screen').style.display = 'block';
+        document.getElementById('result-screen').style.display = 'none';
+        
+        loadQuestion();
+    }
 
-  </script></body>
+    function loadQuestion() {
+        const data = currentQuestions[currentQuestionIndex];
+        
+        // Progress Bar
+        document.getElementById('progress').style.width = `${(currentQuestionIndex / 5) * 100}%`;
+
+        // Set Question (Replace underscore with styled blank)
+        const formattedSentence = data.sentence.replace('_______', '<span class="blank-space">_______</span>');
+        document.getElementById('question-text').innerHTML = formattedSentence;
+        
+        // Reset UI
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        // Prepare Options (English Words)
+        let options = [data.word];
+        let distractors = advancedDatabase
+            .filter(item => item.word !== data.word)
+            .map(item => item.word);
+        
+        shuffleArray(distractors);
+        options.push(...distractors.slice(0, 3));
+        shuffleArray(options);
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(btn, opt, data);
+            container.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(btn, selected, data) {
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(b => b.disabled = true);
+
+        const feedback = document.getElementById('feedback');
+        const title = document.getElementById('feedback-title');
+        const meaning = document.getElementById('feedback-meaning');
+        const text = document.getElementById('feedback-text');
+
+        if (selected === data.word) {
+            btn.classList.add('correct');
+            score++;
+            feedback.className = 'feedback-section success';
+            title.innerText = "Excellent! ✅";
+        } else {
+            btn.classList.add('wrong');
+            buttons.forEach(b => {
+                if (b.innerText === data.word) b.classList.add('correct');
+            });
+            feedback.className = 'feedback-section error';
+            title.innerText = "Wrong! ❌";
+        }
+
+        // إظهار الكلمة في الفراغ
+        const filledSentence = data.sentence.replace('_______', `<span style="color:${selected === data.word ? '#27ae60' : '#c0392b'}">${data.word}</span>`);
+        document.getElementById('question-text').innerHTML = filledSentence;
+
+        meaning.innerText = `المعنى: ${data.meaning}`;
+        text.innerText = data.explanation;
+        
+        feedback.style.display = 'block';
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < 5) loadQuestion();
+        else showResults();
+    }
+
+    function showResults() {
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        document.getElementById('progress').style.width = '100%';
+        
+        document.getElementById('final-score').innerText = `${score}/5`;
+        
+        const title = document.getElementById('result-title');
+        const msg = document.getElementById('result-msg');
+        
+        if (score === 5) {
+            title.innerText = "Master of Words! 👑";
+            msg.innerText = "أداء أسطوري! أنت تفهم سياق الكلمات بدقة.";
+        } else if (score >= 3) {
+            title.innerText = "Great Job! 🌟";
+            msg.innerText = "مستوى جيد جداً، لكن انتبه للفروقات الدقيقة.";
+        } else {
+            title.innerText = "Keep Practicing 📚";
+            msg.innerText = "السياق هو المفتاح، حاول قراءة الجمل بتركيز أكبر.";
+        }
+    }
+
+    function restartQuiz() {
+        startQuiz();
+    }
+
+    startQuiz();
+</script>
+
+</body>
 </html>
