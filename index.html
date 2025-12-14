@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EduUltra | النسخة المطورة</title>
+    <title>EduUltra | تسجيل الدخول</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,7 +19,7 @@
 
     <script>
         tailwind.config = {
-            darkMode: 'class', // Enable manual dark mode toggle
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -27,13 +27,10 @@
                         outfit: ['Outfit', 'sans-serif'],
                     },
                     colors: {
-                        obsidian: '#000000', // True Black for Ultra Dark
-                        paper: '#ffffff',    // True White for Ultra Light
-                        
-                        // Glass Accents (Adaptive)
+                        obsidian: '#000000',
+                        paper: '#ffffff',
                         'glass-dark': 'rgba(255, 255, 255, 0.05)',
                         'glass-light': 'rgba(0, 0, 0, 0.04)',
-                        
                         neon: '#00f3ff', 
                         violet: '#8b5cf6',
                         gold: '#fbbf24',
@@ -76,9 +73,7 @@
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* --- ULTRA GLASSMORPHISM (ADAPTIVE) --- */
         .ultra-glass {
-            /* Default (Light Mode) */
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -88,7 +83,6 @@
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        /* Dark Mode Overrides */
         html.dark .ultra-glass {
             background: rgba(15, 15, 20, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -96,34 +90,40 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
         }
 
-        .ultra-glass:active {
-            transform: scale(0.98);
-        }
+        .ultra-glass:active { transform: scale(0.98); }
 
-        /* Gradients */
-        .ultra-card-gradient {
-            background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%);
-        }
-        html.dark .ultra-card-gradient {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.4) 0%, rgba(10, 15, 25, 0.6) 100%);
-        }
+        .ultra-card-gradient { background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%); }
+        html.dark .ultra-card-gradient { background: linear-gradient(145deg, rgba(30, 41, 59, 0.4) 0%, rgba(10, 15, 25, 0.6) 100%); }
 
-        /* Scroll Snap */
         .hide-scroll::-webkit-scrollbar { display: none; }
         .snap-x-mandatory { scroll-snap-type: x mandatory; }
         .snap-center { scroll-snap-align: center; }
 
-        /* Animation Classes */
-        .stagger-entry {
-            opacity: 0;
-            transform: translateY(20px);
+        .stagger-entry { opacity: 0; transform: translateY(20px); }
+
+        /* Form Styles */
+        .ultra-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            border-radius: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        html.dark .ultra-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .ultra-input:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
         }
 
-        /* High Contrast Controls */
-        .btn-primary {
-            @apply bg-black text-white dark:bg-white dark:text-black;
+        .step-transition {
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
-
     </style>
 </head>
 <body class="bg-paper text-slate-900 dark:bg-obsidian dark:text-white selection:bg-violet-500/30">
@@ -133,7 +133,7 @@
         <source src="data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAAABmYWN0BAAAAAAAAABkYXRhAAAAAA==" type="audio/wav"> 
     </audio>
 
-    <!-- 0. INTRO SCREEN -->
+    <!-- 0. LOADING / INTRO SCREEN -->
     <div id="intro-overlay" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-paper dark:bg-obsidian transition-opacity duration-700">
         <div class="relative w-24 h-24 flex items-center justify-center mb-6">
             <div class="absolute inset-0 bg-violet-600/20 rounded-full blur-xl animate-pulse"></div>
@@ -142,6 +142,155 @@
         <h1 class="text-3xl font-black text-black dark:text-white tracking-widest font-outfit" style="letter-spacing: 4px;">EDU<span class="text-violet-500">ULTRA</span></h1>
         <div class="mt-4 h-1 w-32 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
             <div class="h-full bg-violet-500 w-0" id="loading-bar"></div>
+        </div>
+    </div>
+
+    <!-- === REGISTRATION WIZARD (Overlay) === -->
+    <div id="reg-wizard" class="fixed inset-0 z-[5000] hidden flex-col items-center justify-center bg-paper dark:bg-obsidian overflow-hidden">
+        
+        <!-- Background Elements for Wizard -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+            <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px]"></div>
+            <div class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-500/10 rounded-full blur-[100px]"></div>
+        </div>
+
+        <div class="w-full max-w-md px-8 relative z-10 flex flex-col h-full justify-center">
+            
+            <!-- Step 0: Welcome -->
+            <div id="step-0" class="step-content flex flex-col items-center text-center">
+                <div class="w-32 h-32 relative mb-8">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-violet-600 to-blue-500 rounded-3xl blur-2xl opacity-40 animate-pulse"></div>
+                    <div class="w-full h-full bg-white dark:bg-slate-900 rounded-3xl border border-white/20 shadow-2xl flex items-center justify-center relative z-10 overflow-hidden p-2">
+                        <!-- Updated to Image -->
+                        <img src="https://cdn3d.iconscout.com/3d/premium/thumb/education-5596489-4666014.png" class="w-full h-full object-contain drop-shadow-lg animate-float" alt="Start Icon">
+                    </div>
+                </div>
+                <h2 class="text-4xl font-black mb-2 text-black dark:text-white font-cairo">مرحباً بك</h2>
+                <p class="text-slate-500 dark:text-slate-400 mb-10 text-lg">بوابتك للتعليم الذكي المتطور.</p>
+                <!-- Black on Light, White on Dark Button -->
+                <button onclick="nextStep(1)" class="w-full py-4 bg-black dark:bg-white text-white dark:text-black font-bold text-lg rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
+                    البدء <i class="fa-solid fa-arrow-left mr-2"></i>
+                </button>
+            </div>
+
+            <!-- Step 1: Name -->
+            <div id="step-1" class="step-content hidden flex-col">
+                <div class="mb-8">
+                    <span class="text-xs font-bold text-violet-500 uppercase tracking-widest bg-violet-500/10 px-2 py-1 rounded">الخطوة 1</span>
+                    <h2 class="text-3xl font-bold mt-2 text-black dark:text-white">عرّفنا بنفسك</h2>
+                    <p class="text-slate-500 dark:text-slate-400">نحتاج لاسمك لإنشاء ملفك الشخصي.</p>
+                </div>
+                
+                <div class="space-y-4 mb-8">
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-300">الاسم الأول</label>
+                        <input type="text" id="reg-fname" class="ultra-input" placeholder="مثال: أحمد">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-300">اسم العائلة</label>
+                        <input type="text" id="reg-lname" class="ultra-input" placeholder="مثال: محمد">
+                    </div>
+                </div>
+
+                <!-- High Contrast Button -->
+                <button onclick="validateStep1()" class="w-full py-4 bg-black dark:bg-white text-white dark:text-black font-bold text-lg rounded-2xl shadow-xl hover:scale-[1.01] active:scale-95 transition-all">
+                    التالي
+                </button>
+            </div>
+
+            <!-- Step 2: Contact Info -->
+            <div id="step-2" class="step-content hidden flex-col">
+                <div class="mb-8">
+                    <span class="text-xs font-bold text-blue-500 uppercase tracking-widest bg-blue-500/10 px-2 py-1 rounded">الخطوة 2</span>
+                    <h2 class="text-3xl font-bold mt-2 text-black dark:text-white">التأمين والاتصال</h2>
+                    <p class="text-slate-500 dark:text-slate-400">للحفاظ على حسابك واستعادته.</p>
+                </div>
+                
+                <div class="space-y-4 mb-8">
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-300">رقم الموبايل</label>
+                        <input type="tel" id="reg-mobile" class="ultra-input text-left" placeholder="05xxxxxxxx" dir="ltr">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-slate-700 dark:text-slate-300">رمز المرور (PIN)</label>
+                        <input type="password" id="reg-code" maxlength="6" class="ultra-input text-center text-2xl tracking-[5px]" placeholder="••••••">
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="nextStep(1)" class="w-16 py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl hover:bg-slate-200 transition-all">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <!-- High Contrast Button -->
+                    <button onclick="validateStep2()" class="flex-1 py-4 bg-black dark:bg-white text-white dark:text-black font-bold text-lg rounded-2xl shadow-xl hover:scale-[1.01] active:scale-95 transition-all">
+                        التالي
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Avatar -->
+            <div id="step-3" class="step-content hidden flex-col text-center">
+                <div class="mb-6">
+                    <span class="text-xs font-bold text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-2 py-1 rounded">الخطوة 3</span>
+                    <h2 class="text-3xl font-bold mt-2 text-black dark:text-white">اختر شخصيتك</h2>
+                    <p class="text-slate-500 dark:text-slate-400">كيف تريد أن تظهر للآخرين؟</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <!-- Option 1 -->
+                    <div onclick="selectAvatar(1, this)" class="avatar-option cursor-pointer p-1 rounded-2xl border-2 border-transparent hover:border-violet-500 transition-all group relative">
+                        <div class="bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden aspect-square relative">
+                             <img src="https://api.dicebear.com/9.x/micah/svg?seed=Felix&backgroundColor=b6e3f4" class="w-full h-full object-cover">
+                             <div class="absolute inset-0 bg-violet-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </div>
+                        <div class="check-mark absolute top-3 right-3 w-6 h-6 bg-violet-500 rounded-full text-white flex items-center justify-center text-xs scale-0 transition-transform shadow-lg"><i class="fa-solid fa-check"></i></div>
+                    </div>
+                    <!-- Option 2 -->
+                    <div onclick="selectAvatar(2, this)" class="avatar-option cursor-pointer p-1 rounded-2xl border-2 border-transparent hover:border-violet-500 transition-all group relative">
+                        <div class="bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden aspect-square relative">
+                             <img src="https://api.dicebear.com/9.x/micah/svg?seed=Aneka&backgroundColor=c0aede" class="w-full h-full object-cover">
+                             <div class="absolute inset-0 bg-violet-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </div>
+                        <div class="check-mark absolute top-3 right-3 w-6 h-6 bg-violet-500 rounded-full text-white flex items-center justify-center text-xs scale-0 transition-transform shadow-lg"><i class="fa-solid fa-check"></i></div>
+                    </div>
+                    <!-- Option 3 -->
+                    <div onclick="selectAvatar(3, this)" class="avatar-option cursor-pointer p-1 rounded-2xl border-2 border-transparent hover:border-violet-500 transition-all group relative">
+                        <div class="bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden aspect-square relative">
+                             <img src="https://api.dicebear.com/9.x/micah/svg?seed=Jude&backgroundColor=ffdfbf" class="w-full h-full object-cover">
+                             <div class="absolute inset-0 bg-violet-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </div>
+                        <div class="check-mark absolute top-3 right-3 w-6 h-6 bg-violet-500 rounded-full text-white flex items-center justify-center text-xs scale-0 transition-transform shadow-lg"><i class="fa-solid fa-check"></i></div>
+                    </div>
+                    <!-- Option 4 -->
+                    <div onclick="selectAvatar(4, this)" class="avatar-option cursor-pointer p-1 rounded-2xl border-2 border-transparent hover:border-violet-500 transition-all group relative">
+                        <div class="bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden aspect-square relative">
+                             <img src="https://api.dicebear.com/9.x/micah/svg?seed=Brook&backgroundColor=d1d4f9" class="w-full h-full object-cover">
+                             <div class="absolute inset-0 bg-violet-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </div>
+                        <div class="check-mark absolute top-3 right-3 w-6 h-6 bg-violet-500 rounded-full text-white flex items-center justify-center text-xs scale-0 transition-transform shadow-lg"><i class="fa-solid fa-check"></i></div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                     <button onclick="nextStep(2)" class="w-16 py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl hover:bg-slate-200 transition-all">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <!-- High Contrast Button -->
+                    <button id="finishBtn" onclick="finishRegistration()" disabled class="flex-1 py-4 bg-black dark:bg-white text-white dark:text-black font-bold text-lg rounded-2xl shadow-xl hover:scale-[1.01] active:scale-95 transition-all opacity-50 cursor-not-allowed">
+                        إتمام التسجيل
+                    </button>
+                </div>
+            </div>
+
+             <!-- Step 4: Success -->
+             <div id="step-4" class="step-content hidden flex-col items-center justify-center text-center">
+                <div class="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center mb-6 animate-bounce-slight shadow-neon">
+                    <i class="fa-solid fa-check text-4xl text-white"></i>
+                </div>
+                <h2 class="text-3xl font-black mb-2 text-black dark:text-white">تم التسجيل بنجاح!</h2>
+                <p class="text-slate-500 dark:text-slate-400">جاري إعداد واجهتك الخاصة...</p>
+            </div>
+
         </div>
     </div>
 
@@ -160,16 +309,16 @@
         <header class="flex justify-between items-center p-6 pt-8 stagger-entry">
             <div class="flex items-center gap-4">
                 <div class="relative group cursor-pointer" onclick="uiClick()">
-                    <!-- Avatar Border: Black in Light, Gradient in Dark -->
+                    <!-- Avatar Border -->
                     <div class="w-14 h-14 rounded-full p-[2px] bg-slate-200 dark:bg-gradient-to-tr dark:from-cyan-400 dark:via-blue-500 dark:to-violet-600 shadow-lg dark:shadow-neon-violet transition-all duration-300">
-                        <img src="https://api.dicebear.com/9.x/micah/svg?seed=Felix" alt="Profile" class="w-full h-full rounded-full bg-white dark:bg-slate-900 object-cover">
+                        <img id="userAvatarDisplay" src="" alt="Profile" class="w-full h-full rounded-full bg-white dark:bg-slate-900 object-cover">
                     </div>
                     <div class="absolute bottom-1 right-0 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-obsidian animate-bounce-slight"></div>
                 </div>
                 <div>
                     <h1 class="text-[11px] text-slate-500 dark:text-slate-400 font-outfit uppercase tracking-[2px] mb-1">Welcome Back</h1>
                     <h2 class="text-xl font-bold text-black dark:text-white font-cairo flex items-center gap-2">
-                        أحمد المبدع 
+                        <span id="userNameDisplay">...</span>
                         <i class="fa-solid fa-circle-check text-blue-500 text-xs"></i>
                     </h2>
                 </div>
@@ -177,9 +326,7 @@
             
             <!-- THEME TOGGLE BUTTON -->
             <button onclick="uiClick(); toggleTheme()" class="w-12 h-12 ultra-glass flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white transition group relative overflow-hidden">
-                <!-- Sun Icon -->
                 <i class="fa-solid fa-sun text-xl absolute transition-all duration-500 rotate-0 scale-100 dark:rotate-90 dark:scale-0 text-amber-500"></i>
-                <!-- Moon Icon -->
                 <i class="fa-solid fa-moon text-xl absolute transition-all duration-500 -rotate-90 scale-0 dark:rotate-0 dark:scale-100 text-blue-200"></i>
             </button>
         </header>
@@ -253,9 +400,8 @@
                 <h3 class="font-bold text-slate-700 dark:text-slate-200 text-sm">المجتمع</h3>
             </div>
 
-            <!-- SalfAI Pro (High Contrast) -->
+            <!-- SalfAI Pro -->
             <div onclick="uiClick(); openModal('ai')" class="ultra-glass col-span-2 p-0 relative overflow-hidden group cursor-pointer border-violet-500/30">
-                <!-- High Contrast Background -->
                 <div class="absolute inset-0 bg-slate-100 dark:bg-transparent transition-colors duration-500"></div>
                 <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-500/10 dark:bg-violet-600/30 rounded-full blur-3xl animate-pulse-glow"></div>
                 <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-blue-500/10 dark:bg-blue-600/20 rounded-full blur-3xl"></div>
@@ -269,7 +415,6 @@
                         <h3 class="text-3xl font-black italic text-black dark:text-white mb-1">Salf<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400">AI</span></h3>
                         <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-tight">اسألني عن أي شيء، أنا هنا.</p>
                         
-                        <!-- Interactive 'Typing' dots -->
                         <div class="flex gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
                             <div class="w-1 h-1 bg-violet-500 dark:bg-violet-400 rounded-full animate-bounce"></div>
                             <div class="w-1 h-1 bg-violet-500 dark:bg-violet-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
@@ -301,13 +446,11 @@
                 <div class="min-w-[80%] snap-center" onclick="uiClick(); playVideo('coding')">
                     <div class="ultra-glass h-44 relative group overflow-hidden border-slate-200 dark:border-slate-700/50 rounded-2xl cursor-pointer">
                         <img src="https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=600" class="w-full h-full object-cover opacity-70 transition group-hover:scale-105 group-hover:opacity-50">
-                        
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
                             <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 hover:bg-white/30">
                                 <i class="fa-solid fa-play text-white ml-1"></i>
                             </div>
                         </div>
-
                         <div class="absolute bottom-3 right-3 z-10 text-right">
                             <span class="text-[9px] text-blue-300 font-outfit uppercase tracking-wider mb-0.5 block">Coding</span>
                             <h4 class="font-bold text-base text-white">أساسيات بايثون</h4>
@@ -334,7 +477,6 @@
                 المتصدرين
             </h3>
             <div class="ultra-glass p-1">
-                <!-- Top 1 -->
                 <div class="flex items-center gap-3 p-3 border-b border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 rounded-t-xl">
                     <div class="font-bold text-yellow-500 font-outfit text-lg w-6">1</div>
                     <img src="https://api.dicebear.com/9.x/micah/svg?seed=Sara" class="w-8 h-8 rounded-full bg-slate-800">
@@ -371,12 +513,10 @@
                 <i class="fa-solid fa-gamepad text-2xl text-orange-500 dark:text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.4)]"></i>
                 <span class="text-xs font-bold text-slate-600 dark:text-slate-300">الألعاب</span>
             </div>
-            <!-- Inspiration -> Quotes -->
             <div onclick="uiClick(); openModal('quotes')" class="ultra-glass p-3 flex flex-col items-center justify-center gap-2 py-5 active:scale-95 transition cursor-pointer hover:bg-black/5 dark:hover:bg-white/5">
                 <i class="fa-solid fa-quote-right text-2xl text-teal-500 dark:text-teal-400 drop-shadow-[0_0_8px_rgba(20,184,166,0.4)]"></i>
                 <span class="text-xs font-bold text-slate-600 dark:text-slate-300">اقتباسات</span>
             </div>
-            <!-- Tools -> Platform Maker Tools -->
             <div onclick="uiClick(); openModal('maker')" class="ultra-glass p-3 flex flex-col items-center justify-center gap-2 py-5 active:scale-95 transition cursor-pointer hover:bg-black/5 dark:hover:bg-white/5">
                 <i class="fa-solid fa-layer-group text-2xl text-pink-500 dark:text-pink-400 drop-shadow-[0_0_8px_rgba(244,114,182,0.4)]"></i>
                 <span class="text-[10px] text-center font-bold text-slate-600 dark:text-slate-300 leading-tight">أدوات صنع المنصات</span>
@@ -387,7 +527,6 @@
 
     <!-- 8. ULTRA FLOATING DOCK -->
     <div id="dock" class="fixed bottom-6 left-0 w-full z-40 flex justify-center pointer-events-none opacity-0 translate-y-10 transition-all duration-700">
-        <!-- Dock Background: Black on Light, Glass Black on Dark -->
         <div class="ultra-glass px-6 py-3 flex items-center gap-8 pointer-events-auto rounded-full shadow-2xl dark:shadow-neon border border-black/5 dark:border-white/10 bg-white dark:bg-black/40">
             <button onclick="uiClick()" class="text-blue-600 dark:text-blue-500 relative flex flex-col items-center group">
                 <i class="fa-solid fa-house text-xl mb-1 group-hover:-translate-y-1 transition-transform shadow-blue-500/50"></i>
@@ -397,10 +536,8 @@
                 <i class="fa-solid fa-magnifying-glass text-xl group-hover:scale-110 transition"></i>
             </button>
             
-            <!-- Main Action Button (High Contrast) -->
             <button onclick="uiClick(); openModal('add')" class="w-16 h-16 bg-black dark:bg-gradient-to-tr dark:from-blue-600 dark:via-indigo-600 dark:to-violet-600 rounded-full flex items-center justify-center -mt-10 shadow-lg dark:shadow-neon-violet border-4 border-white dark:border-[#020617] transform hover:scale-110 active:scale-90 transition duration-300 relative overflow-hidden group">
                 <div class="absolute inset-0 bg-white/20 blur-md rounded-full animate-pulse opacity-0 dark:opacity-100"></div>
-                <!-- Icon: White in both modes for contrast on the button itself -->
                 <i class="fa-solid fa-plus text-white text-2xl relative z-10 group-hover:rotate-90 transition-transform"></i>
             </button>
             
@@ -414,9 +551,6 @@
     </div>
 
     <!-- MODALS (Full Screen Overlays) -->
-    <!-- Note: Modals need to handle light/dark mode too -->
-
-    <!-- Video Modal -->
     <div id="videoModal" class="fixed inset-0 z-[100] hidden flex-col bg-white/95 dark:bg-black/95 backdrop-blur-xl transition-opacity duration-300 opacity-0">
         <div class="flex justify-between items-center p-6 w-full max-w-[480px] mx-auto">
             <button onclick="uiClick(); closeModal()" class="w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-black dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition">
@@ -425,13 +559,11 @@
             <span class="font-bold text-black dark:text-white">مشاهدة</span>
             <div class="w-10"></div>
         </div>
-        
         <div class="flex-1 flex items-center justify-center w-full max-w-[480px] mx-auto px-4">
             <div class="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-black/10 dark:border-white/10 relative">
                  <iframe id="youtubeFrame" class="absolute top-0 left-0 w-full h-full" src="" title="Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
-
         <div class="p-8 w-full max-w-[480px] mx-auto">
             <h2 id="videoTitleText" class="text-2xl font-bold text-black dark:text-white mb-2">عنوان الفيديو</h2>
             <p class="text-slate-500 dark:text-slate-400 text-sm">محتوى تفاعلي عالي الجودة.</p>
@@ -439,11 +571,9 @@
         </div>
     </div>
 
-    <!-- Info Modal -->
     <div id="infoModal" class="fixed inset-0 z-[100] hidden items-end justify-center bg-black/60 backdrop-blur-md transition-opacity duration-300 opacity-0">
         <div id="infoContent" class="bg-white dark:bg-[#0b1020] border-t border-black/5 dark:border-white/10 w-full max-w-[480px] rounded-t-[32px] p-8 transform translate-y-full transition-transform duration-500 shadow-glass-depth">
             <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-8"></div>
-            
             <div class="text-center">
                 <div class="w-24 h-24 rounded-full bg-slate-100 dark:bg-gradient-to-tr dark:from-blue-500/10 dark:to-purple-500/10 flex items-center justify-center mx-auto mb-6 border border-black/5 dark:border-white/10 relative">
                     <div class="absolute inset-0 bg-blue-500/0 dark:bg-blue-500/20 blur-xl rounded-full animate-pulse transition-all"></div>
@@ -451,7 +581,6 @@
                 </div>
                 <h2 id="modalTitle" class="text-2xl font-bold text-black dark:text-white mb-3 font-cairo">العنوان</h2>
                 <p id="modalDesc" class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8">الوصف يظهر هنا بشكل مفصل.</p>
-                
                 <button onclick="uiClick(); closeInfoModal()" class="w-full bg-black dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition relative overflow-hidden group">
                     <span class="relative z-10">حسناً، فهمت</span>
                 </button>
@@ -465,81 +594,214 @@
             const html = document.documentElement;
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
-                // Could save preference to localStorage here
             } else {
                 html.classList.add('dark');
             }
         }
 
-        // --- 2. INTRO ANIMATION LOGIC ---
+        // --- 2. REGISTRATION STATE ---
+        let regData = {
+            firstName: '',
+            lastName: '',
+            mobile: '',
+            code: '',
+            avatar: ''
+        };
+
+        const avatars = [
+            "https://api.dicebear.com/9.x/micah/svg?seed=Felix&backgroundColor=b6e3f4",
+            "https://api.dicebear.com/9.x/micah/svg?seed=Aneka&backgroundColor=c0aede",
+            "https://api.dicebear.com/9.x/micah/svg?seed=Jude&backgroundColor=ffdfbf",
+            "https://api.dicebear.com/9.x/micah/svg?seed=Brook&backgroundColor=d1d4f9"
+        ];
+
+        // --- 3. INIT LOGIC ---
         window.addEventListener('load', () => {
             const bar = document.getElementById('loading-bar');
             const intro = document.getElementById('intro-overlay');
             const app = document.getElementById('app-container');
             const dock = document.getElementById('dock');
+            const wizard = document.getElementById('reg-wizard');
             
-            // 1. Loading Bar Animation
+            // Check Local Storage
+            const savedUser = localStorage.getItem('eduUltra_user');
+
+            // Loading Animation
             anime({
                 targets: '#loading-bar',
                 width: '100%',
                 easing: 'easeInOutQuad',
                 duration: 1500,
                 complete: function() {
-                    // 2. Fade Out Intro
+                    // Fade out Intro
                     intro.style.opacity = '0';
                     setTimeout(() => {
                         intro.style.display = 'none';
-                        app.classList.remove('hidden');
                         
-                        // 3. Staggered Entry for Content
-                        anime({
-                            targets: '.stagger-entry',
-                            opacity: [0, 1],
-                            translateY: [20, 0],
-                            delay: anime.stagger(100), // 100ms delay between elements
-                            easing: 'easeOutExpo',
-                            duration: 1200
-                        });
-
-                        // 4. Dock Slide Up
-                        setTimeout(() => {
-                            dock.classList.remove('opacity-0', 'translate-y-10');
-                        }, 800);
-
+                        if (savedUser) {
+                            // User exists -> Show App
+                            const user = JSON.parse(savedUser);
+                            loadUserData(user);
+                            showApp(app, dock);
+                        } else {
+                            // No user -> Show Registration Wizard
+                            wizard.classList.remove('hidden');
+                            wizard.classList.add('flex');
+                            animateWizardEntry();
+                        }
                     }, 800);
                 }
             });
         });
 
-        // --- 3. SOUND FX LOGIC ---
+        function showApp(app, dock) {
+            app.classList.remove('hidden');
+            anime({
+                targets: '.stagger-entry',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                delay: anime.stagger(100),
+                easing: 'easeOutExpo',
+                duration: 1200
+            });
+            setTimeout(() => {
+                dock.classList.remove('opacity-0', 'translate-y-10');
+            }, 800);
+        }
+
+        function loadUserData(user) {
+            document.getElementById('userNameDisplay').innerText = user.firstName + ' ' + user.lastName;
+            document.getElementById('userAvatarDisplay').src = user.avatar;
+        }
+
+        function animateWizardEntry() {
+            anime({
+                targets: '#step-0',
+                opacity: [0, 1],
+                scale: [0.9, 1],
+                easing: 'easeOutElastic(1, .8)',
+                duration: 1000
+            });
+        }
+
+        // --- 4. WIZARD NAVIGATION ---
+        function nextStep(stepNum) {
+            uiClick();
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            // Show new step with animation
+            const nextEl = document.getElementById(`step-${stepNum}`);
+            nextEl.classList.remove('hidden');
+            nextEl.classList.add('flex');
+            
+            anime({
+                targets: `#step-${stepNum}`,
+                opacity: [0, 1],
+                translateX: [20, 0],
+                easing: 'easeOutQuad',
+                duration: 500
+            });
+        }
+
+        function validateStep1() {
+            const fname = document.getElementById('reg-fname').value.trim();
+            const lname = document.getElementById('reg-lname').value.trim();
+
+            if (fname && lname) {
+                regData.firstName = fname;
+                regData.lastName = lname;
+                nextStep(2);
+            } else {
+                alert("يرجى إدخال الاسم الكامل");
+            }
+        }
+
+        function validateStep2() {
+            const mobile = document.getElementById('reg-mobile').value.trim();
+            const code = document.getElementById('reg-code').value.trim();
+
+            if (mobile.length >= 8 && code.length >= 4) {
+                regData.mobile = mobile;
+                regData.code = code;
+                nextStep(3);
+            } else {
+                alert("يرجى إدخال رقم هاتف صحيح ورمز مرور (على الأقل 4 أرقام)");
+            }
+        }
+
+        function selectAvatar(idx, element) {
+            uiClick();
+            // Reset visuals
+            document.querySelectorAll('.avatar-option').forEach(el => {
+                el.classList.remove('border-violet-500');
+                el.querySelector('.check-mark').classList.add('scale-0');
+            });
+
+            // Select clicked
+            element.classList.add('border-violet-500');
+            element.querySelector('.check-mark').classList.remove('scale-0');
+
+            regData.avatar = avatars[idx-1];
+            
+            // Enable finish button
+            const btn = document.getElementById('finishBtn');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        function finishRegistration() {
+            uiClick();
+            if (!regData.avatar) return;
+
+            // Save Data Locally
+            localStorage.setItem('eduUltra_user', JSON.stringify(regData));
+
+            // Show Success Step
+            nextStep(4);
+
+            // Wait then Enter App
+            setTimeout(() => {
+                const wizard = document.getElementById('reg-wizard');
+                const app = document.getElementById('app-container');
+                const dock = document.getElementById('dock');
+                
+                // Fade out wizard
+                anime({
+                    targets: wizard,
+                    opacity: 0,
+                    duration: 800,
+                    easing: 'easeOutQuad',
+                    complete: function() {
+                        wizard.style.display = 'none';
+                        loadUserData(regData);
+                        showApp(app, dock);
+                    }
+                });
+            }, 2500);
+        }
+
+        // --- 5. AUDIO & MODAL UTILS (Existing) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         function uiClick() {
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            
+            if (audioCtx.state === 'suspended') { audioCtx.resume(); }
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
-
             oscillator.type = 'sine';
             oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); 
             oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
-
             gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-
             oscillator.connect(gainNode);
             gainNode.connect(audioCtx.destination);
-
             oscillator.start();
             oscillator.stop(audioCtx.currentTime + 0.1);
-            
             if (navigator.vibrate) navigator.vibrate(5);
         }
 
-        // --- 4. DATA & MODAL LOGIC ---
-        
         const videos = {
             'main': { id: 'lAIGb1lfpBw', title: 'مستقبل التقنية 2025' },
             'shorts': { id: 'PPxduF5hQpI', title: 'فيديو قصير (Shorts)' },
@@ -559,7 +821,7 @@
             'profile': { icon: 'fa-user-astronaut', title: 'ملفك الشخصي', desc: 'المستوى 5 - المتصدر.' }
         };
 
-        // Video Modal
+        // Modal Logic
         const vidModal = document.getElementById('videoModal');
         const frame = document.getElementById('youtubeFrame');
         const vidTitle = document.getElementById('videoTitleText');
@@ -567,36 +829,26 @@
         function playVideo(key) {
             const data = videos[key];
             if (!data) return;
-            
             frame.src = `https://www.youtube.com/embed/${data.id}?autoplay=1&modestbranding=1&rel=0`;
             vidTitle.innerText = data.title;
-            
             vidModal.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                vidModal.classList.remove('opacity-0');
-            });
+            requestAnimationFrame(() => { vidModal.classList.remove('opacity-0'); });
         }
 
         function closeModal() {
             vidModal.classList.add('opacity-0');
-            setTimeout(() => {
-                vidModal.classList.add('hidden');
-                frame.src = '';
-            }, 300);
+            setTimeout(() => { vidModal.classList.add('hidden'); frame.src = ''; }, 300);
         }
 
-        // Info Modal
         const infoModal = document.getElementById('infoModal');
         const infoContent = document.getElementById('infoContent');
 
         function openModal(key) {
             const data = modalData[key];
             if (!data) return;
-
             document.getElementById('modalIcon').className = `fa-solid ${data.icon} text-5xl text-blue-500 dark:text-blue-400 drop-shadow-lg relative z-10`;
             document.getElementById('modalTitle').innerText = data.title;
             document.getElementById('modalDesc').innerText = data.desc;
-
             infoModal.classList.remove('hidden');
             requestAnimationFrame(() => {
                 infoModal.classList.remove('opacity-0');
@@ -607,9 +859,7 @@
         function closeInfoModal() {
             infoContent.classList.add('translate-y-full');
             infoModal.classList.add('opacity-0');
-            setTimeout(() => {
-                infoModal.classList.add('hidden');
-            }, 300);
+            setTimeout(() => { infoModal.classList.add('hidden'); }, 300);
         }
 
         window.onclick = function(e) {
