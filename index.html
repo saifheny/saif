@@ -1,21 +1,25 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EduUltra | المستقبل</title>
+    <title>EduUltra | النسخة المطورة</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts: Cairo (Arabic) & Outfit (English/Numbers) -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;400;600;700;900&family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome Pro (Latest) -->
+    <!-- FontAwesome Pro -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Anime.js for smooth animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 
     <script>
         tailwind.config = {
+            darkMode: 'class', // Enable manual dark mode toggle
             theme: {
                 extend: {
                     fontFamily: {
@@ -23,35 +27,40 @@
                         outfit: ['Outfit', 'sans-serif'],
                     },
                     colors: {
-                        obsidian: '#020617', // Darkest Blue
-                        charcoal: '#0f172a',
-                        glass: 'rgba(30, 41, 59, 0.4)',
-                        primary: '#3b82f6',
-                        neon: '#06b6d4', // Cyan
-                        ai: '#8b5cf6',   // Violet
+                        obsidian: '#000000', // True Black for Ultra Dark
+                        paper: '#ffffff',    // True White for Ultra Light
+                        
+                        // Glass Accents (Adaptive)
+                        'glass-dark': 'rgba(255, 255, 255, 0.05)',
+                        'glass-light': 'rgba(0, 0, 0, 0.04)',
+                        
+                        neon: '#00f3ff', 
+                        violet: '#8b5cf6',
+                        gold: '#fbbf24',
                     },
                     boxShadow: {
-                        'glow-ai': '0 0 30px -5px rgba(139, 92, 246, 0.6)',
-                        'glow-blue': '0 0 20px -5px rgba(59, 130, 246, 0.5)',
-                        'card': '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
+                        'neon': '0 0 20px -5px rgba(0, 243, 255, 0.5)',
+                        'neon-violet': '0 0 25px -5px rgba(139, 92, 246, 0.6)',
+                        'glass-depth': '0 20px 40px -10px rgba(0,0,0,0.2)',
                     },
                     animation: {
-                        'float': 'float 4s ease-in-out infinite',
-                        'pulse-glow': 'pulseGlow 3s infinite alternate',
-                        'shimmer': 'shimmer 2s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 4s infinite alternate',
+                        'spin-slow': 'spin 8s linear infinite',
+                        'bounce-slight': 'bounceSlight 2s infinite',
                     },
                     keyframes: {
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-8px)' },
+                            '50%': { transform: 'translateY(-12px)' },
                         },
                         pulseGlow: {
-                            '0%': { boxShadow: '0 0 15px -5px rgba(139, 92, 246, 0.3)' },
-                            '100%': { boxShadow: '0 0 35px -5px rgba(139, 92, 246, 0.8)' },
+                            '0%': { opacity: '0.4', filter: 'blur(15px)' },
+                            '100%': { opacity: '0.8', filter: 'blur(25px)' },
                         },
-                        shimmer: {
-                            '0%': { backgroundPosition: '200% 0' },
-                            '100%': { backgroundPosition: '-200% 0' }
+                        bounceSlight: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-3px)' }
                         }
                     }
                 }
@@ -62,164 +71,172 @@
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #020617;
-            color: #fff;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* Deep Mesh Background */
-        .mesh-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background: radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
-        }
-
-        /* Advanced Glassmorphism */
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        /* --- ULTRA GLASSMORPHISM (ADAPTIVE) --- */
+        .ultra-glass {
+            /* Default (Light Mode) */
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
             border-radius: 24px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        .glass-card {
-            background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 22px;
-            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
-            overflow: hidden;
+        /* Dark Mode Overrides */
+        html.dark .ultra-glass {
+            background: rgba(15, 15, 20, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
         }
 
-        .glass-card:active {
-            transform: scale(0.97);
+        .ultra-glass:active {
+            transform: scale(0.98);
         }
 
-        /* Horizontal Scroll Snap (The Video Carousel) */
-        .snap-x-mandatory {
-            scroll-snap-type: x mandatory;
+        /* Gradients */
+        .ultra-card-gradient {
+            background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%);
         }
-        .snap-center {
-            scroll-snap-align: center;
-        }
-        .hide-scroll::-webkit-scrollbar {
-            display: none;
+        html.dark .ultra-card-gradient {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.4) 0%, rgba(10, 15, 25, 0.6) 100%);
         }
 
-        /* Text Gradients */
-        .text-gradient-gold {
-            background: linear-gradient(to right, #fbbf24, #d97706);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .text-gradient-ai {
-            background: linear-gradient(to right, #c084fc, #60a5fa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* Scroll Snap */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .snap-x-mandatory { scroll-snap-type: x mandatory; }
+        .snap-center { scroll-snap-align: center; }
+
+        /* Animation Classes */
+        .stagger-entry {
+            opacity: 0;
+            transform: translateY(20px);
         }
 
-        /* Shimmer Effect for AI Text */
-        .shimmer-text {
-            background: linear-gradient(to right, #4c1d95 0%, #a78bfa 50%, #4c1d95 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shimmer 3s linear infinite;
+        /* High Contrast Controls */
+        .btn-primary {
+            @apply bg-black text-white dark:bg-white dark:text-black;
         }
+
     </style>
 </head>
-<body>
+<body class="bg-paper text-slate-900 dark:bg-obsidian dark:text-white selection:bg-violet-500/30">
 
-    <!-- Dynamic Background -->
-    <div class="mesh-bg"></div>
+    <!-- AUDIO ELEMENTS -->
+    <audio id="clickSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRjIAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAAABmYWN0BAAAAAAAAABkYXRhAAAAAA==" type="audio/wav"> 
+    </audio>
 
-    <!-- Main App Container -->
-    <div class="max-w-[480px] mx-auto min-h-screen relative pb-28">
+    <!-- 0. INTRO SCREEN -->
+    <div id="intro-overlay" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-paper dark:bg-obsidian transition-opacity duration-700">
+        <div class="relative w-24 h-24 flex items-center justify-center mb-6">
+            <div class="absolute inset-0 bg-violet-600/20 rounded-full blur-xl animate-pulse"></div>
+            <i class="fa-solid fa-atom text-5xl text-violet-500 animate-spin-slow"></i>
+        </div>
+        <h1 class="text-3xl font-black text-black dark:text-white tracking-widest font-outfit" style="letter-spacing: 4px;">EDU<span class="text-violet-500">ULTRA</span></h1>
+        <div class="mt-4 h-1 w-32 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full bg-violet-500 w-0" id="loading-bar"></div>
+        </div>
+    </div>
 
-        <!-- 1. Header -->
-        <header class="flex justify-between items-center p-6 pt-8">
+    <!-- BACKGROUND MESH (Adaptive) -->
+    <div class="fixed inset-0 z-[-1] opacity-60 dark:opacity-100 transition-opacity duration-500">
+        <div class="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-violet-500/10 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2"></div>
+        <!-- Grid Pattern -->
+        <div class="absolute inset-0" style="background-image: linear-gradient(rgba(100, 100, 100, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(100, 100, 100, 0.05) 1px, transparent 1px); background-size: 40px 40px; mask-image: linear-gradient(to bottom, black 40%, transparent 100%);"></div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app-container" class="max-w-[480px] mx-auto min-h-screen relative pb-32 hidden">
+
+        <!-- 1. HEADER -->
+        <header class="flex justify-between items-center p-6 pt-8 stagger-entry">
             <div class="flex items-center gap-4">
-                <div class="relative">
-                    <div class="w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-blue-500 to-purple-500">
-                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Profile" class="w-full h-full rounded-full bg-slate-900 border-2 border-slate-900">
+                <div class="relative group cursor-pointer" onclick="uiClick()">
+                    <!-- Avatar Border: Black in Light, Gradient in Dark -->
+                    <div class="w-14 h-14 rounded-full p-[2px] bg-slate-200 dark:bg-gradient-to-tr dark:from-cyan-400 dark:via-blue-500 dark:to-violet-600 shadow-lg dark:shadow-neon-violet transition-all duration-300">
+                        <img src="https://api.dicebear.com/9.x/micah/svg?seed=Felix" alt="Profile" class="w-full h-full rounded-full bg-white dark:bg-slate-900 object-cover">
                     </div>
-                    <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-slate-900"></div>
+                    <div class="absolute bottom-1 right-0 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-obsidian animate-bounce-slight"></div>
                 </div>
                 <div>
-                    <h1 class="text-xs text-slate-400 font-outfit uppercase tracking-wider mb-0.5">Welcome Back</h1>
-                    <h2 class="text-lg font-bold text-white font-cairo">أحمد المتطور</h2>
+                    <h1 class="text-[11px] text-slate-500 dark:text-slate-400 font-outfit uppercase tracking-[2px] mb-1">Welcome Back</h1>
+                    <h2 class="text-xl font-bold text-black dark:text-white font-cairo flex items-center gap-2">
+                        أحمد المبدع 
+                        <i class="fa-solid fa-circle-check text-blue-500 text-xs"></i>
+                    </h2>
                 </div>
             </div>
-            <button class="w-11 h-11 glass-panel flex items-center justify-center text-slate-300 hover:text-white transition group">
-                <i class="fa-regular fa-bell text-xl group-hover:rotate-12 transition-transform"></i>
-                <span class="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            
+            <!-- THEME TOGGLE BUTTON -->
+            <button onclick="uiClick(); toggleTheme()" class="w-12 h-12 ultra-glass flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white transition group relative overflow-hidden">
+                <!-- Sun Icon -->
+                <i class="fa-solid fa-sun text-xl absolute transition-all duration-500 rotate-0 scale-100 dark:rotate-90 dark:scale-0 text-amber-500"></i>
+                <!-- Moon Icon -->
+                <i class="fa-solid fa-moon text-xl absolute transition-all duration-500 -rotate-90 scale-0 dark:rotate-0 dark:scale-100 text-blue-200"></i>
             </button>
         </header>
 
-        <!-- 2. Hero Slider (Advertisements) -->
-        <div class="px-5 mb-8">
-            <div class="relative w-full aspect-[2/1] rounded-3xl overflow-hidden shadow-card group">
-                <!-- Slides Container -->
-                <div id="adSlider" class="flex w-full h-full overflow-x-auto snap-x-mandatory hide-scroll">
+        <!-- 2. HERO SLIDER -->
+        <div class="px-5 mb-8 stagger-entry">
+            <div class="relative w-full aspect-[16/9] rounded-[32px] overflow-hidden shadow-2xl dark:shadow-glass-depth group border border-black/5 dark:border-white/5">
+                <div class="flex w-full h-full overflow-x-auto snap-x-mandatory hide-scroll" id="adSlider">
                     <!-- Slide 1 -->
                     <div class="min-w-full h-full relative snap-center">
-                        <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent p-6 flex flex-col justify-end items-start">
-                            <span class="bg-blue-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-lg mb-2">NEW</span>
-                            <h3 class="text-2xl font-bold text-white font-cairo mb-1">مسار الذكاء الاصطناعي</h3>
-                            <p class="text-slate-300 text-xs font-outfit">Level up your skills with AI 2.0</p>
-                        </div>
-                    </div>
-                    <!-- Slide 2 -->
-                    <div class="min-w-full h-full relative snap-center">
-                        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent p-6 flex flex-col justify-end items-start">
-                            <span class="bg-purple-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-lg mb-2">EVENT</span>
-                            <h3 class="text-2xl font-bold text-white font-cairo mb-1">الهاكاثون السنوي</h3>
-                            <p class="text-slate-300 text-xs font-outfit">Join the challenge now.</p>
+                        <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent dark:from-obsidian dark:via-obsidian/40 dark:to-transparent p-6 flex flex-col justify-end items-start transition-colors duration-500">
+                            <span class="bg-blue-500 text-white backdrop-blur-md text-[10px] font-bold px-3 py-1.5 rounded-lg mb-3 flex items-center gap-2 shadow-lg">
+                                <i class="fa-solid fa-rocket"></i> جديد
+                            </span>
+                            <h3 class="text-3xl font-bold text-black dark:text-white font-cairo mb-1 leading-tight">الذكاء الاصطناعي <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-cyan-400 dark:to-blue-500">المتقدم</span></h3>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 3. Advanced Bento Grid -->
-        <div class="grid grid-cols-2 gap-4 px-5">
+        <!-- 3. ADVANCED BENTO GRID -->
+        <div class="grid grid-cols-2 gap-4 px-5 stagger-entry">
 
-            <!-- A. Quiz Module (Tall) -->
-            <div class="glass-card row-span-2 p-5 flex flex-col justify-between group" onclick="openModal('quiz')">
+            <!-- Quiz Module -->
+            <div onclick="uiClick(); openModal('quiz')" class="ultra-glass ultra-card-gradient row-span-2 p-5 flex flex-col justify-between group cursor-pointer border border-transparent hover:border-blue-500/30 transition-all">
                 <div class="flex justify-between items-start">
-                    <div class="w-12 h-12 rounded-2xl bg-blue-600/20 flex items-center justify-center text-blue-400 border border-blue-500/20 group-hover:scale-110 transition-transform">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/10 group-hover:scale-110 transition-transform duration-500">
                         <i class="fa-solid fa-list-check text-xl"></i>
                     </div>
-                    <span class="text-[10px] font-outfit text-slate-500 bg-slate-800/50 px-2 py-1 rounded-full border border-slate-700">4 New</span>
+                    <span class="text-[10px] font-outfit text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/5 px-2 py-1 rounded-full border border-black/5 dark:border-white/10">4 New</span>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-white mb-1">الاختبارات</h3>
-                    <div class="w-full h-1.5 bg-slate-800 rounded-full mt-3 overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 w-[70%]"></div>
+                    <h3 class="text-lg font-bold text-black dark:text-white mb-2">الاختبارات</h3>
+                    <div class="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-blue-600 to-cyan-400 w-[75%] shadow-[0_0_10px_rgba(6,182,212,0.5)]"></div>
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-2 font-outfit text-right">70% Completed</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-outfit">Progress</p>
+                        <p class="text-[10px] text-blue-600 dark:text-cyan-400 font-bold font-outfit">75%</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- B. Shorts (Visual) -->
-            <div class="glass-card h-40 relative group overflow-hidden" onclick="playVideo('shorts')">
-                <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?q=80&w=400&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-60 transition duration-500 group-hover:scale-110 group-hover:opacity-40">
-                <div class="absolute top-3 left-3 bg-red-600 text-white text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1 shadow-lg">
+            <!-- Shorts (Visual) -->
+            <div onclick="uiClick(); playVideo('shorts')" class="ultra-glass h-40 relative group overflow-hidden cursor-pointer bg-black">
+                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=400" class="absolute inset-0 w-full h-full object-cover opacity-60 transition duration-700 group-hover:scale-110 group-hover:opacity-40">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                
+                <div class="absolute top-3 left-3 bg-rose-600 text-white text-[9px] font-bold px-2 py-1 rounded-md flex items-center gap-1.5 shadow-lg">
                     <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> LIVE
                 </div>
-                <div class="absolute bottom-3 right-3">
-                    <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
-                        <i class="fa-solid fa-play text-white text-sm ml-0.5"></i>
+                
+                <div class="absolute bottom-3 right-3 group-hover:scale-110 transition-transform">
+                    <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-lg">
+                        <i class="fa-solid fa-play text-white text-xs pl-0.5"></i>
                     </div>
                 </div>
                 <div class="absolute bottom-4 left-3">
@@ -227,227 +244,322 @@
                 </div>
             </div>
 
-            <!-- C. Chat -->
-            <div class="glass-card p-4 flex flex-col items-center justify-center gap-2 group" onclick="openModal('chat')">
+            <!-- Community / Chat -->
+            <div onclick="uiClick(); openModal('chat')" class="ultra-glass ultra-card-gradient p-4 flex flex-col items-center justify-center gap-3 group cursor-pointer border border-transparent hover:border-emerald-500/30 transition-all">
                 <div class="relative">
-                    <i class="fa-solid fa-comments text-3xl text-emerald-400 group-hover:-translate-y-1 transition-transform"></i>
-                    <div class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-800"></div>
+                    <i class="fa-solid fa-users-viewfinder text-3xl text-emerald-500 dark:text-emerald-400 group-hover:-translate-y-1 transition-transform duration-300 drop-shadow-[0_0_10px_rgba(52,211,153,0.4)]"></i>
+                    <div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-800 animate-pulse"></div>
                 </div>
-                <h3 class="font-bold text-slate-200 text-sm">مجتمعنا</h3>
+                <h3 class="font-bold text-slate-700 dark:text-slate-200 text-sm">المجتمع</h3>
             </div>
 
-            <!-- D. SalfAI (The Star Feature) -->
-            <div class="glass-card col-span-2 p-0 relative overflow-hidden animate-pulse-glow" style="border-color: rgba(139, 92, 246, 0.3);" onclick="openModal('ai')">
-                <!-- Inner Gradient Mesh -->
-                <div class="absolute inset-0 bg-gradient-to-r from-violet-900/40 via-transparent to-transparent z-0"></div>
+            <!-- SalfAI Pro (High Contrast) -->
+            <div onclick="uiClick(); openModal('ai')" class="ultra-glass col-span-2 p-0 relative overflow-hidden group cursor-pointer border-violet-500/30">
+                <!-- High Contrast Background -->
+                <div class="absolute inset-0 bg-slate-100 dark:bg-transparent transition-colors duration-500"></div>
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-500/10 dark:bg-violet-600/30 rounded-full blur-3xl animate-pulse-glow"></div>
+                <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-blue-500/10 dark:bg-blue-600/20 rounded-full blur-3xl"></div>
                 
-                <div class="relative z-10 flex items-center justify-between p-5 h-28">
-                    <div class="flex flex-col justify-center h-full">
-                        <div class="flex items-center gap-2 mb-1">
-                            <i class="fa-solid fa-sparkles text-violet-400 text-xs animate-spin-slow"></i>
-                            <span class="text-[10px] font-bold text-violet-300 tracking-widest uppercase font-outfit">AI Powered</span>
+                <div class="relative z-10 flex items-center justify-between p-6 h-32">
+                    <div class="flex flex-col justify-center h-full relative">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fa-solid fa-sparkles text-violet-600 dark:text-violet-400 text-xs animate-spin-slow"></i>
+                            <span class="text-[10px] font-bold text-violet-700 dark:text-violet-300 tracking-widest uppercase font-outfit bg-violet-100 dark:bg-violet-900/30 px-2 py-0.5 rounded border border-violet-200 dark:border-violet-500/20">AI Assistant</span>
                         </div>
-                        <h3 class="text-2xl font-black italic shimmer-text">SalfAI <span class="text-white not-italic text-lg">Pro</span></h3>
-                        <p class="text-[11px] text-slate-400 mt-1 max-w-[160px] leading-tight">المساعد الذكي الأقوى للدراسة. اسألني الآن.</p>
+                        <h3 class="text-3xl font-black italic text-black dark:text-white mb-1">Salf<span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-400 dark:to-fuchsia-400">AI</span></h3>
+                        <p class="text-[11px] text-slate-600 dark:text-slate-300 leading-tight">اسألني عن أي شيء، أنا هنا.</p>
+                        
+                        <!-- Interactive 'Typing' dots -->
+                        <div class="flex gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="w-1 h-1 bg-violet-500 dark:bg-violet-400 rounded-full animate-bounce"></div>
+                            <div class="w-1 h-1 bg-violet-500 dark:bg-violet-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                            <div class="w-1 h-1 bg-violet-500 dark:bg-violet-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        </div>
                     </div>
                     
-                    <div class="relative w-20 h-20 flex items-center justify-center">
-                        <div class="absolute inset-0 bg-violet-500/20 blur-xl rounded-full animate-pulse"></div>
-                        <i class="fa-solid fa-robot text-5xl text-violet-200 drop-shadow-[0_0_15px_rgba(139,92,246,0.5)] animate-float"></i>
+                    <div class="relative w-24 h-24 flex items-center justify-center">
+                        <div class="absolute inset-0 border-2 border-violet-500/20 rounded-full animate-[spin_10s_linear_infinite]"></div>
+                        <div class="absolute inset-2 border border-violet-400/10 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
+                        <i class="fa-solid fa-robot text-6xl text-slate-800 dark:text-violet-200 drop-shadow-[0_0_20px_rgba(139,92,246,0.3)] animate-float transform group-hover:scale-110 transition-transform duration-500"></i>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 4. "The Carousel" - Video Section (Requested Feature) -->
-        <div class="mt-8">
+        <!-- 5. VIDEO CAROUSEL -->
+        <div class="mt-8 stagger-entry">
             <div class="flex items-center justify-between px-6 mb-4">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <h3 class="text-lg font-bold text-black dark:text-white flex items-center gap-2">
                     <i class="fa-solid fa-clapperboard text-blue-500"></i>
                     دورات مميزة
                 </h3>
-                <span class="text-xs text-blue-400 cursor-pointer">عرض الكل</span>
+                <span class="text-xs text-blue-500 cursor-pointer hover:underline">عرض الكل</span>
             </div>
 
-            <!-- Swiper Container with Padding -->
-            <div class="flex overflow-x-auto snap-x-mandatory hide-scroll pb-8 px-5 gap-4">
-                
-                <!-- Video Card 1 -->
-                <div class="min-w-[85%] snap-center" onclick="playVideo('coding')">
-                    <div class="glass-card h-48 relative group overflow-hidden border-slate-700">
-                        <img src="https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover opacity-80 transition group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+            <div class="flex overflow-x-auto snap-x-mandatory hide-scroll pb-4 px-5 gap-4">
+                <!-- Video 1 -->
+                <div class="min-w-[80%] snap-center" onclick="uiClick(); playVideo('coding')">
+                    <div class="ultra-glass h-44 relative group overflow-hidden border-slate-200 dark:border-slate-700/50 rounded-2xl cursor-pointer">
+                        <img src="https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=600" class="w-full h-full object-cover opacity-70 transition group-hover:scale-105 group-hover:opacity-50">
                         
-                        <!-- Play Button -->
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
-                            <div class="w-14 h-14 rounded-full bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-glow-blue scale-75 group-hover:scale-100 transition">
+                            <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 hover:bg-white/30">
                                 <i class="fa-solid fa-play text-white ml-1"></i>
                             </div>
                         </div>
 
-                        <div class="absolute bottom-4 right-4 z-10 text-right">
-                            <span class="text-[10px] text-blue-300 font-outfit uppercase tracking-wider mb-1 block">Programming</span>
-                            <h4 class="font-bold text-lg text-white leading-tight">أساسيات بايثون</h4>
-                            <p class="text-[10px] text-slate-400 mt-1"><i class="fa-regular fa-clock mr-1"></i> 45 دقيقة</p>
+                        <div class="absolute bottom-3 right-3 z-10 text-right">
+                            <span class="text-[9px] text-blue-300 font-outfit uppercase tracking-wider mb-0.5 block">Coding</span>
+                            <h4 class="font-bold text-base text-white">أساسيات بايثون</h4>
                         </div>
                     </div>
                 </div>
-
-                <!-- Video Card 2 -->
-                <div class="min-w-[85%] snap-center" onclick="playVideo('main')">
-                    <div class="glass-card h-48 relative group overflow-hidden border-slate-700">
-                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover opacity-80 transition group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
-                            <div class="w-14 h-14 rounded-full bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-glow-blue scale-75 group-hover:scale-100 transition">
-                                <i class="fa-solid fa-play text-white ml-1"></i>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-4 right-4 z-10 text-right">
-                            <span class="text-[10px] text-purple-300 font-outfit uppercase tracking-wider mb-1 block">Technology</span>
-                            <h4 class="font-bold text-lg text-white leading-tight">مستقبل التقنية</h4>
-                            <p class="text-[10px] text-slate-400 mt-1"><i class="fa-regular fa-clock mr-1"></i> 12 دقيقة</p>
+                <!-- Video 2 -->
+                <div class="min-w-[80%] snap-center" onclick="uiClick(); playVideo('main')">
+                    <div class="ultra-glass h-44 relative group overflow-hidden border-slate-200 dark:border-slate-700/50 rounded-2xl cursor-pointer">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600" class="w-full h-full object-cover opacity-70 transition group-hover:scale-105 group-hover:opacity-50">
+                        <div class="absolute bottom-3 right-3 z-10 text-right">
+                            <span class="text-[9px] text-purple-300 font-outfit uppercase tracking-wider mb-0.5 block">Tech</span>
+                            <h4 class="font-bold text-base text-white">مستقبل الـ VR</h4>
                         </div>
                     </div>
                 </div>
-
-                <!-- Video Card 3 -->
-                <div class="min-w-[85%] snap-center" onclick="playVideo('shorts')">
-                    <div class="glass-card h-48 relative group overflow-hidden border-slate-700">
-                        <img src="https://images.unsplash.com/photo-1610484826967-09c5720778c7?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover opacity-80 transition group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
-                            <div class="w-14 h-14 rounded-full bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-glow-blue scale-75 group-hover:scale-100 transition">
-                                <i class="fa-solid fa-play text-white ml-1"></i>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-4 right-4 z-10 text-right">
-                            <span class="text-[10px] text-green-300 font-outfit uppercase tracking-wider mb-1 block">Design</span>
-                            <h4 class="font-bold text-lg text-white leading-tight">تصميم الواجهات</h4>
-                            <p class="text-[10px] text-slate-400 mt-1"><i class="fa-regular fa-clock mr-1"></i> 20 دقيقة</p>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
 
-        <!-- 5. Mini Tools (Grid) -->
-        <div class="grid grid-cols-3 gap-3 px-5 mb-6">
-            <div class="glass-card p-3 flex flex-col items-center justify-center gap-2 py-4 active:scale-95 transition" onclick="openModal('games')">
-                <i class="fa-solid fa-gamepad text-2xl text-orange-400"></i>
-                <span class="text-xs font-bold text-slate-300">الألعاب</span>
+        <!-- 6. LEADERBOARD -->
+        <div class="mt-4 px-5 mb-8 stagger-entry">
+            <h3 class="text-lg font-bold text-black dark:text-white flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-trophy text-yellow-500"></i>
+                المتصدرين
+            </h3>
+            <div class="ultra-glass p-1">
+                <!-- Top 1 -->
+                <div class="flex items-center gap-3 p-3 border-b border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 rounded-t-xl">
+                    <div class="font-bold text-yellow-500 font-outfit text-lg w-6">1</div>
+                    <img src="https://api.dicebear.com/9.x/micah/svg?seed=Sara" class="w-8 h-8 rounded-full bg-slate-800">
+                    <div class="flex-1">
+                        <h4 class="text-xs font-bold text-black dark:text-white">سارة محمد</h4>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">9850 نقطة</p>
+                    </div>
+                    <i class="fa-solid fa-crown text-yellow-500 text-lg animate-bounce-slight"></i>
+                </div>
+                <!-- Top 2 -->
+                <div class="flex items-center gap-3 p-3 border-b border-black/5 dark:border-white/5">
+                    <div class="font-bold text-slate-400 font-outfit text-lg w-6">2</div>
+                    <img src="https://api.dicebear.com/9.x/micah/svg?seed=Omar" class="w-8 h-8 rounded-full bg-slate-800">
+                    <div class="flex-1">
+                        <h4 class="text-xs font-bold text-black dark:text-white">عمر خالد</h4>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">8420 نقطة</p>
+                    </div>
+                </div>
+                <!-- Top 3 -->
+                <div class="flex items-center gap-3 p-3">
+                    <div class="font-bold text-slate-500 font-outfit text-lg w-6">3</div>
+                    <img src="https://api.dicebear.com/9.x/micah/svg?seed=Ali" class="w-8 h-8 rounded-full bg-slate-800">
+                    <div class="flex-1">
+                        <h4 class="text-xs font-bold text-black dark:text-white">علي حسن</h4>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400">7600 نقطة</p>
+                    </div>
+                </div>
             </div>
-            <div class="glass-card p-3 flex flex-col items-center justify-center gap-2 py-4 active:scale-95 transition" onclick="openModal('quotes')">
-                <i class="fa-solid fa-quote-right text-2xl text-teal-400"></i>
-                <span class="text-xs font-bold text-slate-300">اقتباسات</span>
+        </div>
+
+        <!-- 7. MINI TOOLS GRID -->
+        <div class="grid grid-cols-3 gap-3 px-5 mb-8 stagger-entry">
+            <div onclick="uiClick(); openModal('games')" class="ultra-glass p-3 flex flex-col items-center justify-center gap-2 py-5 active:scale-95 transition cursor-pointer hover:bg-black/5 dark:hover:bg-white/5">
+                <i class="fa-solid fa-gamepad text-2xl text-orange-500 dark:text-orange-400 drop-shadow-[0_0_8px_rgba(251,146,60,0.4)]"></i>
+                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">الألعاب</span>
             </div>
-            <div class="glass-card p-3 flex flex-col items-center justify-center gap-2 py-4 active:scale-95 transition" onclick="openModal('maker')">
-                <i class="fa-solid fa-layer-group text-2xl text-pink-400"></i>
-                <span class="text-xs font-bold text-slate-300">الأدوات</span>
+            <!-- Inspiration -> Quotes -->
+            <div onclick="uiClick(); openModal('quotes')" class="ultra-glass p-3 flex flex-col items-center justify-center gap-2 py-5 active:scale-95 transition cursor-pointer hover:bg-black/5 dark:hover:bg-white/5">
+                <i class="fa-solid fa-quote-right text-2xl text-teal-500 dark:text-teal-400 drop-shadow-[0_0_8px_rgba(20,184,166,0.4)]"></i>
+                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">اقتباسات</span>
+            </div>
+            <!-- Tools -> Platform Maker Tools -->
+            <div onclick="uiClick(); openModal('maker')" class="ultra-glass p-3 flex flex-col items-center justify-center gap-2 py-5 active:scale-95 transition cursor-pointer hover:bg-black/5 dark:hover:bg-white/5">
+                <i class="fa-solid fa-layer-group text-2xl text-pink-500 dark:text-pink-400 drop-shadow-[0_0_8px_rgba(244,114,182,0.4)]"></i>
+                <span class="text-[10px] text-center font-bold text-slate-600 dark:text-slate-300 leading-tight">أدوات صنع المنصات</span>
             </div>
         </div>
 
     </div>
 
-    <!-- 6. Ultra Floating Dock (Navigation) -->
-    <div class="fixed bottom-6 left-0 w-full z-40 flex justify-center pointer-events-none">
-        <div class="glass-panel px-6 py-3 flex items-center gap-8 shadow-glow-blue pointer-events-auto rounded-full border-t border-white/10">
-            <button class="text-blue-500 relative flex flex-col items-center group">
-                <i class="fa-solid fa-house text-xl mb-1 group-hover:-translate-y-1 transition-transform"></i>
-                <span class="w-1 h-1 bg-blue-500 rounded-full"></span>
+    <!-- 8. ULTRA FLOATING DOCK -->
+    <div id="dock" class="fixed bottom-6 left-0 w-full z-40 flex justify-center pointer-events-none opacity-0 translate-y-10 transition-all duration-700">
+        <!-- Dock Background: Black on Light, Glass Black on Dark -->
+        <div class="ultra-glass px-6 py-3 flex items-center gap-8 pointer-events-auto rounded-full shadow-2xl dark:shadow-neon border border-black/5 dark:border-white/10 bg-white dark:bg-black/40">
+            <button onclick="uiClick()" class="text-blue-600 dark:text-blue-500 relative flex flex-col items-center group">
+                <i class="fa-solid fa-house text-xl mb-1 group-hover:-translate-y-1 transition-transform shadow-blue-500/50"></i>
+                <span class="w-1 h-1 bg-blue-600 dark:bg-blue-500 rounded-full shadow-[0_0_5px_#3b82f6]"></span>
             </button>
-            <button class="text-slate-400 hover:text-white transition relative group" onclick="openModal('search')">
+            <button onclick="uiClick(); openModal('search')" class="text-slate-400 hover:text-black dark:hover:text-white transition relative group">
                 <i class="fa-solid fa-magnifying-glass text-xl group-hover:scale-110 transition"></i>
             </button>
             
-            <!-- Main Action Button -->
-            <button class="w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center -mt-10 shadow-glow-blue border-4 border-[#020617] transform hover:scale-110 active:scale-90 transition duration-300" onclick="openModal('add')">
-                <i class="fa-solid fa-plus text-white text-2xl"></i>
+            <!-- Main Action Button (High Contrast) -->
+            <button onclick="uiClick(); openModal('add')" class="w-16 h-16 bg-black dark:bg-gradient-to-tr dark:from-blue-600 dark:via-indigo-600 dark:to-violet-600 rounded-full flex items-center justify-center -mt-10 shadow-lg dark:shadow-neon-violet border-4 border-white dark:border-[#020617] transform hover:scale-110 active:scale-90 transition duration-300 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-white/20 blur-md rounded-full animate-pulse opacity-0 dark:opacity-100"></div>
+                <!-- Icon: White in both modes for contrast on the button itself -->
+                <i class="fa-solid fa-plus text-white text-2xl relative z-10 group-hover:rotate-90 transition-transform"></i>
             </button>
             
-            <button class="text-slate-400 hover:text-white transition relative group" onclick="openModal('stats')">
+            <button onclick="uiClick(); openModal('stats')" class="text-slate-400 hover:text-black dark:hover:text-white transition relative group">
                 <i class="fa-solid fa-chart-simple text-xl group-hover:scale-110 transition"></i>
             </button>
-            <button class="text-slate-400 hover:text-white transition relative group" onclick="openModal('profile')">
+            <button onclick="uiClick(); openModal('profile')" class="text-slate-400 hover:text-black dark:hover:text-white transition relative group">
                 <i class="fa-solid fa-user text-xl group-hover:scale-110 transition"></i>
             </button>
         </div>
     </div>
 
-    <!-- MODALS (Full Screen Blur) -->
+    <!-- MODALS (Full Screen Overlays) -->
+    <!-- Note: Modals need to handle light/dark mode too -->
 
     <!-- Video Modal -->
-    <div id="videoModal" class="fixed inset-0 z-[100] hidden flex-col bg-black/95 backdrop-blur-xl transition-opacity duration-300 opacity-0">
+    <div id="videoModal" class="fixed inset-0 z-[100] hidden flex-col bg-white/95 dark:bg-black/95 backdrop-blur-xl transition-opacity duration-300 opacity-0">
         <div class="flex justify-between items-center p-6 w-full max-w-[480px] mx-auto">
-            <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition">
+            <button onclick="uiClick(); closeModal()" class="w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-black dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition">
                 <i class="fa-solid fa-chevron-down"></i>
             </button>
-            <span class="font-bold text-white">مشاهدة</span>
-            <button class="w-10 h-10 opacity-0 cursor-default"></button>
+            <span class="font-bold text-black dark:text-white">مشاهدة</span>
+            <div class="w-10"></div>
         </div>
         
         <div class="flex-1 flex items-center justify-center w-full max-w-[480px] mx-auto px-4">
-            <div class="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative">
-                 <iframe id="youtubeFrame" class="absolute top-0 left-0 w-full h-full" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <div class="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-black/10 dark:border-white/10 relative">
+                 <iframe id="youtubeFrame" class="absolute top-0 left-0 w-full h-full" src="" title="Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
 
         <div class="p-8 w-full max-w-[480px] mx-auto">
-            <h2 id="videoTitleText" class="text-2xl font-bold text-white mb-2">عنوان الفيديو</h2>
-            <p class="text-slate-400 text-sm">شرح تفصيلي للمحتوى التعليمي الموجود في هذا الفيديو. يمكنك المتابعة والتعلم.</p>
-            
-            <div class="mt-6 flex gap-4">
-                <button class="flex-1 bg-blue-600 py-3 rounded-xl font-bold text-white shadow-glow-blue">تحميل الدرس</button>
-                <button class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-share-nodes"></i></button>
-            </div>
+            <h2 id="videoTitleText" class="text-2xl font-bold text-black dark:text-white mb-2">عنوان الفيديو</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">محتوى تفاعلي عالي الجودة.</p>
+            <button onclick="uiClick()" class="mt-6 w-full bg-black text-white dark:bg-blue-600 dark:text-white py-3 rounded-xl font-bold shadow-lg">تحميل الملخص</button>
         </div>
     </div>
 
     <!-- Info Modal -->
-    <div id="infoModal" class="fixed inset-0 z-[100] hidden items-end justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0">
-        <div id="infoContent" class="bg-[#0f172a] border-t border-white/10 w-full max-w-[480px] rounded-t-3xl p-8 transform translate-y-full transition-transform duration-300">
-            <div class="w-12 h-1.5 bg-slate-700 rounded-full mx-auto mb-8"></div>
+    <div id="infoModal" class="fixed inset-0 z-[100] hidden items-end justify-center bg-black/60 backdrop-blur-md transition-opacity duration-300 opacity-0">
+        <div id="infoContent" class="bg-white dark:bg-[#0b1020] border-t border-black/5 dark:border-white/10 w-full max-w-[480px] rounded-t-[32px] p-8 transform translate-y-full transition-transform duration-500 shadow-glass-depth">
+            <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-8"></div>
             
             <div class="text-center">
-                <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500/20 to-purple-500/20 flex items-center justify-center mx-auto mb-5 border border-white/5">
-                    <i id="modalIcon" class="fa-solid fa-robot text-4xl text-blue-400 drop-shadow-lg"></i>
+                <div class="w-24 h-24 rounded-full bg-slate-100 dark:bg-gradient-to-tr dark:from-blue-500/10 dark:to-purple-500/10 flex items-center justify-center mx-auto mb-6 border border-black/5 dark:border-white/10 relative">
+                    <div class="absolute inset-0 bg-blue-500/0 dark:bg-blue-500/20 blur-xl rounded-full animate-pulse transition-all"></div>
+                    <i id="modalIcon" class="fa-solid fa-robot text-5xl text-blue-500 dark:text-blue-400 drop-shadow-lg relative z-10"></i>
                 </div>
-                <h2 id="modalTitle" class="text-2xl font-bold text-white mb-2 font-cairo">العنوان</h2>
-                <p id="modalDesc" class="text-slate-400 text-sm leading-relaxed mb-8">الوصف يظهر هنا بشكل مفصل وجميل.</p>
+                <h2 id="modalTitle" class="text-2xl font-bold text-black dark:text-white mb-3 font-cairo">العنوان</h2>
+                <p id="modalDesc" class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-8">الوصف يظهر هنا بشكل مفصل.</p>
                 
-                <button onclick="closeInfoModal()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition">
-                    فهمت ذلك
+                <button onclick="uiClick(); closeInfoModal()" class="w-full bg-black dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition relative overflow-hidden group">
+                    <span class="relative z-10">حسناً، فهمت</span>
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Logic ---
+        // --- 1. THEME LOGIC ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                // Could save preference to localStorage here
+            } else {
+                html.classList.add('dark');
+            }
+        }
+
+        // --- 2. INTRO ANIMATION LOGIC ---
+        window.addEventListener('load', () => {
+            const bar = document.getElementById('loading-bar');
+            const intro = document.getElementById('intro-overlay');
+            const app = document.getElementById('app-container');
+            const dock = document.getElementById('dock');
+            
+            // 1. Loading Bar Animation
+            anime({
+                targets: '#loading-bar',
+                width: '100%',
+                easing: 'easeInOutQuad',
+                duration: 1500,
+                complete: function() {
+                    // 2. Fade Out Intro
+                    intro.style.opacity = '0';
+                    setTimeout(() => {
+                        intro.style.display = 'none';
+                        app.classList.remove('hidden');
+                        
+                        // 3. Staggered Entry for Content
+                        anime({
+                            targets: '.stagger-entry',
+                            opacity: [0, 1],
+                            translateY: [20, 0],
+                            delay: anime.stagger(100), // 100ms delay between elements
+                            easing: 'easeOutExpo',
+                            duration: 1200
+                        });
+
+                        // 4. Dock Slide Up
+                        setTimeout(() => {
+                            dock.classList.remove('opacity-0', 'translate-y-10');
+                        }, 800);
+
+                    }, 800);
+                }
+            });
+        });
+
+        // --- 3. SOUND FX LOGIC ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-        // Videos Data
+        function uiClick() {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); 
+            oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.1);
+            
+            if (navigator.vibrate) navigator.vibrate(5);
+        }
+
+        // --- 4. DATA & MODAL LOGIC ---
+        
         const videos = {
             'main': { id: 'lAIGb1lfpBw', title: 'مستقبل التقنية 2025' },
             'shorts': { id: 'PPxduF5hQpI', title: 'فيديو قصير (Shorts)' },
-            'coding': { id: 'rfscVS0vtbw', title: 'أساسيات بايثون للمبتدئين' }
+            'coding': { id: 'rfscVS0vtbw', title: 'أساسيات بايثون' }
         };
 
-        // Modal Data
         const modalData = {
-            'quiz': { icon: 'fa-list-check', title: 'مركز الاختبارات', desc: '4 اختبارات جديدة في انتظارك. حقق أعلى الدرجات لتتصدر القائمة!' },
-            'chat': { icon: 'fa-comments', title: 'الدردشة الحية', desc: 'تواصل مع زملائك ومعلميك في غرف صوتية وكتابية عالية الجودة.' },
-            'ai': { icon: 'fa-robot', title: 'SalfAI الذكي', desc: 'أنا هنا لمساعدتك 24/7. يمكنني تلخيص الكتب، حل المعادلات، وشرح المفاهيم الصعبة.' },
-            'games': { icon: 'fa-gamepad', title: 'استراحة الألعاب', desc: 'مجموعة من الألعاب الذهنية لتنشيط الذاكرة والتركيز.' },
-            'quotes': { icon: 'fa-quote-right', title: 'إلهام يومي', desc: 'اقتباسات مختارة بعناية لتحفيزك على الدراسة والنجاح.' },
-            'maker': { icon: 'fa-layer-group', title: 'أدوات الصانع', desc: 'أنشئ بطاقات استذكار، خرائط ذهنية، وجداول دراسية بسهولة.' },
-            'add': { icon: 'fa-plus', title: 'إضافة سريعة', desc: 'ماذا تريد أن تفعل؟ إضافة مهمة، بدء مذاكرة، أو رفع ملف؟' },
-            'search': { icon: 'fa-search', title: 'بحث شامل', desc: 'ابحث في الدروس، الفيديوهات، والملفات.' },
-            'stats': { icon: 'fa-chart-pie', title: 'إحصائياتك', desc: 'أداؤك ممتاز هذا الأسبوع! استمر في التقدم.' },
-            'profile': { icon: 'fa-user-astronaut', title: 'الملف الشخصي', desc: 'تعديل بياناتك، الصورة الرمزية، والإعدادات.' }
+            'quiz': { icon: 'fa-list-check', title: 'مركز الاختبارات', desc: '4 اختبارات جديدة متاحة. أكملها لرفع ترتيبك في المتصدرين.' },
+            'chat': { icon: 'fa-users-viewfinder', title: 'المجتمع', desc: 'تواصل مع 1,200 طالب نشط الآن. غرف صوتية وكتابية.' },
+            'ai': { icon: 'fa-robot', title: 'SalfAI Ultra', desc: 'نسخة مطورة من مساعدك الذكي. أسرع بـ 3 مرات وأكثر دقة في حل المسائل.' },
+            'games': { icon: 'fa-gamepad', title: 'منطقة الألعاب', desc: 'ألعاب ذكاء لتنشيط الذاكرة.' },
+            'quotes': { icon: 'fa-quote-right', title: 'اقتباسات', desc: '"النجاح هو مجموع مجهودات صغيرة تتكرر يوماً بعد يوم."' },
+            'maker': { icon: 'fa-layer-group', title: 'أدوات صنع المنصات', desc: 'أدوات متكاملة لبناء منصتك التعليمية الخاصة.' },
+            'add': { icon: 'fa-plus', title: 'إجراء سريع', desc: 'إضافة مهمة جديدة أو بدء جلسة مذاكرة.' },
+            'search': { icon: 'fa-magnifying-glass', title: 'بحث ذكي', desc: 'ابحث في محتوى الدروس والفيديوهات والملخصات.' },
+            'stats': { icon: 'fa-chart-pie', title: 'إحصائيات', desc: 'لقد قضيت 5 ساعات في التعلم هذا الأسبوع. عمل رائع!' },
+            'profile': { icon: 'fa-user-astronaut', title: 'ملفك الشخصي', desc: 'المستوى 5 - المتصدر.' }
         };
 
-        // Video Modal Control
+        // Video Modal
         const vidModal = document.getElementById('videoModal');
         const frame = document.getElementById('youtubeFrame');
         const vidTitle = document.getElementById('videoTitleText');
@@ -456,7 +568,7 @@
             const data = videos[key];
             if (!data) return;
             
-            frame.src = https://www.youtube.com/embed/${data.id}?autoplay=1&modestbranding=1&rel=0;
+            frame.src = `https://www.youtube.com/embed/${data.id}?autoplay=1&modestbranding=1&rel=0`;
             vidTitle.innerText = data.title;
             
             vidModal.classList.remove('hidden');
@@ -473,7 +585,7 @@
             }, 300);
         }
 
-        // Info Modal Control
+        // Info Modal
         const infoModal = document.getElementById('infoModal');
         const infoContent = document.getElementById('infoContent');
 
@@ -481,7 +593,7 @@
             const data = modalData[key];
             if (!data) return;
 
-            document.getElementById('modalIcon').className = fa-solid ${data.icon} text-4xl text-blue-400 drop-shadow-lg;
+            document.getElementById('modalIcon').className = `fa-solid ${data.icon} text-5xl text-blue-500 dark:text-blue-400 drop-shadow-lg relative z-10`;
             document.getElementById('modalTitle').innerText = data.title;
             document.getElementById('modalDesc').innerText = data.desc;
 
@@ -500,7 +612,6 @@
             }, 300);
         }
 
-        // Close on background click
         window.onclick = function(e) {
             if (e.target == infoModal) closeInfoModal();
             if (e.target == vidModal) closeModal();
