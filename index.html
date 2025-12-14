@@ -2,453 +2,510 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Vocab Challenge</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EduUltra | المستقبل</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Cairo (Arabic) & Outfit (English/Numbers) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;400;600;700;900&family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Pro (Latest) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        obsidian: '#020617', // Darkest Blue
+                        charcoal: '#0f172a',
+                        glass: 'rgba(30, 41, 59, 0.4)',
+                        primary: '#3b82f6',
+                        neon: '#06b6d4', // Cyan
+                        ai: '#8b5cf6',   // Violet
+                    },
+                    boxShadow: {
+                        'glow-ai': '0 0 30px -5px rgba(139, 92, 246, 0.6)',
+                        'glow-blue': '0 0 20px -5px rgba(59, 130, 246, 0.5)',
+                        'card': '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
+                    },
+                    animation: {
+                        'float': 'float 4s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite alternate',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        },
+                        pulseGlow: {
+                            '0%': { boxShadow: '0 0 15px -5px rgba(139, 92, 246, 0.3)' },
+                            '100%': { boxShadow: '0 0 35px -5px rgba(139, 92, 246, 0.8)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '200% 0' },
+                            '100%': { backgroundPosition: '-200% 0' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        :root {
-            --primary-color: #2c3e50; /* لون داكن أكثر للجدية */
-            --accent-color: #e67e22; /* لون برتقالي للتمييز */
-            --bg-color: #ecf0f1;
-            --correct-color: #27ae60;
-            --wrong-color: #c0392b;
-        }
-
         body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: var(--primary-color);
+            font-family: 'Cairo', sans-serif;
+            background-color: #020617;
+            color: #fff;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .container {
-            background: white;
-            width: 90%;
-            max-width: 650px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            overflow: hidden;
+        /* Deep Mesh Background */
+        .mesh-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+        }
+
+        /* Advanced Glassmorphism */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+        }
+
+        .glass-card {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 22px;
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: relative;
-        }
-
-        .header {
-            background: var(--primary-color);
-            color: white;
-            padding: 25px;
-            text-align: center;
-            position: relative;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: 900;
-        }
-        
-        .header p {
-            margin: 5px 0 0;
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background: rgba(255,255,255,0.2);
-            margin-top: 20px;
-            border-radius: 4px;
             overflow: hidden;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: var(--accent-color);
-            width: 0%;
-            transition: width 0.4s ease;
+        .glass-card:active {
+            transform: scale(0.97);
         }
 
-        .quiz-body {
-            padding: 40px 30px;
+        /* Horizontal Scroll Snap (The Video Carousel) */
+        .snap-x-mandatory {
+            scroll-snap-type: x mandatory;
         }
-
-        .question-box {
-            background-color: #f8f9fa;
-            border-left: 5px solid var(--accent-color);
-            padding: 20px;
-            margin-bottom: 30px;
-            border-radius: 5px;
+        .snap-center {
+            scroll-snap-align: center;
         }
-
-        .question-text {
-            font-size: 1.3rem;
-            line-height: 1.6;
-            font-weight: bold;
-            color: #34495e;
-            text-align: left; /* الجمل إنجليزية فتكون يسار */
-            direction: ltr;
-        }
-
-        .blank-space {
-            color: var(--accent-color);
-            text-decoration: underline;
-            font-weight: 900;
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            direction: ltr; /* الخيارات إنجليزية */
-        }
-
-        .option-btn {
-            background: white;
-            border: 2px solid #bdc3c7;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            font-weight: bold;
-            color: var(--primary-color);
-            transition: all 0.2s;
-        }
-
-        .option-btn:hover:not(:disabled) {
-            border-color: var(--primary-color);
-            background-color: #f0f3f4;
-            transform: translateY(-2px);
-        }
-
-        .option-btn.correct {
-            background-color: var(--correct-color);
-            border-color: var(--correct-color);
-            color: white;
-        }
-
-        .option-btn.wrong {
-            background-color: var(--wrong-color);
-            border-color: var(--wrong-color);
-            color: white;
-        }
-
-        .feedback-section {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 8px;
-            display: none;
-            text-align: right; /* الشرح بالعربي */
-            direction: rtl;
-            animation: slideUp 0.4s;
-        }
-
-        .feedback-section.success { background-color: #d5f5e3; color: #1e8449; }
-        .feedback-section.error { background-color: #fadbd8; color: #943126; }
-
-        .next-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.2rem;
-            font-family: 'Tajawal', sans-serif;
-            cursor: pointer;
-            margin-top: 20px;
+        .hide-scroll::-webkit-scrollbar {
             display: none;
         }
 
-        .next-btn:hover { background: #34495e; }
-
-        .result-screen {
-            text-align: center;
-            padding: 50px 20px;
-            display: none;
+        /* Text Gradients */
+        .text-gradient-gold {
+            background: linear-gradient(to right, #fbbf24, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-gradient-ai {
+            background: linear-gradient(to right, #c084fc, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .score-display {
-            font-size: 4rem;
-            font-weight: 900;
-            color: var(--accent-color);
-            margin-bottom: 10px;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 500px) {
-            .options-grid { grid-template-columns: 1fr; }
+        /* Shimmer Effect for AI Text */
+        .shimmer-text {
+            background: linear-gradient(to right, #4c1d95 0%, #a78bfa 50%, #4c1d95 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>Advanced Challenge</h1>
-        <p>املأ الفراغ بالكلمة المناسبة</p>
-        <div class="progress-bar">
-            <div class="progress-fill" id="progress"></div>
-        </div>
-    </div>
+    <!-- Dynamic Background -->
+    <div class="mesh-bg"></div>
 
-    <div class="quiz-body" id="quiz-screen">
-        <div class="question-box">
-            <div class="question-text" id="question-text">
-                Loading...
+    <!-- Main App Container -->
+    <div class="max-w-[480px] mx-auto min-h-screen relative pb-28">
+
+        <!-- 1. Header -->
+        <header class="flex justify-between items-center p-6 pt-8">
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <div class="w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-blue-500 to-purple-500">
+                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Profile" class="w-full h-full rounded-full bg-slate-900 border-2 border-slate-900">
+                    </div>
+                    <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-slate-900"></div>
+                </div>
+                <div>
+                    <h1 class="text-xs text-slate-400 font-outfit uppercase tracking-wider mb-0.5">Welcome Back</h1>
+                    <h2 class="text-lg font-bold text-white font-cairo">أحمد المتطور</h2>
+                </div>
+            </div>
+            <button class="w-11 h-11 glass-panel flex items-center justify-center text-slate-300 hover:text-white transition group">
+                <i class="fa-regular fa-bell text-xl group-hover:rotate-12 transition-transform"></i>
+                <span class="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            </button>
+        </header>
+
+        <!-- 2. Hero Slider (Advertisements) -->
+        <div class="px-5 mb-8">
+            <div class="relative w-full aspect-[2/1] rounded-3xl overflow-hidden shadow-card group">
+                <!-- Slides Container -->
+                <div id="adSlider" class="flex w-full h-full overflow-x-auto snap-x-mandatory hide-scroll">
+                    <!-- Slide 1 -->
+                    <div class="min-w-full h-full relative snap-center">
+                        <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent p-6 flex flex-col justify-end items-start">
+                            <span class="bg-blue-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-lg mb-2">NEW</span>
+                            <h3 class="text-2xl font-bold text-white font-cairo mb-1">مسار الذكاء الاصطناعي</h3>
+                            <p class="text-slate-300 text-xs font-outfit">Level up your skills with AI 2.0</p>
+                        </div>
+                    </div>
+                    <!-- Slide 2 -->
+                    <div class="min-w-full h-full relative snap-center">
+                        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent p-6 flex flex-col justify-end items-start">
+                            <span class="bg-purple-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-1 rounded-lg mb-2">EVENT</span>
+                            <h3 class="text-2xl font-bold text-white font-cairo mb-1">الهاكاثون السنوي</h3>
+                            <p class="text-slate-300 text-xs font-outfit">Join the challenge now.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="options-grid" id="options-container">
+        <!-- 3. Advanced Bento Grid -->
+        <div class="grid grid-cols-2 gap-4 px-5">
+
+            <!-- A. Quiz Module (Tall) -->
+            <div class="glass-card row-span-2 p-5 flex flex-col justify-between group" onclick="openModal('quiz')">
+                <div class="flex justify-between items-start">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-600/20 flex items-center justify-center text-blue-400 border border-blue-500/20 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-list-check text-xl"></i>
+                    </div>
+                    <span class="text-[10px] font-outfit text-slate-500 bg-slate-800/50 px-2 py-1 rounded-full border border-slate-700">4 New</span>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-1">الاختبارات</h3>
+                    <div class="w-full h-1.5 bg-slate-800 rounded-full mt-3 overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 w-[70%]"></div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 font-outfit text-right">70% Completed</p>
+                </div>
             </div>
 
-        <div class="feedback-section" id="feedback">
-            <h3 id="feedback-title" style="margin: 0 0 10px 0;"></h3>
-            <p id="feedback-meaning" style="font-weight: bold;"></p>
-            <p id="feedback-text"></p>
+            <!-- B. Shorts (Visual) -->
+            <div class="glass-card h-40 relative group overflow-hidden" onclick="playVideo('shorts')">
+                <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?q=80&w=400&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-60 transition duration-500 group-hover:scale-110 group-hover:opacity-40">
+                <div class="absolute top-3 left-3 bg-red-600 text-white text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1 shadow-lg">
+                    <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> LIVE
+                </div>
+                <div class="absolute bottom-3 right-3">
+                    <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
+                        <i class="fa-solid fa-play text-white text-sm ml-0.5"></i>
+                    </div>
+                </div>
+                <div class="absolute bottom-4 left-3">
+                    <h3 class="font-bold text-white text-sm">Shorts</h3>
+                </div>
+            </div>
+
+            <!-- C. Chat -->
+            <div class="glass-card p-4 flex flex-col items-center justify-center gap-2 group" onclick="openModal('chat')">
+                <div class="relative">
+                    <i class="fa-solid fa-comments text-3xl text-emerald-400 group-hover:-translate-y-1 transition-transform"></i>
+                    <div class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-800"></div>
+                </div>
+                <h3 class="font-bold text-slate-200 text-sm">مجتمعنا</h3>
+            </div>
+
+            <!-- D. SalfAI (The Star Feature) -->
+            <div class="glass-card col-span-2 p-0 relative overflow-hidden animate-pulse-glow" style="border-color: rgba(139, 92, 246, 0.3);" onclick="openModal('ai')">
+                <!-- Inner Gradient Mesh -->
+                <div class="absolute inset-0 bg-gradient-to-r from-violet-900/40 via-transparent to-transparent z-0"></div>
+                
+                <div class="relative z-10 flex items-center justify-between p-5 h-28">
+                    <div class="flex flex-col justify-center h-full">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fa-solid fa-sparkles text-violet-400 text-xs animate-spin-slow"></i>
+                            <span class="text-[10px] font-bold text-violet-300 tracking-widest uppercase font-outfit">AI Powered</span>
+                        </div>
+                        <h3 class="text-2xl font-black italic shimmer-text">SalfAI <span class="text-white not-italic text-lg">Pro</span></h3>
+                        <p class="text-[11px] text-slate-400 mt-1 max-w-[160px] leading-tight">المساعد الذكي الأقوى للدراسة. اسألني الآن.</p>
+                    </div>
+                    
+                    <div class="relative w-20 h-20 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-violet-500/20 blur-xl rounded-full animate-pulse"></div>
+                        <i class="fa-solid fa-robot text-5xl text-violet-200 drop-shadow-[0_0_15px_rgba(139,92,246,0.5)] animate-float"></i>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question</button>
+        <!-- 4. "The Carousel" - Video Section (Requested Feature) -->
+        <div class="mt-8">
+            <div class="flex items-center justify-between px-6 mb-4">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clapperboard text-blue-500"></i>
+                    دورات مميزة
+                </h3>
+                <span class="text-xs text-blue-400 cursor-pointer">عرض الكل</span>
+            </div>
+
+            <!-- Swiper Container with Padding -->
+            <div class="flex overflow-x-auto snap-x-mandatory hide-scroll pb-8 px-5 gap-4">
+                
+                <!-- Video Card 1 -->
+                <div class="min-w-[85%] snap-center" onclick="playVideo('coding')">
+                    <div class="glass-card h-48 relative group overflow-hidden border-slate-700">
+                        <img src="https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover opacity-80 transition group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                        
+                        <!-- Play Button -->
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
+                            <div class="w-14 h-14 rounded-full bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-glow-blue scale-75 group-hover:scale-100 transition">
+                                <i class="fa-solid fa-play text-white ml-1"></i>
+                            </div>
+                        </div>
+
+                        <div class="absolute bottom-4 right-4 z-10 text-right">
+                            <span class="text-[10px] text-blue-300 font-outfit uppercase tracking-wider mb-1 block">Programming</span>
+                            <h4 class="font-bold text-lg text-white leading-tight">أساسيات بايثون</h4>
+                            <p class="text-[10px] text-slate-400 mt-1"><i class="fa-regular fa-clock mr-1"></i> 45 دقيقة</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 2 -->
+                <div class="min-w-[85%] snap-center" onclick="playVideo('main')">
+                    <div class="glass-card h-48 relative group overflow-hidden border-slate-700">
+                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover opacity-80 transition group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
+                            <div class="w-14 h-14 rounded-full bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-glow-blue scale-75 group-hover:scale-100 transition">
+                                <i class="fa-solid fa-play text-white ml-1"></i>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-4 right-4 z-10 text-right">
+                            <span class="text-[10px] text-purple-300 font-outfit uppercase tracking-wider mb-1 block">Technology</span>
+                            <h4 class="font-bold text-lg text-white leading-tight">مستقبل التقنية</h4>
+                            <p class="text-[10px] text-slate-400 mt-1"><i class="fa-regular fa-clock mr-1"></i> 12 دقيقة</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 3 -->
+                <div class="min-w-[85%] snap-center" onclick="playVideo('shorts')">
+                    <div class="glass-card h-48 relative group overflow-hidden border-slate-700">
+                        <img src="https://images.unsplash.com/photo-1610484826967-09c5720778c7?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover opacity-80 transition group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
+                            <div class="w-14 h-14 rounded-full bg-blue-600/90 backdrop-blur flex items-center justify-center shadow-glow-blue scale-75 group-hover:scale-100 transition">
+                                <i class="fa-solid fa-play text-white ml-1"></i>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-4 right-4 z-10 text-right">
+                            <span class="text-[10px] text-green-300 font-outfit uppercase tracking-wider mb-1 block">Design</span>
+                            <h4 class="font-bold text-lg text-white leading-tight">تصميم الواجهات</h4>
+                            <p class="text-[10px] text-slate-400 mt-1"><i class="fa-regular fa-clock mr-1"></i> 20 دقيقة</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 5. Mini Tools (Grid) -->
+        <div class="grid grid-cols-3 gap-3 px-5 mb-6">
+            <div class="glass-card p-3 flex flex-col items-center justify-center gap-2 py-4 active:scale-95 transition" onclick="openModal('games')">
+                <i class="fa-solid fa-gamepad text-2xl text-orange-400"></i>
+                <span class="text-xs font-bold text-slate-300">الألعاب</span>
+            </div>
+            <div class="glass-card p-3 flex flex-col items-center justify-center gap-2 py-4 active:scale-95 transition" onclick="openModal('quotes')">
+                <i class="fa-solid fa-quote-right text-2xl text-teal-400"></i>
+                <span class="text-xs font-bold text-slate-300">اقتباسات</span>
+            </div>
+            <div class="glass-card p-3 flex flex-col items-center justify-center gap-2 py-4 active:scale-95 transition" onclick="openModal('maker')">
+                <i class="fa-solid fa-layer-group text-2xl text-pink-400"></i>
+                <span class="text-xs font-bold text-slate-300">الأدوات</span>
+            </div>
+        </div>
+
     </div>
 
-    <div class="result-screen" id="result-screen">
-        <div class="score-display" id="final-score">0/5</div>
-        <h2 id="result-title"></h2>
-        <p id="result-msg" style="font-size: 1.1rem; color: #7f8c8d;"></p>
-        <button class="next-btn" style="display:inline-block; width: auto; padding: 10px 40px;" onclick="restartQuiz()">Play Again</button>
+    <!-- 6. Ultra Floating Dock (Navigation) -->
+    <div class="fixed bottom-6 left-0 w-full z-40 flex justify-center pointer-events-none">
+        <div class="glass-panel px-6 py-3 flex items-center gap-8 shadow-glow-blue pointer-events-auto rounded-full border-t border-white/10">
+            <button class="text-blue-500 relative flex flex-col items-center group">
+                <i class="fa-solid fa-house text-xl mb-1 group-hover:-translate-y-1 transition-transform"></i>
+                <span class="w-1 h-1 bg-blue-500 rounded-full"></span>
+            </button>
+            <button class="text-slate-400 hover:text-white transition relative group" onclick="openModal('search')">
+                <i class="fa-solid fa-magnifying-glass text-xl group-hover:scale-110 transition"></i>
+            </button>
+            
+            <!-- Main Action Button -->
+            <button class="w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center -mt-10 shadow-glow-blue border-4 border-[#020617] transform hover:scale-110 active:scale-90 transition duration-300" onclick="openModal('add')">
+                <i class="fa-solid fa-plus text-white text-2xl"></i>
+            </button>
+            
+            <button class="text-slate-400 hover:text-white transition relative group" onclick="openModal('stats')">
+                <i class="fa-solid fa-chart-simple text-xl group-hover:scale-110 transition"></i>
+            </button>
+            <button class="text-slate-400 hover:text-white transition relative group" onclick="openModal('profile')">
+                <i class="fa-solid fa-user text-xl group-hover:scale-110 transition"></i>
+            </button>
+        </div>
     </div>
-</div>
 
-<script>
-    // قاعدة البيانات المحدثة: جمل بدلاً من مجرد معاني
-    const advancedDatabase = [
-        { 
-            word: "Serendipity", 
-            sentence: "Finding my favorite book in a small shop in Tokyo was pure _______.", 
-            meaning: "صدفة جميلة",
-            explanation: "لأن الجملة تتحدث عن العثور على شيء محبوب بالصدفة في مكان غير متوقع."
-        },
-        { 
-            word: "Ephemeral", 
-            sentence: "Fashion trends are usually _______; they don't last very long.", 
-            meaning: "قصير العمر / لحظي",
-            explanation: "سياق الجملة يتحدث عن أشياء لا تدوم طويلاً (don't last long)."
-        },
-        { 
-            word: "Luminous", 
-            sentence: "The full moon was so _______ that we could see clearly at night.", 
-            meaning: "مضيء / مشع",
-            explanation: "الكلمة تصف القمر الذي يسمح بالرؤية في الليل بسبب ضوئه."
-        },
-        { 
-            word: "Quintessential", 
-            sentence: "He is the _______ gentleman; polite, kind, and well-dressed.", 
-            meaning: "جوهري / المثال الأمثل",
-            explanation: "الجملة تصف شخصاً يجمع كل صفات الرجل النبيل المثالية."
-        },
-        { 
-            word: "Euphoria", 
-            sentence: "Winning the championship filled the team with a sense of _______.", 
-            meaning: "سعادة شديدة",
-            explanation: "الفوز بالبطولة يسبب شعوراً غامراً بالسعادة."
-        },
-        { 
-            word: "Nebulous", 
-            sentence: "His plans for the future are still _______; nothing is decided yet.", 
-            meaning: "غامض / غير واضح",
-            explanation: "بما أن لا شيء مقرر (nothing is decided)، فالخطط غامضة."
-        },
-        { 
-            word: "Ineffable", 
-            sentence: "The beauty of the sunset was _______; words could not describe it.", 
-            meaning: "لا يوصف بالكلام",
-            explanation: "الجملة تقول صراحة أن الكلمات لا يمكنها وصفه."
-        },
-        { 
-            word: "Ethereal", 
-            sentence: "The dancer moved with an _______ grace, looking almost like an angel.", 
-            meaning: "رقيق جداً / سماوي",
-            explanation: "وصف الحركة بأنها تشبه الملائكة (angel) يدل على الرقة والسماوية."
-        },
-        { 
-            word: "Solitude", 
-            sentence: "He went to the mountains to enjoy the peace and _______.", 
-            meaning: "عزلة هادئة",
-            explanation: "الذهاب للجبال بحثاً عن السلام (peace) يرتبط بالعزلة الإيجابية."
-        },
-        { 
-            word: "Resilient", 
-            sentence: "Children are often very _______; they bounce back quickly from illness.", 
-            meaning: "مرن / يتخطى الصعاب",
-            explanation: "عبارة (bounce back) هي المفتاح وتعني التعافي بسرعة."
-        },
-        { 
-            word: "Melancholy", 
-            sentence: "The rainy weather put him in a state of quiet _______.", 
-            meaning: "كآبة خفيفة / شجن",
-            explanation: "الجو الممطر والهادئ غالباً يرتبط بالشعور بالحزن الخفيف."
-        },
-        { 
-            word: "Ambiguous", 
-            sentence: "The ending of the movie was _______; no one knew what really happened.", 
-            meaning: "غامض / ملتبس",
-            explanation: "عدم معرفة ما حدث يعني أن النهاية تحتمل أكثر من تفسير."
-        },
-        { 
-            word: "Vigilant", 
-            sentence: "Security guards must remain _______ at all times to prevent theft.", 
-            meaning: "يقظ / منتبه",
-            explanation: "الحراسة ومنع السرقة يتطلبان الانتباه الدائم."
-        },
-        { 
-            word: "Elusive", 
-            sentence: "The solution to this math problem remains _______ to me.", 
-            meaning: "صعب الفهم أو الإمساك به",
-            explanation: "عندما يكون الحل صعب المنال أو الفهم."
-        },
-        { 
-            word: "Meticulous", 
-            sentence: "She is very _______ about her work; she checks every detail twice.", 
-            meaning: "شديد الدقة",
-            explanation: "فحص كل التفاصيل مرتين يدل على الدقة الشديدة."
-        }
-    ];
+    <!-- MODALS (Full Screen Blur) -->
 
-    let currentQuestions = [];
-    let currentQuestionIndex = 0;
-    let score = 0;
-
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    function startQuiz() {
-        let shuffledDb = shuffleArray([...advancedDatabase]);
-        currentQuestions = shuffledDb.slice(0, 5);
-        currentQuestionIndex = 0;
-        score = 0;
+    <!-- Video Modal -->
+    <div id="videoModal" class="fixed inset-0 z-[100] hidden flex-col bg-black/95 backdrop-blur-xl transition-opacity duration-300 opacity-0">
+        <div class="flex justify-between items-center p-6 w-full max-w-[480px] mx-auto">
+            <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition">
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <span class="font-bold text-white">مشاهدة</span>
+            <button class="w-10 h-10 opacity-0 cursor-default"></button>
+        </div>
         
-        document.getElementById('quiz-screen').style.display = 'block';
-        document.getElementById('result-screen').style.display = 'none';
-        
-        loadQuestion();
-    }
+        <div class="flex-1 flex items-center justify-center w-full max-w-[480px] mx-auto px-4">
+            <div class="w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative">
+                 <iframe id="youtubeFrame" class="absolute top-0 left-0 w-full h-full" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
 
-    function loadQuestion() {
-        const data = currentQuestions[currentQuestionIndex];
-        
-        // Progress Bar
-        document.getElementById('progress').style.width = `${(currentQuestionIndex / 5) * 100}%`;
+        <div class="p-8 w-full max-w-[480px] mx-auto">
+            <h2 id="videoTitleText" class="text-2xl font-bold text-white mb-2">عنوان الفيديو</h2>
+            <p class="text-slate-400 text-sm">شرح تفصيلي للمحتوى التعليمي الموجود في هذا الفيديو. يمكنك المتابعة والتعلم.</p>
+            
+            <div class="mt-6 flex gap-4">
+                <button class="flex-1 bg-blue-600 py-3 rounded-xl font-bold text-white shadow-glow-blue">تحميل الدرس</button>
+                <button class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-share-nodes"></i></button>
+            </div>
+        </div>
+    </div>
 
-        // Set Question (Replace underscore with styled blank)
-        const formattedSentence = data.sentence.replace('_______', '<span class="blank-space">_______</span>');
-        document.getElementById('question-text').innerHTML = formattedSentence;
-        
-        // Reset UI
-        document.getElementById('feedback').style.display = 'none';
-        document.getElementById('next-btn').style.display = 'none';
-        
-        // Prepare Options (English Words)
-        let options = [data.word];
-        let distractors = advancedDatabase
-            .filter(item => item.word !== data.word)
-            .map(item => item.word);
-        
-        shuffleArray(distractors);
-        options.push(...distractors.slice(0, 3));
-        shuffleArray(options);
+    <!-- Info Modal -->
+    <div id="infoModal" class="fixed inset-0 z-[100] hidden items-end justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div id="infoContent" class="bg-[#0f172a] border-t border-white/10 w-full max-w-[480px] rounded-t-3xl p-8 transform translate-y-full transition-transform duration-300">
+            <div class="w-12 h-1.5 bg-slate-700 rounded-full mx-auto mb-8"></div>
+            
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500/20 to-purple-500/20 flex items-center justify-center mx-auto mb-5 border border-white/5">
+                    <i id="modalIcon" class="fa-solid fa-robot text-4xl text-blue-400 drop-shadow-lg"></i>
+                </div>
+                <h2 id="modalTitle" class="text-2xl font-bold text-white mb-2 font-cairo">العنوان</h2>
+                <p id="modalDesc" class="text-slate-400 text-sm leading-relaxed mb-8">الوصف يظهر هنا بشكل مفصل وجميل.</p>
+                
+                <button onclick="closeInfoModal()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition">
+                    فهمت ذلك
+                </button>
+            </div>
+        </div>
+    </div>
 
-        const container = document.getElementById('options-container');
-        container.innerHTML = '';
+    <script>
+        // --- Logic ---
         
-        options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = opt;
-            btn.onclick = () => checkAnswer(btn, opt, data);
-            container.appendChild(btn);
-        });
-    }
+        // Videos Data
+        const videos = {
+            'main': { id: 'lAIGb1lfpBw', title: 'مستقبل التقنية 2025' },
+            'shorts': { id: 'PPxduF5hQpI', title: 'فيديو قصير (Shorts)' },
+            'coding': { id: 'rfscVS0vtbw', title: 'أساسيات بايثون للمبتدئين' }
+        };
 
-    function checkAnswer(btn, selected, data) {
-        const buttons = document.querySelectorAll('.option-btn');
-        buttons.forEach(b => b.disabled = true);
+        // Modal Data
+        const modalData = {
+            'quiz': { icon: 'fa-list-check', title: 'مركز الاختبارات', desc: '4 اختبارات جديدة في انتظارك. حقق أعلى الدرجات لتتصدر القائمة!' },
+            'chat': { icon: 'fa-comments', title: 'الدردشة الحية', desc: 'تواصل مع زملائك ومعلميك في غرف صوتية وكتابية عالية الجودة.' },
+            'ai': { icon: 'fa-robot', title: 'SalfAI الذكي', desc: 'أنا هنا لمساعدتك 24/7. يمكنني تلخيص الكتب، حل المعادلات، وشرح المفاهيم الصعبة.' },
+            'games': { icon: 'fa-gamepad', title: 'استراحة الألعاب', desc: 'مجموعة من الألعاب الذهنية لتنشيط الذاكرة والتركيز.' },
+            'quotes': { icon: 'fa-quote-right', title: 'إلهام يومي', desc: 'اقتباسات مختارة بعناية لتحفيزك على الدراسة والنجاح.' },
+            'maker': { icon: 'fa-layer-group', title: 'أدوات الصانع', desc: 'أنشئ بطاقات استذكار، خرائط ذهنية، وجداول دراسية بسهولة.' },
+            'add': { icon: 'fa-plus', title: 'إضافة سريعة', desc: 'ماذا تريد أن تفعل؟ إضافة مهمة، بدء مذاكرة، أو رفع ملف؟' },
+            'search': { icon: 'fa-search', title: 'بحث شامل', desc: 'ابحث في الدروس، الفيديوهات، والملفات.' },
+            'stats': { icon: 'fa-chart-pie', title: 'إحصائياتك', desc: 'أداؤك ممتاز هذا الأسبوع! استمر في التقدم.' },
+            'profile': { icon: 'fa-user-astronaut', title: 'الملف الشخصي', desc: 'تعديل بياناتك، الصورة الرمزية، والإعدادات.' }
+        };
 
-        const feedback = document.getElementById('feedback');
-        const title = document.getElementById('feedback-title');
-        const meaning = document.getElementById('feedback-meaning');
-        const text = document.getElementById('feedback-text');
+        // Video Modal Control
+        const vidModal = document.getElementById('videoModal');
+        const frame = document.getElementById('youtubeFrame');
+        const vidTitle = document.getElementById('videoTitleText');
 
-        if (selected === data.word) {
-            btn.classList.add('correct');
-            score++;
-            feedback.className = 'feedback-section success';
-            title.innerText = "Excellent! ✅";
-        } else {
-            btn.classList.add('wrong');
-            buttons.forEach(b => {
-                if (b.innerText === data.word) b.classList.add('correct');
+        function playVideo(key) {
+            const data = videos[key];
+            if (!data) return;
+            
+            frame.src = https://www.youtube.com/embed/${data.id}?autoplay=1&modestbranding=1&rel=0;
+            vidTitle.innerText = data.title;
+            
+            vidModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                vidModal.classList.remove('opacity-0');
             });
-            feedback.className = 'feedback-section error';
-            title.innerText = "Wrong! ❌";
         }
 
-        // إظهار الكلمة في الفراغ
-        const filledSentence = data.sentence.replace('_______', `<span style="color:${selected === data.word ? '#27ae60' : '#c0392b'}">${data.word}</span>`);
-        document.getElementById('question-text').innerHTML = filledSentence;
-
-        meaning.innerText = `المعنى: ${data.meaning}`;
-        text.innerText = data.explanation;
-        
-        feedback.style.display = 'block';
-        document.getElementById('next-btn').style.display = 'block';
-    }
-
-    function nextQuestion() {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < 5) loadQuestion();
-        else showResults();
-    }
-
-    function showResults() {
-        document.getElementById('quiz-screen').style.display = 'none';
-        document.getElementById('result-screen').style.display = 'block';
-        document.getElementById('progress').style.width = '100%';
-        
-        document.getElementById('final-score').innerText = `${score}/5`;
-        
-        const title = document.getElementById('result-title');
-        const msg = document.getElementById('result-msg');
-        
-        if (score === 5) {
-            title.innerText = "Master of Words! 👑";
-            msg.innerText = "أداء أسطوري! أنت تفهم سياق الكلمات بدقة.";
-        } else if (score >= 3) {
-            title.innerText = "Great Job! 🌟";
-            msg.innerText = "مستوى جيد جداً، لكن انتبه للفروقات الدقيقة.";
-        } else {
-            title.innerText = "Keep Practicing 📚";
-            msg.innerText = "السياق هو المفتاح، حاول قراءة الجمل بتركيز أكبر.";
+        function closeModal() {
+            vidModal.classList.add('opacity-0');
+            setTimeout(() => {
+                vidModal.classList.add('hidden');
+                frame.src = '';
+            }, 300);
         }
-    }
 
-    function restartQuiz() {
-        startQuiz();
-    }
+        // Info Modal Control
+        const infoModal = document.getElementById('infoModal');
+        const infoContent = document.getElementById('infoContent');
 
-    startQuiz();
-</script>
+        function openModal(key) {
+            const data = modalData[key];
+            if (!data) return;
 
+            document.getElementById('modalIcon').className = fa-solid ${data.icon} text-4xl text-blue-400 drop-shadow-lg;
+            document.getElementById('modalTitle').innerText = data.title;
+            document.getElementById('modalDesc').innerText = data.desc;
+
+            infoModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                infoModal.classList.remove('opacity-0');
+                infoContent.classList.remove('translate-y-full');
+            });
+        }
+
+        function closeInfoModal() {
+            infoContent.classList.add('translate-y-full');
+            infoModal.classList.add('opacity-0');
+            setTimeout(() => {
+                infoModal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Close on background click
+        window.onclick = function(e) {
+            if (e.target == infoModal) closeInfoModal();
+            if (e.target == vidModal) closeModal();
+        }
+
+    </script>
 </body>
 </html>
