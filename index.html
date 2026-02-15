@@ -1,133 +1,1973 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>المدينة الملكية المتطورة</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            margin: 0; overflow: hidden; background: #000; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            user-select: none; -webkit-user-select: none; 
+        }
+        
+        #canvas-container { width: 100vw; height: 100vh; }
+        #game-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        
+        /* علامة التصويب */
+        #crosshair {
+            position: absolute; top: 50%; left: 50%; width: 20px; height: 20px;
+            transform: translate(-50%, -50%);
+            border: 3px solid rgba(255,255,255,0.9);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        #crosshair::before, #crosshair::after {
+            content: ''; position: absolute; background: rgba(255,255,255,0.9);
+        }
+        #crosshair::before { 
+            width: 2px; height: 10px; left: 50%; top: 50%; 
+            transform: translate(-50%, -50%); 
+        }
+        #crosshair::after { 
+            width: 10px; height: 2px; left: 50%; top: 50%; 
+            transform: translate(-50%, -50%); 
+        }
+
+        /* شريط الأدوات */
+        #hotbar-container {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(0,0,0,0.85), rgba(40,40,40,0.9));
+            padding: 10px; border-radius: 15px; display: flex; gap: 8px; 
+            pointer-events: auto; border: 3px solid rgba(255,215,0,0.6);
+            box-shadow: 0 0 30px rgba(255,215,0,0.4), inset 0 0 20px rgba(0,0,0,0.3);
+        }
+        .slot {
+            width: 55px; height: 55px; border: 3px solid #555; 
+            background-size: cover; cursor: pointer; transition: all 0.2s;
+            position: relative; border-radius: 8px; background-color: #2a2a2a;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .slot.active { 
+            border-color: #FFD700; transform: scale(1.2); 
+            box-shadow: 0 0 25px rgba(255,215,0,0.9), inset 0 0 15px rgba(255,215,0,0.3);
+            z-index: 2;
+        }
+        .slot:hover:not(.active) { 
+            border-color: #999; transform: scale(1.08); 
+            box-shadow: 0 0 15px rgba(255,255,255,0.3);
+        }
+        .slot span {
+            position: absolute; bottom: 3px; right: 5px; color: #FFD700; 
+            font-size: 14px; font-weight: bold;
+            text-shadow: 2px 2px 4px #000, 0 0 5px #000;
+        }
+
+        /* لوحة المعلومات */
+        #info-panel {
+            position: absolute; top: 15px; right: 15px; 
+            color: white; text-align: right; font-size: 15px; font-weight: bold;
+            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(40,40,40,0.85));
+            padding: 18px 22px; border-radius: 12px;
+            border: 2px solid rgba(255,215,0,0.4);
+            box-shadow: 0 0 20px rgba(0,0,0,0.6);
+            min-width: 220px;
+        }
+        #info-panel div { 
+            margin: 6px 0; 
+            text-shadow: 2px 2px 4px #000;
+        }
+        .info-label { color: #FFD700; display: inline-block; width: 110px; }
+        .info-value { color: #FFF; }
+
+        /* شريط الصحة */
+        #health-bar {
+            position: absolute; bottom: 95px; left: 50%; transform: translateX(-50%);
+            width: 320px; height: 28px; background: rgba(0,0,0,0.8);
+            border: 3px solid #444; border-radius: 18px; overflow: hidden;
+            box-shadow: 0 0 15px rgba(0,0,0,0.7);
+        }
+        #health-fill {
+            height: 100%; background: linear-gradient(90deg, #ff4444, #ff0000);
+            transition: width 0.3s; width: 100%;
+            box-shadow: inset 0 0 15px rgba(255,255,255,0.4);
+        }
+        #health-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: white; font-weight: bold; font-size: 16px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        /* نافذة معلومات الشخصية */
+        #npc-info-modal {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(20,20,40,0.97), rgba(40,20,60,0.97));
+            padding: 35px; border-radius: 18px; display: none;
+            border: 4px solid #FFD700; pointer-events: auto;
+            box-shadow: 0 0 50px rgba(255,215,0,0.6);
+            min-width: 450px; max-width: 550px;
+        }
+        #npc-info-modal h2 {
+            color: #FFD700; margin-bottom: 25px; text-align: center;
+            font-size: 26px; text-shadow: 2px 2px 6px #000;
+        }
+        #npc-info-modal .info-row {
+            margin: 14px 0; font-size: 17px; color: white;
+            display: flex; justify-content: space-between;
+            padding: 10px; background: rgba(0,0,0,0.4); border-radius: 6px;
+        }
+        #npc-info-modal .info-row .label { color: #FFD700; font-weight: bold; }
+        #npc-info-modal .close-btn {
+            margin-top: 25px; padding: 14px 35px; background: #ff4444;
+            color: white; border: none; border-radius: 10px; cursor: pointer;
+            font-size: 17px; font-weight: bold; width: 100%;
+            transition: all 0.2s;
+        }
+        #npc-info-modal .close-btn:hover { background: #ff0000; transform: scale(1.05); }
+        #npc-info-modal .action-btn {
+            margin-top: 12px; padding: 14px 35px; background: #FFD700;
+            color: #000; border: none; border-radius: 10px; cursor: pointer;
+            font-size: 17px; font-weight: bold; width: 100%;
+            transition: all 0.2s;
+        }
+        #npc-info-modal .action-btn:hover { background: #FFA500; transform: scale(1.05); }
+
+        /* شاشة البداية */
+        #overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,30,0.97), rgba(30,0,50,0.97));
+            display: flex; flex-direction: column; justify-content: center; 
+            align-items: center; color: white; pointer-events: auto; z-index: 100;
+        }
+        #overlay h1 {
+            color: #FFD700; font-size: 52px; margin-bottom: 20px;
+            text-shadow: 3px 3px 8px #000, 0 0 30px rgba(255,215,0,0.6);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 3px 3px 8px #000, 0 0 30px rgba(255,215,0,0.6); }
+            to { text-shadow: 3px 3px 8px #000, 0 0 50px rgba(255,215,0,0.9); }
+        }
+        #overlay p {
+            font-size: 19px; margin: 10px 0; text-align: center;
+            max-width: 650px; line-height: 1.7;
+        }
+        #start-btn {
+            padding: 20px 60px; font-size: 26px; cursor: pointer; 
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000; border: none; border-radius: 15px; margin-top: 35px;
+            box-shadow: 0 8px 0 #CC8800; transition: all 0.2s;
+            font-weight: bold;
+        }
+        #start-btn:hover { transform: translateY(-3px); box-shadow: 0 11px 0 #CC8800; }
+        #start-btn:active { transform: translateY(8px); box-shadow: none; }
+
+        /* رسائل التنبيه */
+        #notification {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95); color: #FFD700; padding: 25px 50px;
+            border-radius: 12px; font-size: 22px; font-weight: bold;
+            border: 3px solid #FFD700; display: none; pointer-events: none;
+            box-shadow: 0 0 40px rgba(255,215,0,0.6);
+            text-align: center; max-width: 80%;
+        }
+
+        /* التحكم باللمس - محسّن بنمط ماين كرافت */
+        .joystick-zone {
+            position: absolute; bottom: 60px; width: 160px; height: 160px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15), rgba(255,255,255,0.03));
+            border-radius: 50%; pointer-events: auto; display: none;
+            border: 4px solid rgba(255,255,255,0.25);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        }
+        #joystick-left { left: 35px; }
+        #joystick-right { right: 35px; }
+        .stick {
+            width: 70px; height: 70px; 
+            background: radial-gradient(circle, rgba(255,255,255,0.8), rgba(255,255,255,0.4));
+            border-radius: 50%; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); pointer-events: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.6), inset 0 0 10px rgba(255,255,255,0.3);
+            border: 3px solid rgba(255,255,255,0.5);
+        }
+        #jump-btn, #fly-btn, #attack-btn {
+            position: absolute; width: 80px; height: 80px;
+            background: rgba(255,215,0,0.5); border-radius: 50%; color: white;
+            display: none; justify-content: center; align-items: center; 
+            pointer-events: auto; font-size: 16px; font-weight: bold;
+            border: 4px solid rgba(255,255,255,0.6);
+            box-shadow: 0 0 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,255,255,0.2);
+        }
+        #jump-btn { bottom: 220px; right: 35px; background: rgba(0,220,0,0.5); }
+        #fly-btn { bottom: 220px; left: 35px; background: rgba(0,120,255,0.5); }
+        #attack-btn { bottom: 120px; right: 120px; background: rgba(255,50,50,0.5); }
+
+        @media (hover: none) and (pointer: coarse) {
+            .joystick-zone, #jump-btn, #fly-btn, #attack-btn { display: flex; }
+            #info-panel { font-size: 13px; padding: 12px; }
+        }
+    </style>
 </head>
-
 <body>
-    <script>
-        var config = {
-            type: Phaser.AUTO,
-            width: 800,
-            height: 600,
-            physics: {
-                default: 'arcade',
-                arcade: {
-                    gravity: { y: 300 },
-                    debug: false
-                }
-            },
-            scene: {
-                preload: preload,
-                create: create,
-                update: update
-            }
-        };
-        var game = new Phaser.Game(config);
-        function preload() {
-            this.load.image('sky', 'assets/sky.png');
-            this.load.image('ground', 'assets/platform.png');
-            this.load.spritesheet('dude',
-                'assets/dude.png',
-                { frameWidth: 32, frameHeight: 48 }
-            );
-            this.load.image('star', 'assets/star.png');
-            this.load.spritesheet('cat',
-                'assets/cat.png',
-                { frameWidth: 32, frameHeight: 40 }
-            );
-        }
-        var player;
-        var platforms;
-        var cursors;
-        var stars;
-        function create() {
-            this.add.image(400, 300, 'sky');
-            platforms = this.physics.add.staticGroup();
-            platforms.create(600, 400, 'ground');
-            platforms.create(50, 250, 'ground');
-            platforms.create(750, 220, 'ground');
-            platforms.create(400, 568, 'ground').setScale(2).refreshBody();
 
-            this.anims.create({
-                key: 'left',
-                frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-                frameRate: 10,
-                repeat: -1
-            });
-            this.anims.create({
-                key: 'turn',
-                frames: [{ key: 'dude', frame: 4 }],
-                frameRate: 20
-            });
+    <div id="canvas-container"></div>
 
-            this.anims.create({
-                key: 'right',
-                frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-                frameRate: 10,
-                repeat: -1
-            });
+    <div id="game-ui">
+        <div id="crosshair"></div>
+        
+        <div id="info-panel">
+            <div><span class="info-label">FPS:</span> <span class="info-value" id="fps">0</span></div>
+            <div><span class="info-label">الوقت:</span> <span class="info-value" id="time-display">صباح</span></div>
+            <div><span class="info-label">السكان:</span> <span class="info-value" id="npc-count">0</span></div>
+            <div><span class="info-label">الأطفال:</span> <span class="info-value" id="children-count">0</span></div>
+            <div><span class="info-label">الوحوش:</span> <span class="info-value" id="mob-count">0</span></div>
+            <div><span class="info-label">الموقع:</span> <span class="info-value" id="coords">0, 0, 0</span></div>
+        </div>
 
+        <div id="health-bar">
+            <div id="health-fill"></div>
+            <div id="health-text">❤️ 100 / 100</div>
+        </div>
+        
+        <div id="hotbar-container"></div>
 
-            this.anims.create({
-                key: 'catleft',
-                frames: this.anims.generateFrameNumbers('cat', { start: 9, end: 16 }),
-                frameRate: 10,
-                repeat: -1
-            });
-            this.anims.create({
-                key: 'catturn',
-                frames: [{ key: 'cat', frame: 8 }],
-                frameRate: 20
-            });
+        <div id="joystick-left" class="joystick-zone"><div class="stick"></div></div>
+        <div id="joystick-right" class="joystick-zone"><div class="stick"></div></div>
+        <div id="jump-btn">⬆️</div>
+        <div id="fly-btn">🦅</div>
+        <div id="attack-btn">⚔️</div>
 
-            this.anims.create({
-                key: 'catright',
-                frames: this.anims.generateFrameNumbers('cat', { start: 0, end: 7 }),
-                frameRate: 10,
-                repeat: -1
-            });
+        <div id="notification"></div>
 
-            player = this.physics.add.sprite(100, 450, 'cat');
-            player.setBounce(0.2);
-            player.setCollideWorldBounds(true);
-            this.physics.add.collider(player, platforms);
-            cursors = this.input.keyboard.createCursorKeys();
-            stars = this.physics.add.group({
-                key: 'star', repeat: 11, setXY: { x: 12, y: 0, stepX: 70 }
-            });
-            this.physics.add.collider(stars, platforms);
-            stars.children.iterate(function (child) {
-                child.setBounceY(0.3);
-            });
-            this.physics.add.overlap(player, stars, collectStar, null, this);
-        }
+        <div id="npc-info-modal">
+            <h2 id="npc-modal-title">معلومات الشخصية</h2>
+            <div class="info-row">
+                <span class="label">الاسم:</span>
+                <span id="npc-name"></span>
+            </div>
+            <div class="info-row">
+                <span class="label">الجنس:</span>
+                <span id="npc-gender"></span>
+            </div>
+            <div class="info-row">
+                <span class="label">العمر:</span>
+                <span id="npc-age"></span>
+            </div>
+            <div class="info-row">
+                <span class="label">الحالة:</span>
+                <span id="npc-status"></span>
+            </div>
+            <div class="info-row">
+                <span class="label">الزوج/ة:</span>
+                <span id="npc-spouse"></span>
+            </div>
+            <div class="info-row">
+                <span class="label">الأطفال:</span>
+                <span id="npc-children"></span>
+            </div>
+            <div class="info-row">
+                <span class="label">البيت:</span>
+                <span id="npc-house"></span>
+            </div>
+            <div class="info-row">
+                <span class="label">الصحة:</span>
+                <span id="npc-health"></span>
+            </div>
+            <button class="action-btn" id="marry-btn" style="display:none;">💑 الزواج</button>
+            <button class="action-btn" id="attack-npc-btn" style="background:#ff4444;">⚔️ مهاجمة</button>
+            <button class="close-btn" id="close-modal-btn">إغلاق</button>
+        </div>
+    </div>
 
-        function collectStar(player, star) {
-            star.disableBody(true, true);
-        }
+    <div id="overlay">
+        <h1>🏰 المدينة الملكية المتطورة</h1>
+        <p><strong>مرحباً بك في مملكتك الكبيرة!</strong></p>
+        <p>🏰 مدينة ضخمة محصنة | 🌙 نظام يوم/ليل متقدم | 🛏️ نظام النوم والاستيقاظ</p>
+        <p>👥 سكان أذكياء مع عائلات | 💑 نظام زواج وإنجاب | 👶 نظام الأطفال والنمو</p>
+        <p>⚔️ قتال الوحوش | 🚪 أبواب ذكية | 🏗️ بناء تلقائي للطوابق</p>
+        <p style="margin-top:15px; font-size:17px;">
+            <strong>التحكم:</strong> WASD - حركة | مسافة - قفز | F - طيران<br>
+            ماوس أيسر - تكسير | ماوس أيمن - بناء<br>
+            E - التفاعل | Q - مهاجمة
+        </p>
+        <button id="start-btn">🎮 ابدأ المغامرة</button>
+    </div>
 
-        function update() {
-            if (cursors.left.isDown) {
-                player.setVelocityX(-160);
-
-                player.anims.play('catleft', true);
-            }
-            else if (cursors.right.isDown) {
-                player.setVelocityX(160);
-
-                player.anims.play('catright', true);
-            }
-            else {
-                player.setVelocityX(0);
-
-                player.anims.play('catturn');
-            }
-            if (cursors.up.isDown && player.body.touching.down) {
-                player.setVelocityY(-330);
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
             }
         }
     </script>
-</body>
 
+    <script type="module">
+        import * as THREE from 'three';
+        import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+        // ==================== مولد الضوضاء ====================
+        class SimplexNoise {
+            constructor(seed = Math.random()) {
+                this.p = new Uint8Array(256);
+                for(let i=0; i<256; i++) this.p[i] = i;
+                const random = this.seededRandom(seed);
+                for(let i=0; i<256; i++) {
+                    const r = Math.floor(random() * 256);
+                    [this.p[i], this.p[r]] = [this.p[r], this.p[i]];
+                }
+                this.perm = new Uint8Array(512);
+                for(let i=0; i<512; i++) this.perm[i] = this.p[i & 255];
+            }
+            seededRandom(seed) {
+                let x = Math.sin(seed++) * 10000;
+                return () => { x = Math.sin(x) * 10000; return x - Math.floor(x); };
+            }
+            noise2D(x, y) {
+                const X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
+                x -= Math.floor(x); y -= Math.floor(y);
+                const u = x*x*x*(x*(x*6-15)+10), v = y*y*y*(y*(y*6-15)+10);
+                const A = this.perm[X]+Y, B = this.perm[X+1]+Y;
+                return this.lerp(v, this.lerp(u, this.grad(this.perm[A], x, y), this.grad(this.perm[B], x-1, y)),
+                                    this.lerp(u, this.grad(this.perm[A+1], x, y-1), this.grad(this.perm[B+1], x-1, y-1)));
+            }
+            lerp(t, a, b) { return a + t * (b - a); }
+            grad(hash, x, y) {
+                const h = hash & 15;
+                const u = h<8 ? x : y, v = h<4 ? y : (h===12||h===14 ? x : 0);
+                return ((h&1) === 0 ? u : -u) + ((h&2) === 0 ? v : -v);
+            }
+        }
+
+        // ==================== ثوابت اللعبة ====================
+        const CHUNK_SIZE = 16;
+        const CITY_SIZE = 14; // مدينة أكبر
+        const WALL_HEIGHT = 18;
+        const WALL_THICKNESS = 3;
+        const GRAVITY = 28.0;
+        const JUMP_FORCE = 11.0;
+        const SPEED_WALK = 6.0;
+        const SPEED_FLY = 16.0;
+        const PLAYER_HEIGHT = 1.8;
+        const PLAYER_RADIUS = 0.35;
+        const DAY_CYCLE_DURATION = 300; // 5 دقائق
+
+        const NOISE = new SimplexNoise(12345);
+        
+        const BLOCKS = { 
+            AIR: 0, GRASS: 1, DIRT: 2, STONE: 3, WOOD: 4, LEAVES: 5, 
+            WATER: 6, SAND: 7, PLANK: 8, BRICK: 9, COBBLESTONE: 10,
+            DOOR: 11, GLASS: 12, TORCH: 13, BED: 14
+        };
+        
+        const BLOCK_COLORS = { 
+            [BLOCKS.GRASS]: '#4a9c2d', [BLOCKS.DIRT]: '#7a5c3d', 
+            [BLOCKS.STONE]: '#808080', [BLOCKS.WOOD]: '#6b4423', 
+            [BLOCKS.LEAVES]: '#2d5016', [BLOCKS.WATER]: '#2463a8',
+            [BLOCKS.SAND]: '#d4c090', [BLOCKS.PLANK]: '#8b6c42', 
+            [BLOCKS.BRICK]: '#a04040', [BLOCKS.COBBLESTONE]: '#6b6b6b',
+            [BLOCKS.DOOR]: '#5c3a1f', [BLOCKS.GLASS]: '#a8d8ff',
+            [BLOCKS.TORCH]: '#ffaa00', [BLOCKS.BED]: '#c04040'
+        };
+
+        // أسماء عربية
+        const MALE_NAMES = ['أحمد', 'محمد', 'علي', 'حسن', 'خالد', 'عمر', 'سعيد', 'طارق', 'ياسر', 'فهد', 'سلطان', 'عبدالله', 'يوسف', 'إبراهيم', 'عبدالرحمن'];
+        const FEMALE_NAMES = ['فاطمة', 'عائشة', 'مريم', 'خديجة', 'سارة', 'نور', 'لينا', 'هند', 'دينا', 'ريم', 'أمل', 'ليلى', 'زينب', 'رقية', 'سمية'];
+
+        // ==================== متغيرات عامة ====================
+        let camera, scene, renderer, controls;
+        let world = new Map();
+        let meshes = [];
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+        
+        let player = {
+            pos: new THREE.Vector3(),
+            vel: new THREE.Vector3(),
+            onGround: false,
+            flying: false,
+            health: 100,
+            maxHealth: 100,
+            isKing: true,
+            spouse: null
+        };
+        
+        const keys = { w:false, a:false, s:false, d:false, space:false, shift:false, e:false, q:false };
+        let joystickMove = { x: 0, y: 0 };
+        let joystickLook = { x: 0, y: 0 };
+        let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        let selectedBlock = BLOCKS.BRICK;
+
+        // نظام اليوم/الليل
+        let gameTime = 0.25; // نبدأ في الصباح
+        let sunLight, moonLight;
+        let skyGradient;
+
+        // NPCs والمنازل
+        let npcs = [];
+        let houses = [];
+        let kingHouse = null;
+        let beds = [];
+
+        // الوحوش
+        let monsters = [];
+
+        // الأبواب
+        let doors = [];
+        let gateBlocks = [];
+        let gatesOpen = false;
+
+        // ==================== الإعداد الأولي ====================
+        function init() {
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x87CEEB, 40, 180);
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+
+            sunLight = new THREE.DirectionalLight(0xfff5e6, 0.9);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 4096;
+            sunLight.shadow.mapSize.height = 4096;
+            sunLight.shadow.camera.near = 0.5;
+            sunLight.shadow.camera.far = 500;
+            sunLight.shadow.camera.left = -120;
+            sunLight.shadow.camera.right = 120;
+            sunLight.shadow.camera.top = 120;
+            sunLight.shadow.camera.bottom = -120;
+            scene.add(sunLight);
+
+            moonLight = new THREE.DirectionalLight(0x7090ff, 0.25);
+            moonLight.castShadow = false;
+            scene.add(moonLight);
+
+            createSky();
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            generateCity();
+            
+            if (kingHouse) {
+                player.pos.set(kingHouse.x + 10, kingHouse.y + 3, kingHouse.z + 10);
+            } else {
+                const centerX = (CITY_SIZE * CHUNK_SIZE) / 2;
+                const centerZ = (CITY_SIZE * CHUNK_SIZE) / 2;
+                player.pos.set(centerX, 25, centerZ);
+            }
+            camera.position.copy(player.pos);
+
+            setupControls();
+            createHotbar();
+
+            animate();
+        }
+
+        // ==================== السماء ====================
+        function createSky() {
+            const skyGeo = new THREE.SphereGeometry(350, 32, 32);
+            const skyMat = new THREE.MeshBasicMaterial({ 
+                side: THREE.BackSide,
+                vertexColors: true 
+            });
+            
+            const colors = [];
+            const positions = skyGeo.attributes.position;
+            for (let i = 0; i < positions.count; i++) {
+                colors.push(0.53, 0.81, 0.92);
+            }
+            skyGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            
+            skyGradient = new THREE.Mesh(skyGeo, skyMat);
+            scene.add(skyGradient);
+        }
+
+        function updateSky() {
+            const dayProgress = gameTime % 1;
+            let r, g, b;
+            
+            if (dayProgress < 0.25) { // ليل
+                const t = dayProgress / 0.25;
+                r = 0.08 + t * 0.45;
+                g = 0.08 + t * 0.55;
+                b = 0.15 + t * 0.70;
+            } else if (dayProgress < 0.5) { // نهار
+                const t = (dayProgress - 0.25) / 0.25;
+                r = 0.53 + t * 0.15;
+                g = 0.63 + t * 0.15;
+                b = 0.85 + t * 0.10;
+            } else if (dayProgress < 0.75) { // غروب
+                const t = (dayProgress - 0.5) / 0.25;
+                r = 0.68 - t * 0.28;
+                g = 0.78 - t * 0.48;
+                b = 0.95 - t * 0.60;
+            } else { // ليل
+                const t = (dayProgress - 0.75) / 0.25;
+                r = 0.40 - t * 0.32;
+                g = 0.30 - t * 0.22;
+                b = 0.35 - t * 0.20;
+            }
+            
+            scene.background = new THREE.Color(r, g, b);
+            scene.fog.color.setRGB(r, g, b);
+            
+            const colors = [];
+            const count = skyGradient.geometry.attributes.position.count;
+            for (let i = 0; i < count; i++) {
+                colors.push(r, g, b);
+            }
+            skyGradient.geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            
+            const angle = dayProgress * Math.PI * 2;
+            sunLight.position.set(
+                Math.cos(angle) * 220,
+                Math.sin(angle) * 220,
+                120
+            );
+            
+            moonLight.position.set(
+                -Math.cos(angle) * 220,
+                -Math.sin(angle) * 220,
+                -120
+            );
+            
+            if (isNightTime()) {
+                sunLight.intensity = 0.15;
+                moonLight.intensity = 0.35;
+            } else {
+                sunLight.intensity = 1.0;
+                moonLight.intensity = 0.05;
+            }
+        }
+
+        function isNightTime() {
+            const dayProgress = gameTime % 1;
+            return dayProgress < 0.25 || dayProgress > 0.75;
+        }
+
+        function isSleepTime() {
+            const dayProgress = gameTime % 1;
+            return dayProgress < 0.20 || dayProgress > 0.80;
+        }
+
+        function getTimeString() {
+            const dayProgress = gameTime % 1;
+            if (dayProgress < 0.10) return '🌙 منتصف الليل';
+            if (dayProgress < 0.25) return '🌅 فجر';
+            if (dayProgress < 0.40) return '☀️ صباح';
+            if (dayProgress < 0.50) return '🌞 ظهر';
+            if (dayProgress < 0.65) return '☀️ عصر';
+            if (dayProgress < 0.75) return '🌇 غروب';
+            if (dayProgress < 0.85) return '🌆 مغرب';
+            return '🌙 ليل';
+        }
+
+        // ==================== الخامات ====================
+        function createTexture(color) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = color;
+            ctx.fillRect(0,0,64,64);
+            
+            for(let i=0; i<400; i++) {
+                ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+                ctx.fillRect(Math.random()*64, Math.random()*64, 3, 3);
+            }
+            
+            ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(0,0,64,64);
+            
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.magFilter = THREE.NearestFilter;
+            return tex;
+        }
+
+        const materials = {};
+        for(let key in BLOCK_COLORS) {
+            materials[key] = new THREE.MeshLambertMaterial({ 
+                map: createTexture(BLOCK_COLORS[key]) 
+            });
+        }
+        materials[BLOCKS.LEAVES].transparent = true;
+        materials[BLOCKS.LEAVES].opacity = 0.7;
+        materials[BLOCKS.WATER].transparent = true;
+        materials[BLOCKS.WATER].opacity = 0.5;
+        materials[BLOCKS.GLASS].transparent = true;
+        materials[BLOCKS.GLASS].opacity = 0.3;
+
+        // ==================== توليد المدينة ====================
+        function generateCity() {
+            console.log("Generating large royal city...");
+            
+            const centerX = (CITY_SIZE * CHUNK_SIZE) / 2;
+            const centerZ = (CITY_SIZE * CHUNK_SIZE) / 2;
+            const cityRadius = (CITY_SIZE * CHUNK_SIZE) / 2 - 5;
+
+            // الأرضية
+            for (let x = 0; x < CITY_SIZE * CHUNK_SIZE; x++) {
+                for (let z = 0; z < CITY_SIZE * CHUNK_SIZE; z++) {
+                    setBlock(x, 0, z, BLOCKS.STONE);
+                    setBlock(x, 1, z, BLOCKS.GRASS);
+                }
+            }
+
+            // السور
+            buildWall(centerX, centerZ, cityRadius);
+
+            // البوابات
+            buildGate(centerX, 2, centerZ - cityRadius + 3, 'north');
+            buildGate(centerX, 2, centerZ + cityRadius - 3, 'south');
+            buildGate(centerX - cityRadius + 3, 2, centerZ, 'west');
+            buildGate(centerX + cityRadius - 3, 2, centerZ, 'east');
+
+            // الشوارع
+            buildStreets(centerX, centerZ, cityRadius);
+
+            // بيت الملك
+            kingHouse = buildKingHouse(centerX - 12, centerZ - 12);
+
+            // بيوت السكان - الكثير منها!
+            buildManyHouses(centerX, centerZ, cityRadius);
+
+            updateChunks();
+            populateCity();
+        }
+
+        function buildWall(cx, cz, radius) {
+            for (let angle = 0; angle < 360; angle += 1.5) {
+                const rad = (angle * Math.PI) / 180;
+                const x = Math.round(cx + Math.cos(rad) * radius);
+                const z = Math.round(cz + Math.sin(rad) * radius);
+                
+                for (let dx = -WALL_THICKNESS; dx <= WALL_THICKNESS; dx++) {
+                    for (let dz = -WALL_THICKNESS; dz <= WALL_THICKNESS; dz++) {
+                        for (let y = 2; y < WALL_HEIGHT; y++) {
+                            setBlock(x + dx, y, z + dz, BLOCKS.COBBLESTONE);
+                        }
+                        if ((dx + dz) % 3 === 0) {
+                            setBlock(x + dx, WALL_HEIGHT, z + dz, BLOCKS.COBBLESTONE);
+                            setBlock(x + dx, WALL_HEIGHT + 1, z + dz, BLOCKS.COBBLESTONE);
+                        }
+                    }
+                }
+            }
+        }
+
+        function buildGate(x, y, z, direction) {
+            const gateWidth = 8;
+            const gateHeight = 10;
+            
+            for (let dx = 0; dx < gateWidth; dx++) {
+                for (let dy = 0; dy < gateHeight; dy++) {
+                    const bx = direction === 'north' || direction === 'south' ? x - gateWidth/2 + dx : x;
+                    const bz = direction === 'west' || direction === 'east' ? z - gateWidth/2 + dx : z;
+                    
+                    setBlock(bx, y + dy, bz, BLOCKS.DOOR);
+                    gateBlocks.push({ x: bx, y: y + dy, z: bz, active: false });
+                }
+            }
+        }
+
+        function buildStreets(cx, cz, radius) {
+            const streetWidth = 4;
+            
+            for (let x = cx - radius + 12; x < cx + radius - 12; x++) {
+                for (let z = cz - streetWidth/2; z < cz + streetWidth/2; z++) {
+                    setBlock(x, 2, z, BLOCKS.COBBLESTONE);
+                }
+            }
+            
+            for (let z = cz - radius + 12; z < cz + radius - 12; z++) {
+                for (let x = cx - streetWidth/2; x < cx + streetWidth/2; x++) {
+                    setBlock(x, 2, z, BLOCKS.COBBLESTONE);
+                }
+            }
+            
+            // شوارع فرعية
+            for (let offset = -30; offset <= 30; offset += 30) {
+                for (let x = cx - radius + 12; x < cx + radius - 12; x++) {
+                    for (let z = cz + offset - 1; z < cz + offset + 1; z++) {
+                        setBlock(x, 2, z, BLOCKS.COBBLESTONE);
+                    }
+                }
+                for (let z = cz - radius + 12; z < cz + radius - 12; z++) {
+                    for (let x = cx + offset - 1; x < cx + offset + 1; x++) {
+                        setBlock(x, 2, z, BLOCKS.COBBLESTONE);
+                    }
+                }
+            }
+        }
+
+        function buildKingHouse(bx, bz) {
+            const width = 24, depth = 24, height = 12;
+            const baseY = 2;
+            
+            for (let x = 0; x < width; x++) {
+                for (let z = 0; z < depth; z++) {
+                    setBlock(bx + x, baseY, bz + z, BLOCKS.STONE);
+                    setBlock(bx + x, baseY + 1, bz + z, BLOCKS.PLANK);
+                }
+            }
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    setBlock(bx + x, baseY + y, bz, BLOCKS.BRICK);
+                    setBlock(bx + x, baseY + y, bz + depth - 1, BLOCKS.BRICK);
+                }
+                for (let z = 0; z < depth; z++) {
+                    setBlock(bx, baseY + y, bz + z, BLOCKS.BRICK);
+                    setBlock(bx + width - 1, baseY + y, bz + z, BLOCKS.BRICK);
+                }
+            }
+            
+            for (let x = 6; x < width - 6; x += 6) {
+                setBlock(bx + x, baseY + 4, bz, BLOCKS.GLASS);
+                setBlock(bx + x, baseY + 5, bz, BLOCKS.GLASS);
+                setBlock(bx + x, baseY + 4, bz + depth - 1, BLOCKS.GLASS);
+                setBlock(bx + x, baseY + 5, bz + depth - 1, BLOCKS.GLASS);
+            }
+            
+            for (let layer = 0; layer < 6; layer++) {
+                for (let x = layer; x < width - layer; x++) {
+                    for (let z = layer; z < depth - layer; z++) {
+                        setBlock(bx + x, baseY + height + layer, bz + z, BLOCKS.BRICK);
+                    }
+                }
+            }
+            
+            setBlock(bx + width/2, baseY + 2, bz, BLOCKS.AIR);
+            setBlock(bx + width/2, baseY + 3, bz, BLOCKS.AIR);
+            setBlock(bx + width/2, baseY + 4, bz, BLOCKS.AIR);
+            doors.push({ x: bx + width/2, y: baseY + 2, z: bz, isOpen: false });
+            
+            // سرير الملك
+            beds.push({
+                x: bx + width/2,
+                y: baseY + 2,
+                z: bz + depth/2,
+                owner: 'الملك',
+                occupied: false
+            });
+            
+            return { x: bx, y: baseY, z: bz, width, depth, height, owner: 'الملك', spouse: null, children: [] };
+        }
+
+        function buildManyHouses(cx, cz, radius) {
+            const houseSize = 14;
+            const spacing = 18;
+            
+            // شبكة كبيرة من البيوت
+            for (let gridX = -3; gridX <= 3; gridX++) {
+                for (let gridZ = -3; gridZ <= 3; gridZ++) {
+                    // تجنب الوسط (بيت الملك)
+                    if (Math.abs(gridX) <= 1 && Math.abs(gridZ) <= 1) continue;
+                    
+                    const hx = cx + gridX * spacing;
+                    const hz = cz + gridZ * spacing;
+                    
+                    // التأكد أنه داخل المدينة
+                    const distFromCenter = Math.sqrt(Math.pow(hx - cx, 2) + Math.pow(hz - cz, 2));
+                    if (distFromCenter < radius - 20) {
+                        const house = buildHouse(hx, 2, hz, houseSize, houseSize);
+                        houses.push(house);
+                    }
+                }
+            }
+            
+            // دائرة خارجية
+            for (let angle = 0; angle < 360; angle += 25) {
+                const rad = (angle * Math.PI) / 180;
+                const r = radius * 0.7;
+                const hx = Math.round(cx + Math.cos(rad) * r);
+                const hz = Math.round(cz + Math.sin(rad) * r);
+                
+                const house = buildHouse(hx, 2, hz, houseSize, houseSize);
+                houses.push(house);
+            }
+        }
+
+        function buildHouse(bx, baseY, bz, width, depth) {
+            const height = 7;
+            const maleName = MALE_NAMES[Math.floor(Math.random() * MALE_NAMES.length)];
+            const femaleName = FEMALE_NAMES[Math.floor(Math.random() * FEMALE_NAMES.length)];
+            
+            for (let x = 0; x < width; x++) {
+                for (let z = 0; z < depth; z++) {
+                    setBlock(bx + x, baseY, bz + z, BLOCKS.PLANK);
+                }
+            }
+            
+            for (let y = 1; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    setBlock(bx + x, baseY + y, bz, BLOCKS.PLANK);
+                    setBlock(bx + x, baseY + y, bz + depth - 1, BLOCKS.PLANK);
+                }
+                for (let z = 0; z < depth; z++) {
+                    setBlock(bx, baseY + y, bz + z, BLOCKS.PLANK);
+                    setBlock(bx + width - 1, baseY + y, bz + z, BLOCKS.PLANK);
+                }
+            }
+            
+            for (let x = 0; x < width; x++) {
+                for (let z = 0; z < depth; z++) {
+                    setBlock(bx + x, baseY + height, bz + z, BLOCKS.BRICK);
+                }
+            }
+            
+            setBlock(bx + 4, baseY + 4, bz, BLOCKS.GLASS);
+            
+            const doorX = bx + width / 2;
+            const doorZ = bz;
+            setBlock(doorX, baseY + 1, doorZ, BLOCKS.AIR);
+            setBlock(doorX, baseY + 2, doorZ, BLOCKS.AIR);
+            setBlock(doorX, baseY + 3, doorZ, BLOCKS.AIR);
+            doors.push({ x: doorX, y: baseY + 1, z: doorZ, isOpen: false });
+            
+            // سرير الزوجين
+            beds.push({
+                x: bx + width/2,
+                y: baseY + 1,
+                z: bz + depth/2,
+                owner: maleName,
+                spouse: femaleName,
+                occupied: false
+            });
+            
+            return { 
+                x: bx, y: baseY, z: bz, width, depth, height,
+                owner: maleName, spouse: femaleName,
+                doorX, doorZ, children: [], floors: 1
+            };
+        }
+
+        function buildSecondFloor(house) {
+            const bx = house.x;
+            const bz = house.z;
+            const width = house.width;
+            const depth = house.depth;
+            const newFloorY = house.y + house.height + 1;
+            const floorHeight = 6;
+            
+            // أرضية الطابق الجديد
+            for (let x = 0; x < width; x++) {
+                for (let z = 0; z < depth; z++) {
+                    setBlock(bx + x, newFloorY, bz + z, BLOCKS.PLANK);
+                }
+            }
+            
+            // جدران
+            for (let y = 1; y < floorHeight; y++) {
+                for (let x = 0; x < width; x++) {
+                    setBlock(bx + x, newFloorY + y, bz, BLOCKS.PLANK);
+                    setBlock(bx + x, newFloorY + y, bz + depth - 1, BLOCKS.PLANK);
+                }
+                for (let z = 0; z < depth; z++) {
+                    setBlock(bx, newFloorY + y, bz + z, BLOCKS.PLANK);
+                    setBlock(bx + width - 1, newFloorY + y, bz + z, BLOCKS.PLANK);
+                }
+            }
+            
+            // سقف
+            for (let x = 0; x < width; x++) {
+                for (let z = 0; z < depth; z++) {
+                    setBlock(bx + x, newFloorY + floorHeight, bz + z, BLOCKS.BRICK);
+                }
+            }
+            
+            // نافذة
+            setBlock(bx + 4, newFloorY + 3, bz, BLOCKS.GLASS);
+            
+            house.height += floorHeight + 1;
+            house.floors++;
+            
+            updateChunks();
+        }
+
+        // ==================== NPCs ====================
+        function createNPCMesh(gender, name, isChild = false) {
+            const group = new THREE.Group();
+            
+            const scale = isChild ? 0.6 : 1.0;
+            
+            let skinColor, shirtColor;
+            
+            if (gender === 'male') {
+                const skinTones = [0xffd1a3, 0xc68642, 0x8d5524];
+                skinColor = skinTones[Math.floor(Math.random() * skinTones.length)];
+                const shirtColors = [0x2c3e50, 0x27ae60, 0x8e44ad, 0x16a085];
+                shirtColor = shirtColors[Math.floor(Math.random() * shirtColors.length)];
+            } else {
+                // ألوان جميلة للبنات
+                const skinTones = [0xffd9c4, 0xffc4a8, 0xf0b090];
+                skinColor = skinTones[Math.floor(Math.random() * skinTones.length)];
+                const dressColors = [0xe74c3c, 0xf39c12, 0x9b59b6, 0xe91e63, 0xff6b9d];
+                shirtColor = dressColors[Math.floor(Math.random() * dressColors.length)];
+            }
+            
+            const matSkin = new THREE.MeshLambertMaterial({color: skinColor});
+            const matShirt = new THREE.MeshLambertMaterial({color: shirtColor});
+            const matPants = new THREE.MeshLambertMaterial({color: 0x34495e});
+            const matHair = new THREE.MeshLambertMaterial({color: gender === 'female' ? 0x3d2817 : 0x000000});
+            
+            // رأس جميل
+            const headSize = 0.65 * scale;
+            const head = new THREE.Mesh(new THREE.BoxGeometry(headSize, headSize, headSize), matSkin);
+            head.position.y = 1.7 * scale;
+            head.castShadow = true;
+            
+            // شعر جميل للبنات
+            if (gender === 'female') {
+                const hair = new THREE.Mesh(new THREE.BoxGeometry(headSize + 0.1, 0.25, headSize + 0.1), matHair);
+                hair.position.y = 2.0 * scale;
+                hair.castShadow = true;
+                group.add(hair);
+                
+                // شعر جانبي
+                const hairSide1 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.6, 0.15), matHair);
+                hairSide1.position.set(-0.35 * scale, 1.7 * scale, 0);
+                hairSide1.castShadow = true;
+                group.add(hairSide1);
+                
+                const hairSide2 = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.6, 0.15), matHair);
+                hairSide2.position.set(0.35 * scale, 1.7 * scale, 0);
+                hairSide2.castShadow = true;
+                group.add(hairSide2);
+            } else {
+                const hair = new THREE.Mesh(new THREE.BoxGeometry(headSize + 0.05, 0.2, headSize + 0.05), matHair);
+                hair.position.y = 2.0 * scale;
+                hair.castShadow = true;
+                group.add(hair);
+            }
+            
+            // عيون جميلة
+            const eyeGeo = new THREE.SphereGeometry(0.09 * scale, 8, 8);
+            const eyeMat = new THREE.MeshBasicMaterial({color: 0x000000});
+            const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+            eyeL.position.set(-0.16 * scale, 1.75 * scale, 0.3 * scale);
+            const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+            eyeR.position.set(0.16 * scale, 1.75 * scale, 0.3 * scale);
+            
+            // فم
+            const mouthGeo = new THREE.BoxGeometry(0.2 * scale, 0.05 * scale, 0.05 * scale);
+            const mouthMat = new THREE.MeshBasicMaterial({color: 0xff6b9d});
+            const mouth = new THREE.Mesh(mouthGeo, mouthMat);
+            mouth.position.set(0, 1.55 * scale, 0.32 * scale);
+            
+            // جسم
+            const bodyGeo = gender === 'female' ? 
+                new THREE.BoxGeometry(0.65 * scale, 1.0 * scale, 0.45 * scale) : 
+                new THREE.BoxGeometry(0.75 * scale, 0.95 * scale, 0.45 * scale);
+            const body = new THREE.Mesh(bodyGeo, matShirt);
+            body.position.y = 1.0 * scale;
+            body.castShadow = true;
+
+            // ذراعين
+            const armGeo = new THREE.BoxGeometry(0.25 * scale, 0.85 * scale, 0.25 * scale);
+            const armL = new THREE.Mesh(armGeo, matSkin);
+            armL.position.set(-0.5 * scale, 1.1 * scale, 0);
+            armL.castShadow = true;
+            
+            const armR = new THREE.Mesh(armGeo, matSkin);
+            armR.position.set(0.5 * scale, 1.1 * scale, 0);
+            armR.castShadow = true;
+
+            // أرجل
+            const legGeo = new THREE.BoxGeometry(0.3 * scale, 0.85 * scale, 0.3 * scale);
+            const legL = new THREE.Mesh(legGeo, matPants);
+            legL.position.set(-0.2 * scale, 0.42 * scale, 0);
+            legL.castShadow = true;
+            
+            const legR = new THREE.Mesh(legGeo, matPants);
+            legR.position.set(0.2 * scale, 0.42 * scale, 0);
+            legR.castShadow = true;
+
+            group.add(head, eyeL, eyeR, mouth, body, armL, armR, legL, legR);
+            
+            // النص
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(0, 0, 256, 64);
+            ctx.fillStyle = gender === 'female' ? '#ff69b4' : '#FFD700';
+            ctx.font = 'bold 30px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(name, 128, 42);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMat = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(spriteMat);
+            sprite.position.y = 2.6 * scale;
+            sprite.scale.set(2, 0.5, 1);
+            group.add(sprite);
+            
+            group.userData = { legL, legR, armL, armR, name, sprite, scale };
+            return group;
+        }
+
+        function populateCity() {
+            houses.forEach(house => {
+                // الزوج
+                const maleMesh = createNPCMesh('male', house.owner);
+                maleMesh.position.set(
+                    house.x + house.width / 2,
+                    house.y + 2,
+                    house.z + house.depth / 2
+                );
+                scene.add(maleMesh);
+                
+                const male = {
+                    mesh: maleMesh,
+                    name: house.owner,
+                    gender: 'male',
+                    age: 'adult',
+                    house: house,
+                    spouse: house.spouse,
+                    health: 100,
+                    maxHealth: 100,
+                    alive: true,
+                    target: null,
+                    state: 'idle',
+                    homePos: maleMesh.position.clone(),
+                    sleeping: false,
+                    bedPos: null
+                };
+                npcs.push(male);
+                
+                // الزوجة
+                const femaleMesh = createNPCMesh('female', house.spouse);
+                femaleMesh.position.set(
+                    house.x + house.width / 2 + 2,
+                    house.y + 2,
+                    house.z + house.depth / 2
+                );
+                scene.add(femaleMesh);
+                
+                const female = {
+                    mesh: femaleMesh,
+                    name: house.spouse,
+                    gender: 'female',
+                    age: 'adult',
+                    house: house,
+                    spouse: house.owner,
+                    health: 100,
+                    maxHealth: 100,
+                    alive: true,
+                    target: null,
+                    state: 'idle',
+                    homePos: femaleMesh.position.clone(),
+                    sleeping: false,
+                    bedPos: null,
+                    pregnant: false,
+                    pregnancyTime: 0
+                };
+                npcs.push(female);
+            });
+        }
+
+        function updateNPCs(dt, time) {
+            const sleepTime = isSleepTime();
+            
+            npcs.forEach(npc => {
+                if (!npc.alive) return;
+                
+                const m = npc.mesh;
+                
+                // نظام النوم
+                if (sleepTime && !npc.sleeping && npc.age === 'adult') {
+                    // البحث عن سرير
+                    const bed = beds.find(b => b.owner === npc.name || b.spouse === npc.name);
+                    if (bed && !bed.occupied) {
+                        npc.sleeping = true;
+                        npc.bedPos = new THREE.Vector3(bed.x, bed.y, bed.z);
+                        m.position.set(bed.x, bed.y + 0.3, bed.z);
+                        m.rotation.z = Math.PI / 2; // نوم على الجنب
+                        bed.occupied = true;
+                        
+                        // علاقة زوجية (رمزية فقط)
+                        if (npc.gender === 'female' && npc.spouse) {
+                            const husband = npcs.find(n => n.name === npc.spouse && n.alive);
+                            if (husband && husband.sleeping && Math.random() < 0.3 && !npc.pregnant) {
+                                npc.pregnant = true;
+                                npc.pregnancyTime = 0;
+                            }
+                        }
+                    }
+                } else if (!sleepTime && npc.sleeping) {
+                    // الاستيقاظ
+                    npc.sleeping = false;
+                    m.rotation.z = 0;
+                    m.position.y = npc.homePos.y;
+                    
+                    if (npc.bedPos) {
+                        const bed = beds.find(b => 
+                            b.x === npc.bedPos.x && b.y === npc.bedPos.y && b.z === npc.bedPos.z
+                        );
+                        if (bed) bed.occupied = false;
+                    }
+                    npc.bedPos = null;
+                }
+                
+                // الحمل والولادة
+                if (npc.pregnant) {
+                    npc.pregnancyTime += dt;
+                    
+                    // الولادة بعد 60 ثانية
+                    if (npc.pregnancyTime > 60) {
+                        giveBirth(npc);
+                        npc.pregnant = false;
+                        npc.pregnancyTime = 0;
+                    }
+                }
+                
+                // الحركة (فقط إذا لم يكن نائماً)
+                if (!npc.sleeping) {
+                    if (npc.age === 'adult') {
+                        if (npc.state === 'idle') {
+                            if (Math.random() < 0.008) {
+                                npc.state = 'walking';
+                                const house = npc.house;
+                                // التحرك داخل البيت فقط
+                                npc.target = new THREE.Vector3(
+                                    house.x + 2 + Math.random() * (house.width - 4),
+                                    house.y + 2,
+                                    house.z + 2 + Math.random() * (house.depth - 4)
+                                );
+                            }
+                        } else if (npc.state === 'walking' && npc.target) {
+                            const dx = npc.target.x - m.position.x;
+                            const dz = npc.target.z - m.position.z;
+                            const dist = Math.sqrt(dx * dx + dz * dz);
+                            
+                            if (dist > 0.5) {
+                                const speed = 1.2 * dt;
+                                const newX = m.position.x + (dx / dist) * speed;
+                                const newZ = m.position.z + (dz / dist) * speed;
+                                
+                                // التأكد من عدم المرور عبر الجدران
+                                const house = npc.house;
+                                if (newX > house.x + 1 && newX < house.x + house.width - 1) {
+                                    m.position.x = newX;
+                                }
+                                if (newZ > house.z + 1 && newZ < house.z + house.depth - 1) {
+                                    m.position.z = newZ;
+                                }
+                                
+                                m.lookAt(npc.target);
+                                
+                                const walkCycle = Math.sin(time * 7);
+                                m.userData.legL.rotation.x = walkCycle * 0.4;
+                                m.userData.legR.rotation.x = -walkCycle * 0.4;
+                                m.userData.armL.rotation.x = -walkCycle * 0.3;
+                                m.userData.armR.rotation.x = walkCycle * 0.3;
+                            } else {
+                                npc.state = 'idle';
+                                m.userData.legL.rotation.x = 0;
+                                m.userData.legR.rotation.x = 0;
+                                m.userData.armL.rotation.x = 0;
+                                m.userData.armR.rotation.x = 0;
+                            }
+                        }
+                    }
+                }
+                
+                m.userData.sprite.material.map.needsUpdate = true;
+            });
+            
+            const adults = npcs.filter(n => n.alive && n.age === 'adult').length;
+            const children = npcs.filter(n => n.alive && n.age === 'child').length;
+            document.getElementById('npc-count').innerText = adults;
+            document.getElementById('children-count').innerText = children;
+        }
+
+        function giveBirth(mother) {
+            const house = mother.house;
+            
+            // موازنة الجنس
+            const childrenInHouse = npcs.filter(n => n.house === house && n.age === 'child');
+            const boys = childrenInHouse.filter(c => c.gender === 'male').length;
+            const girls = childrenInHouse.filter(c => c.gender === 'female').length;
+            
+            let childGender;
+            if (boys > girls) {
+                childGender = 'female';
+            } else if (girls > boys) {
+                childGender = 'male';
+            } else {
+                childGender = Math.random() < 0.5 ? 'male' : 'female';
+            }
+            
+            const childName = childGender === 'male' ? 
+                MALE_NAMES[Math.floor(Math.random() * MALE_NAMES.length)] :
+                FEMALE_NAMES[Math.floor(Math.random() * FEMALE_NAMES.length)];
+            
+            // بناء طابق جديد
+            buildSecondFloor(house);
+            
+            // سرير للطفل
+            const bedY = house.y + house.height - 6;
+            beds.push({
+                x: house.x + house.width/2,
+                y: bedY + 1,
+                z: house.z + house.depth/2 + 3,
+                owner: childName,
+                occupied: false
+            });
+            
+            // إنشاء الطفل
+            const childMesh = createNPCMesh(childGender, childName, true);
+            childMesh.position.set(
+                house.x + house.width / 2,
+                bedY + 1,
+                house.z + house.depth / 2 + 3
+            );
+            scene.add(childMesh);
+            
+            const child = {
+                mesh: childMesh,
+                name: childName,
+                gender: childGender,
+                age: 'child',
+                house: house,
+                mother: mother.name,
+                father: mother.spouse,
+                spouse: null,
+                health: 100,
+                maxHealth: 100,
+                alive: true,
+                target: null,
+                state: 'idle',
+                homePos: childMesh.position.clone(),
+                sleeping: false,
+                bedPos: null
+            };
+            npcs.push(child);
+            
+            house.children.push(childName);
+            
+            showNotification(`🎉 ولد طفل جديد: ${childName} في بيت ${house.owner}!`);
+        }
+
+        function killNPC(npc) {
+            npc.alive = false;
+            npc.mesh.visible = false;
+            
+            if (npc.spouse && npc.gender === 'male') {
+                const widow = npcs.find(n => n.name === npc.spouse && n.alive);
+                if (widow) {
+                    widow.spouse = null;
+                    npc.house.owner = 'الملك';
+                    
+                    showNotification(`💀 قتلت ${npc.name}! أصبحت ${widow.name} أرملة!`);
+                }
+            }
+        }
+
+        // ==================== الوحوش ====================
+        function createMonsterMesh() {
+            const group = new THREE.Group();
+            
+            const matSkin = new THREE.MeshLambertMaterial({color: 0x2d5016});
+            const matEye = new THREE.MeshBasicMaterial({color: 0xff0000});
+            
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.75, 0.75), matSkin);
+            head.position.y = 1.85;
+            head.castShadow = true;
+            
+            const eyeGeo = new THREE.SphereGeometry(0.12, 8, 8);
+            const eyeL = new THREE.Mesh(eyeGeo, matEye);
+            eyeL.position.set(-0.22, 1.9, 0.35);
+            const eyeR = new THREE.Mesh(eyeGeo, matEye);
+            eyeR.position.set(0.22, 1.9, 0.35);
+            
+            const body = new THREE.Mesh(new THREE.BoxGeometry(0.85, 1.1, 0.55), matSkin);
+            body.position.y = 1.15;
+            body.castShadow = true;
+
+            const armGeo = new THREE.BoxGeometry(0.32, 0.95, 0.32);
+            const armL = new THREE.Mesh(armGeo, matSkin);
+            armL.position.set(-0.58, 1.25, 0.4);
+            armL.rotation.x = -Math.PI / 2.3;
+            armL.castShadow = true;
+            
+            const armR = new THREE.Mesh(armGeo, matSkin);
+            armR.position.set(0.58, 1.25, 0.4);
+            armR.rotation.x = -Math.PI / 2.3;
+            armR.castShadow = true;
+
+            const legGeo = new THREE.BoxGeometry(0.32, 0.95, 0.32);
+            const legL = new THREE.Mesh(legGeo, matSkin);
+            legL.position.set(-0.22, 0.48, 0);
+            legL.castShadow = true;
+            
+            const legR = new THREE.Mesh(legGeo, matSkin);
+            legR.position.set(0.22, 0.48, 0);
+            legR.castShadow = true;
+
+            group.add(head, eyeL, eyeR, body, armL, armR, legL, legR);
+            
+            group.userData = { legL, legR, armL, armR };
+            return group;
+        }
+
+        function spawnMonsterAtGate() {
+            // اختيار بوابة عشوائية
+            if (gateBlocks.length === 0) return;
+            
+            const randomGate = gateBlocks[Math.floor(Math.random() * gateBlocks.length)];
+            const spawnX = randomGate.x;
+            const spawnZ = randomGate.z;
+            let spawnY = randomGate.y;
+            
+            const monster = createMonsterMesh();
+            monster.position.set(spawnX, spawnY + 1, spawnZ);
+            scene.add(monster);
+            monsters.push({ 
+                mesh: monster, 
+                velY: 0, 
+                active: true, 
+                health: 60,
+                burning: false,
+                burnTime: 0
+            });
+        }
+
+        function updateMonsters(dt, time) {
+            // Spawn من البوابات ليلاً
+            if (gatesOpen && monsters.filter(m => m.active).length < 20 && Math.random() < 0.015) {
+                spawnMonsterAtGate();
+            }
+            
+            monsters.forEach((mob, index) => {
+                if(!mob.active) return;
+                const m = mob.mesh;
+                
+                // الحرق نهاراً
+                if (!isNightTime() && !mob.burning) {
+                    mob.burning = true;
+                    mob.burnTime = 0;
+                }
+                
+                if (mob.burning) {
+                    mob.burnTime += dt;
+                    m.children.forEach(child => {
+                        if (child.material) {
+                            child.material.emissive = new THREE.Color(0xff4400);
+                            child.material.emissiveIntensity = 0.6;
+                        }
+                    });
+                    
+                    mob.health -= dt * 25;
+                    
+                    if (mob.health <= 0) {
+                        scene.remove(m);
+                        mob.active = false;
+                        return;
+                    }
+                }
+                
+                // الجاذبية
+                mob.velY -= GRAVITY * dt;
+                m.position.y += mob.velY * dt;
+
+                const bx = Math.round(m.position.x);
+                const by = Math.round(m.position.y - 1);
+                const bz = Math.round(m.position.z);
+                
+                if(isSolid(bx, by, bz)) {
+                    m.position.y = by + 2;
+                    mob.velY = 0;
+                }
+
+                // المطاردة
+                let closestTarget = player.pos;
+                let closestDist = Infinity;
+                
+                npcs.forEach(npc => {
+                    if (!npc.alive || npc.sleeping) return;
+                    const d = m.position.distanceTo(npc.mesh.position);
+                    if (d < closestDist) {
+                        closestDist = d;
+                        closestTarget = npc.mesh.position;
+                    }
+                });
+                
+                const playerDist = m.position.distanceTo(player.pos);
+                if (playerDist < closestDist) {
+                    closestTarget = player.pos;
+                    closestDist = playerDist;
+                }
+                
+                if(closestDist > 1 && closestDist < 60 && !mob.burning) {
+                    const dx = closestTarget.x - m.position.x;
+                    const dz = closestTarget.z - m.position.z;
+                    const dist = Math.sqrt(dx*dx + dz*dz);
+                    
+                    const speed = 2.8 * dt;
+                    const vx = (dx/dist) * speed;
+                    const vz = (dz/dist) * speed;
+                    
+                    const nextX = m.position.x + vx;
+                    const nextZ = m.position.z + vz;
+
+                    if(isSolid(Math.round(nextX), Math.round(m.position.y), Math.round(nextZ))) {
+                         if(mob.velY === 0) mob.velY = 11;
+                    } else {
+                        m.position.x = nextX;
+                        m.position.z = nextZ;
+                    }
+
+                    m.lookAt(closestTarget.x, m.position.y, closestTarget.z);
+
+                    const walkCycle = Math.sin(time * 13);
+                    m.userData.legL.rotation.x = walkCycle * 0.65;
+                    m.userData.legR.rotation.x = -walkCycle * 0.65;
+                    m.userData.armL.rotation.x = -Math.PI/2.3 + walkCycle * 0.35;
+                    m.userData.armR.rotation.x = -Math.PI/2.3 - walkCycle * 0.35;
+                    
+                    if (playerDist < 2.2) {
+                        player.health -= dt * 12;
+                        updateHealthBar();
+                        if (player.health <= 0) {
+                            respawnPlayer();
+                        }
+                    }
+                    
+                    npcs.forEach(npc => {
+                        if (!npc.alive || npc.sleeping) return;
+                        if (m.position.distanceTo(npc.mesh.position) < 2.2) {
+                            npc.health -= dt * 18;
+                            if (npc.health <= 0) {
+                                killNPC(npc);
+                            }
+                        }
+                    });
+                }
+            });
+            
+            document.getElementById('mob-count').innerText = monsters.filter(m => m.active).length;
+        }
+
+        function respawnPlayer() {
+            player.health = player.maxHealth;
+            player.vel.set(0, 0, 0);
+            if (kingHouse) {
+                player.pos.set(kingHouse.x + 10, kingHouse.y + 5, kingHouse.z + 10);
+            }
+            updateHealthBar();
+            showNotification('💀 مت! تم إعادتك إلى قصرك');
+        }
+
+        // ==================== الأبواب ====================
+        function updateDoors() {
+            // أبواب البيوت
+            doors.forEach(door => {
+                const dist = Math.sqrt(
+                    Math.pow(player.pos.x - door.x, 2) +
+                    Math.pow(player.pos.z - door.z, 2)
+                );
+                
+                if (dist < 4 && !door.isOpen) {
+                    setBlock(door.x, door.y, door.z, BLOCKS.AIR);
+                    setBlock(door.x, door.y + 1, door.z, BLOCKS.AIR);
+                    setBlock(door.x, door.y + 2, door.z, BLOCKS.AIR);
+                    door.isOpen = true;
+                } else if (dist >= 4 && door.isOpen) {
+                    setBlock(door.x, door.y, door.z, BLOCKS.DOOR);
+                    setBlock(door.x, door.y + 1, door.z, BLOCKS.DOOR);
+                    setBlock(door.x, door.y + 2, door.z, BLOCKS.DOOR);
+                    door.isOpen = false;
+                }
+            });
+            
+            // بوابات السور
+            const shouldOpen = isNightTime();
+            if (shouldOpen !== gatesOpen) {
+                gateBlocks.forEach(gate => {
+                    if (shouldOpen) {
+                        setBlock(gate.x, gate.y, gate.z, BLOCKS.AIR);
+                        gate.active = true;
+                    } else {
+                        setBlock(gate.x, gate.y, gate.z, BLOCKS.DOOR);
+                        gate.active = false;
+                    }
+                });
+                gatesOpen = shouldOpen;
+                
+                if (gatesOpen) {
+                    showNotification('🌙 حل الليل! فُتحت بوابات المدينة - احذر الوحوش!');
+                } else {
+                    showNotification('☀️ طلع النهار! أُغلقت بوابات المدينة');
+                }
+            }
+        }
+
+        // ==================== العالم ====================
+        function getBlock(x, y, z) {
+            return world.get(`${Math.floor(x)},${Math.floor(y)},${Math.floor(z)}`) || BLOCKS.AIR;
+        }
+
+        function setBlock(x, y, z, id) {
+            const key = `${Math.floor(x)},${Math.floor(y)},${Math.floor(z)}`;
+            if(id === BLOCKS.AIR) world.delete(key);
+            else world.set(key, id);
+        }
+
+        function isSolid(x, y, z) {
+            const b = getBlock(x, y, z);
+            return b !== BLOCKS.AIR && b !== BLOCKS.WATER && b !== BLOCKS.LEAVES && b !== BLOCKS.GLASS && b !== BLOCKS.TORCH;
+        }
+
+        function updateChunks() {
+            meshes.forEach(m => scene.remove(m));
+            meshes = [];
+
+            const geometryGroups = {};
+
+            for (const [key, val] of world) {
+                if (!geometryGroups[val]) geometryGroups[val] = [];
+                const [x, y, z] = key.split(',').map(Number);
+                
+                if (isSolid(x+1,y,z) && isSolid(x-1,y,z) && isSolid(x,y+1,z) && 
+                    isSolid(x,y-1,z) && isSolid(x,y,z+1) && isSolid(x,y,z-1)) continue;
+
+                const matrix = new THREE.Matrix4().makeTranslation(x, y, z);
+                geometryGroups[val].push(matrix);
+            }
+
+            const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+            for (const [type, matrices] of Object.entries(geometryGroups)) {
+                if (matrices.length === 0) continue;
+                const mesh = new THREE.InstancedMesh(boxGeo, materials[type], matrices.length);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                
+                for (let i = 0; i < matrices.length; i++) mesh.setMatrixAt(i, matrices[i]);
+                
+                mesh.blockType = parseInt(type);
+                scene.add(mesh);
+                meshes.push(mesh);
+            }
+        }
+
+        // ==================== الفيزياء ====================
+        function setupControls() {
+            controls = new PointerLockControls(camera, document.body);
+            
+            document.getElementById('start-btn').addEventListener('click', () => {
+                document.getElementById('overlay').style.display = 'none';
+                if(!isMobile) controls.lock();
+            });
+
+            if(!isMobile) {
+                controls.addEventListener('unlock', () => {
+                    if (player.health > 0) {
+                        document.getElementById('overlay').style.display = 'flex';
+                    }
+                });
+                document.addEventListener('keydown', (e) => onKey(e, true));
+                document.addEventListener('keyup', (e) => onKey(e, false));
+                document.addEventListener('mousedown', onMouseClick);
+            } else {
+                setupMobileTouch();
+            }
+        }
+
+        function onKey(e, down) {
+            switch(e.code) {
+                case 'KeyW': keys.w = down; break;
+                case 'KeyS': keys.s = down; break;
+                case 'KeyA': keys.a = down; break;
+                case 'KeyD': keys.d = down; break;
+                case 'Space': keys.space = down; break;
+                case 'ShiftLeft': keys.shift = down; break;
+                case 'KeyE': if(down) interactWithNPC(); break;
+                case 'KeyQ': if(down) attackNPC(); break;
+                case 'KeyF': if(down) { player.flying = !player.flying; player.vel.y = 0; } break;
+            }
+        }
+
+        function setupMobileTouch() {
+            const handleStick = (zoneId, callback) => {
+                const zone = document.getElementById(zoneId);
+                const stick = zone.querySelector('.stick');
+                let startX, startY;
+                
+                zone.addEventListener('touchstart', (e) => {
+                    const touch = e.changedTouches[0];
+                    startX = touch.clientX; startY = touch.clientY;
+                });
+                zone.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    const touch = e.changedTouches[0];
+                    let dx = touch.clientX - startX;
+                    let dy = touch.clientY - startY;
+                    const dist = Math.min(70, Math.sqrt(dx*dx + dy*dy));
+                    const angle = Math.atan2(dy, dx);
+                    
+                    stick.style.transform = `translate(calc(-50% + ${Math.cos(angle)*dist}px), calc(-50% + ${Math.sin(angle)*dist}px))`;
+                    callback(Math.cos(angle)*dist/70, Math.sin(angle)*dist/70);
+                });
+                zone.addEventListener('touchend', () => {
+                    stick.style.transform = `translate(-50%, -50%)`;
+                    callback(0, 0);
+                });
+            };
+
+            handleStick('joystick-left', (x, y) => { joystickMove.x = x; joystickMove.y = y; });
+            handleStick('joystick-right', (x, y) => { joystickLook.x = x; joystickLook.y = y; });
+            
+            document.getElementById('jump-btn').addEventListener('touchstart', (e) => { 
+                e.preventDefault(); keys.space = true; 
+            });
+            document.getElementById('jump-btn').addEventListener('touchend', (e) => { 
+                e.preventDefault(); keys.space = false; 
+            });
+
+            document.getElementById('fly-btn').addEventListener('touchstart', (e) => { 
+                e.preventDefault(); player.flying = !player.flying; 
+            });
+
+            document.getElementById('attack-btn').addEventListener('touchstart', (e) => { 
+                e.preventDefault(); attackNPC(); 
+            });
+        }
+
+        function updatePhysics(dt) {
+            const speed = player.flying ? SPEED_FLY : SPEED_WALK;
+            const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+            const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+            forward.y = 0; forward.normalize();
+            right.y = 0; right.normalize();
+
+            let dx = 0, dz = 0;
+            if(!isMobile) {
+                if(keys.w) dz += 1;
+                if(keys.s) dz -= 1;
+                if(keys.a) dx -= 1;
+                if(keys.d) dx += 1;
+            } else {
+                dz = -joystickMove.y;
+                dx = joystickMove.x;
+            }
+
+            if(isMobile && (joystickLook.x !== 0 || joystickLook.y !== 0)) {
+                camera.rotation.y -= joystickLook.x * 2.5 * dt;
+                camera.rotation.x -= joystickLook.y * 2.5 * dt;
+                camera.rotation.x = Math.max(-1.5, Math.min(1.5, camera.rotation.x));
+            }
+
+            const moveVec = new THREE.Vector3().addScaledVector(forward, dz).addScaledVector(right, dx);
+            if(moveVec.length() > 0) moveVec.normalize().multiplyScalar(speed);
+            
+            player.vel.x = moveVec.x;
+            player.vel.z = moveVec.z;
+
+            if(player.flying) {
+                player.vel.y = 0;
+                if(keys.space) player.vel.y = speed;
+                if(keys.shift) player.vel.y = -speed;
+            } else {
+                player.vel.y -= GRAVITY * dt;
+                if(player.onGround && keys.space) {
+                    player.vel.y = JUMP_FORCE;
+                    player.onGround = false;
+                }
+            }
+
+            // حركة ناعمة بدون اهتزاز
+            const dampingFactor = 0.85;
+            
+            player.pos.x += player.vel.x * dt;
+            if(checkCollision(player.pos)) {
+                player.pos.x -= player.vel.x * dt;
+                player.vel.x *= dampingFactor;
+            }
+
+            player.pos.z += player.vel.z * dt;
+            if(checkCollision(player.pos)) {
+                player.pos.z -= player.vel.z * dt;
+                player.vel.z *= dampingFactor;
+            }
+
+            player.pos.y += player.vel.y * dt;
+            player.onGround = false;
+            
+            if(checkCollision(player.pos)) {
+                if(player.vel.y < 0) {
+                    player.onGround = true;
+                    const groundY = Math.ceil(player.pos.y - PLAYER_HEIGHT);
+                    player.pos.y = groundY + PLAYER_HEIGHT;
+                } else if (player.vel.y > 0) {
+                    player.pos.y = Math.floor(player.pos.y + 0.2) - 0.2;
+                }
+                player.vel.y = 0;
+            }
+
+            // كاميرا ناعمة
+            camera.position.lerp(player.pos, 0.3);
+            
+            if(player.pos.y < -50) respawnPlayer();
+        }
+
+        function checkCollision(pos) {
+            const r = PLAYER_RADIUS;
+            const points = [
+                new THREE.Vector3(pos.x, pos.y - PLAYER_HEIGHT + 0.1, pos.z),
+                new THREE.Vector3(pos.x, pos.y - 0.1, pos.z),
+                new THREE.Vector3(pos.x + r, pos.y - 1, pos.z),
+                new THREE.Vector3(pos.x - r, pos.y - 1, pos.z),
+                new THREE.Vector3(pos.x, pos.y - 1, pos.z + r),
+                new THREE.Vector3(pos.x, pos.y - 1, pos.z - r)
+            ];
+
+            for (let p of points) {
+                if (isSolid(Math.floor(p.x), Math.floor(p.y), Math.floor(p.z))) return true;
+            }
+            return false;
+        }
+
+        // ==================== التفاعل ====================
+        function onMouseClick(e) {
+            if(!controls.isLocked) return;
+            handleInteraction(e.button);
+        }
+
+        function handleInteraction(btnCode) {
+            raycaster.setFromCamera(new THREE.Vector2(0,0), camera);
+            
+            const npcMeshes = npcs.filter(n => n.alive).map(n => n.mesh);
+            const npcIntersects = raycaster.intersectObjects(npcMeshes, true);
+            
+            if (npcIntersects.length > 0 && btnCode === 2) {
+                const clickedMesh = npcIntersects[0].object;
+                let clickedNPC = npcs.find(n => {
+                    return n.mesh.children.includes(clickedMesh) || n.mesh === clickedMesh.parent;
+                });
+                if (clickedNPC && clickedNPC.alive) {
+                    showNPCInfo(clickedNPC);
+                    return;
+                }
+            }
+
+            const intersects = raycaster.intersectObjects(meshes);
+            if (intersects.length > 0) {
+                const intersect = intersects[0];
+                const instanceId = intersect.instanceId;
+                const mesh = intersect.object;
+                
+                const matrix = new THREE.Matrix4();
+                mesh.getMatrixAt(instanceId, matrix);
+                const pos = new THREE.Vector3().setFromMatrixPosition(matrix);
+                
+                if(btnCode === 0) {
+                    setBlock(pos.x, pos.y, pos.z, BLOCKS.AIR);
+                } else if (btnCode === 2) {
+                    const n = intersect.face.normal;
+                    const bx = Math.round(pos.x + n.x);
+                    const by = Math.round(pos.y + n.y);
+                    const bz = Math.round(pos.z + n.z);
+                    
+                    const dx = Math.abs(bx - player.pos.x);
+                    const dy = Math.abs(by - (player.pos.y - 1));
+                    const dz = Math.abs(bz - player.pos.z);
+                    
+                    if(dx < 0.7 && dy < 1.0 && dz < 0.7) return;
+
+                    setBlock(bx, by, bz, selectedBlock);
+                }
+                updateChunks();
+            }
+        }
+
+        function interactWithNPC() {
+            raycaster.setFromCamera(new THREE.Vector2(0,0), camera);
+            const npcMeshes = npcs.filter(n => n.alive).map(n => n.mesh);
+            const intersects = raycaster.intersectObjects(npcMeshes, true);
+            
+            if (intersects.length > 0) {
+                const clickedMesh = intersects[0].object;
+                let clickedNPC = npcs.find(n => {
+                    return n.mesh.children.includes(clickedMesh) || n.mesh === clickedMesh.parent;
+                });
+                if (clickedNPC && clickedNPC.alive) {
+                    showNPCInfo(clickedNPC);
+                }
+            }
+        }
+
+        function attackNPC() {
+            raycaster.setFromCamera(new THREE.Vector2(0,0), camera);
+            const npcMeshes = npcs.filter(n => n.alive).map(n => n.mesh);
+            const intersects = raycaster.intersectObjects(npcMeshes, true);
+            
+            if (intersects.length > 0) {
+                const clickedMesh = intersects[0].object;
+                let clickedNPC = npcs.find(n => {
+                    return n.mesh.children.includes(clickedMesh) || n.mesh === clickedMesh.parent;
+                });
+                if (clickedNPC && clickedNPC.alive) {
+                    clickedNPC.health -= 50;
+                    if (clickedNPC.health <= 0) {
+                        killNPC(clickedNPC);
+                    } else {
+                        showNotification(`⚔️ هاجمت ${clickedNPC.name}! الصحة: ${clickedNPC.health}`);
+                    }
+                }
+            }
+            
+            const monsterMeshes = monsters.filter(m => m.active).map(m => m.mesh);
+            const monsterIntersects = raycaster.intersectObjects(monsterMeshes, true);
+            
+            if (monsterIntersects.length > 0) {
+                const clickedMesh = monsterIntersects[0].object;
+                let clickedMonster = monsters.find(m => {
+                    return m.mesh.children.includes(clickedMesh) || m.mesh === clickedMesh.parent;
+                });
+                if (clickedMonster && clickedMonster.active) {
+                    clickedMonster.health -= 30;
+                    if (clickedMonster.health <= 0) {
+                        scene.remove(clickedMonster.mesh);
+                        clickedMonster.active = false;
+                        showNotification('⚔️ قتلت وحشاً!');
+                    }
+                }
+            }
+        }
+
+        function showNPCInfo(npc) {
+            document.getElementById('npc-name').innerText = npc.name;
+            document.getElementById('npc-gender').innerText = npc.gender === 'male' ? '👨 ذكر' : '👩 أنثى';
+            document.getElementById('npc-age').innerText = npc.age === 'adult' ? '👤 بالغ' : '👶 طفل';
+            document.getElementById('npc-status').innerText = npc.alive ? '✅ حي' : '☠️ ميت';
+            document.getElementById('npc-spouse').innerText = npc.spouse || 'لا يوجد';
+            document.getElementById('npc-children').innerText = npc.house.children.length || '0';
+            document.getElementById('npc-house').innerText = npc.house.owner;
+            document.getElementById('npc-health').innerText = `${npc.health} / ${npc.maxHealth}`;
+            
+            const marryBtn = document.getElementById('marry-btn');
+            if (npc.gender === 'female' && !npc.spouse && !player.spouse && npc.age === 'adult') {
+                marryBtn.style.display = 'block';
+                marryBtn.onclick = () => {
+                    player.spouse = npc.name;
+                    npc.spouse = 'الملك';
+                    showNotification(`💑 تزوجت من ${npc.name}!`);
+                    document.getElementById('npc-info-modal').style.display = 'none';
+                };
+            } else {
+                marryBtn.style.display = 'none';
+            }
+            
+            document.getElementById('attack-npc-btn').onclick = () => {
+                attackNPC();
+                document.getElementById('npc-info-modal').style.display = 'none';
+            };
+            
+            document.getElementById('npc-info-modal').style.display = 'block';
+        }
+
+        document.getElementById('close-modal-btn').addEventListener('click', () => {
+            document.getElementById('npc-info-modal').style.display = 'none';
+        });
+
+        function showNotification(message) {
+            const notif = document.getElementById('notification');
+            notif.innerText = message;
+            notif.style.display = 'block';
+            setTimeout(() => {
+                notif.style.display = 'none';
+            }, 4000);
+        }
+
+        function updateHealthBar() {
+            const percent = (player.health / player.maxHealth) * 100;
+            document.getElementById('health-fill').style.width = percent + '%';
+            document.getElementById('health-text').innerText = `❤️ ${Math.max(0, Math.round(player.health))} / ${player.maxHealth}`;
+            
+            if (player.health < 30) {
+                document.getElementById('health-fill').style.background = 'linear-gradient(90deg, #ff0000, #990000)';
+            } else if (player.health < 60) {
+                document.getElementById('health-fill').style.background = 'linear-gradient(90deg, #ff8800, #ff4400)';
+            } else {
+                document.getElementById('health-fill').style.background = 'linear-gradient(90deg, #ff4444, #ff0000)';
+            }
+        }
+
+        function createHotbar() {
+            const container = document.getElementById('hotbar-container');
+            const items = [
+                {id: BLOCKS.BRICK, name: 'طوب'}, {id: BLOCKS.COBBLESTONE, name: 'حجر'},
+                {id: BLOCKS.PLANK, name: 'خشب'}, {id: BLOCKS.GLASS, name: 'زجاج'},
+                {id: BLOCKS.GRASS, name: 'عشب'}, {id: BLOCKS.STONE, name: 'حجر'},
+                {id: BLOCKS.DIRT, name: 'تراب'}
+            ];
+
+            items.forEach((item, i) => {
+                const el = document.createElement('div');
+                el.className = 'slot' + (i===0?' active':'');
+                el.style.backgroundColor = BLOCK_COLORS[item.id];
+                el.innerHTML = `<span>${i+1}</span>`;
+                el.onclick = () => {
+                    document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+                    el.classList.add('active');
+                    selectedBlock = item.id;
+                };
+                container.appendChild(el);
+            });
+        }
+
+        // ==================== حلقة اللعبة ====================
+        const clock = new THREE.Clock();
+        let lastDoorUpdate = 0;
+        let lastUpdate = 0;
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const dt = Math.min(clock.getDelta(), 0.033); // cap at 30fps
+            const time = clock.getElapsedTime();
+
+            gameTime += dt / DAY_CYCLE_DURATION;
+            updateSky();
+
+            updatePhysics(dt);
+            
+            // تحديثات أقل تكراراً
+            if (time - lastUpdate > 0.1) {
+                updateNPCs(dt * 10, time);
+                updateMonsters(dt * 10, time);
+                lastUpdate = time;
+            }
+            
+            if (time - lastDoorUpdate > 0.3) {
+                updateDoors();
+                lastDoorUpdate = time;
+            }
+            
+            document.getElementById('fps').innerText = Math.round(1/dt);
+            document.getElementById('time-display').innerText = getTimeString();
+            document.getElementById('coords').innerText = 
+                `${Math.floor(player.pos.x)}, ${Math.floor(player.pos.y)}, ${Math.floor(player.pos.z)}`;
+
+            renderer.render(scene, camera);
+        }
+
+        init();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+    </script>
+</body>
 </html>
