@@ -2,23 +2,27 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>TurkDrama Premium</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap');
 
         :root {
-            --bg-color: #0b0f19;
-            --surface-color: #151a28;
-            --surface-light: #1e2538;
-            --primary-color: #f59e0b;
-            --primary-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+            --bg-dark: #050810;
+            --bg-surface: #0f1525;
+            --bg-surface-light: #182035;
+            --primary: #ff8c00;
+            --primary-glow: rgba(255, 140, 0, 0.4);
+            --primary-gradient: linear-gradient(135deg, #ff8c00, #ff3b00);
             --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --glass-bg: rgba(21, 26, 40, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.05);
-            --sidebar-width: 280px;
+            --text-muted: #8b9bb4;
+            --glass-bg: rgba(15, 21, 37, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --sidebar-width: 260px;
+            --border-radius-lg: 24px;
+            --border-radius-md: 16px;
+            --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         * {
@@ -30,114 +34,130 @@
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-dark);
             color: var(--text-main);
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
+
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--bg-surface-light); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         .app-container {
             display: flex;
             min-height: 100vh;
         }
 
+        /* --- Sidebar (Desktop) --- */
         .sidebar {
             width: var(--sidebar-width);
-            background: var(--surface-color);
+            background: var(--bg-surface);
             border-left: 1px solid var(--glass-border);
             position: fixed;
             right: 0;
             top: 0;
             height: 100vh;
-            padding: 30px 20px;
+            padding: 40px 20px;
             display: flex;
             flex-direction: column;
             z-index: 100;
+            transition: var(--transition-smooth);
         }
 
         .brand-logo {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 900;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
             text-align: center;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 10px var(--primary-glow));
         }
 
         .sidebar-menu {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
             flex: 1;
         }
 
         .sidebar-menu li {
-            padding: 15px 20px;
-            border-radius: 12px;
+            padding: 16px 20px;
+            border-radius: var(--border-radius-md);
             cursor: pointer;
             font-size: 1.1rem;
-            font-weight: 500;
+            font-weight: 700;
             color: var(--text-muted);
             display: flex;
             align-items: center;
             gap: 15px;
-            transition: all 0.3s ease;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
         }
 
         .sidebar-menu li i {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
+            transition: var(--transition-smooth);
         }
 
         .sidebar-menu li:hover, .sidebar-menu li.active {
-            background: var(--surface-light);
-            color: var(--primary-color);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
         }
 
-        .upload-btn-container {
-            margin-top: auto;
-            padding-top: 20px;
-            border-top: 1px solid var(--glass-border);
+        .sidebar-menu li.active {
+            background: var(--primary-gradient);
+            box-shadow: 0 8px 20px var(--primary-glow);
         }
+
+        .sidebar-menu li.active i { color: white; }
 
         .btn-upload {
             width: 100%;
-            padding: 15px;
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            border-radius: 12px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px dashed var(--glass-border);
+            border-radius: var(--border-radius-md);
             font-size: 1.1rem;
-            font-weight: bold;
+            font-weight: 800;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            transition: var(--transition-smooth);
         }
 
         .btn-upload:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            box-shadow: 0 10px 25px var(--primary-glow);
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
         }
 
+        /* --- Main Content --- */
         .main-content {
             flex: 1;
             margin-right: var(--sidebar-width);
             display: flex;
             flex-direction: column;
+            padding-bottom: 50px;
         }
 
+        /* --- Header --- */
         header {
             position: sticky;
             top: 0;
             background: var(--glass-bg);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             padding: 20px 4%;
             display: flex;
             justify-content: flex-end;
@@ -149,25 +169,28 @@
         .search-wrapper {
             display: flex;
             align-items: center;
-            background: var(--surface-light);
-            border-radius: 20px;
-            padding: 10px 20px;
+            background: var(--bg-dark);
+            border-radius: 30px;
+            padding: 12px 25px;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             border: 1px solid var(--glass-border);
-            transition: all 0.3s ease;
+            transition: var(--transition-smooth);
         }
 
         .search-wrapper:focus-within {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
         }
 
         .search-wrapper i {
-            color: var(--primary-color);
+            color: var(--text-muted);
             font-size: 1.2rem;
             margin-left: 15px;
+            transition: var(--transition-smooth);
         }
+
+        .search-wrapper:focus-within i { color: var(--primary); }
 
         .search-wrapper input {
             background: transparent;
@@ -175,231 +198,291 @@
             color: white;
             outline: none;
             width: 100%;
-            font-size: 1rem;
+            font-size: 1.05rem;
+            font-weight: 500;
         }
 
+        /* --- Hero Banner --- */
         .hero-banner {
             position: relative;
             width: 100%;
-            height: 50vh;
+            height: 60vh;
+            min-height: 400px;
             background: url('https://images.unsplash.com/photo-1542304082-f5c71b69eb07?q=80&w=2000&auto=format&fit=crop') center/cover;
             display: flex;
             align-items: flex-end;
-            padding: 40px 4%;
+            padding: 60px 4%;
+            border-radius: 0 0 40px 40px;
+            overflow: hidden;
+            margin-bottom: 20px;
         }
 
         .hero-banner::before {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to right, rgba(11, 15, 25, 0.9) 0%, rgba(11, 15, 25, 0.4) 100%);
-        }
-
-        .hero-banner::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 50%;
-            background: linear-gradient(to top, var(--bg-color), transparent);
+            background: linear-gradient(10deg, var(--bg-dark) 0%, rgba(5,8,16,0.6) 50%, transparent 100%);
         }
 
         .hero-content {
             position: relative;
             z-index: 10;
+            max-width: 800px;
+            animation: slideUp 0.8s ease forwards;
+        }
+
+        .hero-badge {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            display: inline-block;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px var(--primary-glow);
         }
 
         .hero-title {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 900;
+            line-height: 1.2;
             margin-bottom: 15px;
             color: #fff;
+            text-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
 
         .hero-desc {
             color: var(--text-muted);
             font-size: 1.2rem;
-            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 25px;
         }
 
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.4s ease;
-            padding-bottom: 40px;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .section-wrapper {
-            padding: 30px 4% 0;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: flex;
+        .hero-btn {
+            background: white;
+            color: black;
+            padding: 15px 35px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-flex;
             align-items: center;
             gap: 10px;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            border: none;
         }
 
-        .section-title::before {
-            content: '';
-            display: block;
-            width: 6px;
-            height: 24px;
-            background: var(--primary-gradient);
-            border-radius: 10px;
+        .hero-btn:hover {
+            transform: scale(1.05);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 25px var(--primary-glow);
         }
+
+        /* --- Sections & Grids --- */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active { display: block; }
+
+        .section-wrapper { padding: 30px 4% 10px; }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i { color: var(--primary); font-size: 1.4rem; }
 
         .scroll-grid {
             display: flex;
             overflow-x: auto;
             gap: 20px;
-            padding-bottom: 20px;
-            scroll-behavior: smooth;
+            padding-bottom: 30px;
+            scroll-snap-type: x mandatory;
         }
 
-        .scroll-grid::-webkit-scrollbar {
-            height: 8px;
-        }
+        .scroll-grid::-webkit-scrollbar { display: none; } /* Hide scrollbar for clean look */
 
-        .scroll-grid::-webkit-scrollbar-track {
-            background: var(--surface-color);
-            border-radius: 10px;
-        }
-
-        .scroll-grid::-webkit-scrollbar-thumb {
-            background: var(--surface-light);
-            border-radius: 10px;
-        }
-
+        /* --- Beautiful Cards --- */
         .card {
-            flex: 0 0 200px;
-            background: var(--surface-color);
-            border-radius: 16px;
+            flex: 0 0 240px;
+            height: 360px;
+            background: var(--bg-surface);
+            border-radius: var(--border-radius-lg);
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid var(--glass-border);
+            transition: var(--transition-smooth);
             position: relative;
+            scroll-snap-align: start;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
         .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            border-color: var(--primary-color);
-        }
-
-        .card-img-wrapper {
-            position: relative;
-            width: 100%;
-            height: 280px;
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px var(--primary-glow);
+            z-index: 10;
         }
 
         .card-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.6s ease;
         }
 
-        .card-overlay {
+        .card:hover .card-img { transform: scale(1.1); }
+
+        .card-gradient {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(11, 15, 25, 0.6);
+            bottom: 0; left: 0; width: 100%; height: 70%;
+            background: linear-gradient(to top, var(--bg-dark) 0%, rgba(5,8,16,0.8) 40%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+            transition: var(--transition-smooth);
+        }
+
+        .play-circle {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            width: 60px; height: 60px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            opacity: 0;
+            transition: var(--transition-smooth);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .card:hover .play-circle {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* --- User Videos Grid --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 0 4% 30px;
+        }
+
+        .video-card {
+            background: var(--bg-surface);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition-smooth);
+        }
+
+        .video-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+
+        .video-card-thumb {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+        }
+
+        .video-card-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .video-card:hover .video-card-thumb img { transform: scale(1.05); }
+
+        .video-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: var(--transition-smooth);
         }
 
-        .card:hover .card-overlay {
-            opacity: 1;
-        }
+        .video-card:hover .video-card-overlay { opacity: 1; }
 
-        .card-overlay i {
+        .video-card-overlay i {
             font-size: 3.5rem;
-            color: var(--primary-color);
-            filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.6));
+            color: white;
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
             transform: scale(0.8);
             transition: transform 0.3s;
         }
 
-        .card:hover .card-overlay i {
-            transform: scale(1);
-        }
+        .video-card:hover .video-card-overlay i { transform: scale(1); }
 
-        .card-info {
-            padding: 15px;
-        }
-
-        .card-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 0 4%;
-        }
-
-        .video-card {
-            background: var(--surface-color);
-            border-radius: 16px;
-            overflow: hidden;
-            cursor: pointer;
-            border: 1px solid var(--glass-border);
-            transition: all 0.3s ease;
-        }
-
-        .video-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            border-color: var(--primary-color);
-        }
-
-        .video-card img {
-            width: 100%;
-            aspect-ratio: 16/9;
-            object-fit: cover;
-        }
-
-        .video-card-info {
-            padding: 15px;
-        }
+        .video-card-info { padding: 20px; }
 
         .video-card-title {
-            font-size: 1rem;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 800;
             margin-bottom: 10px;
+            color: white;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
+        /* --- Floating Bottom Nav (Mobile) --- */
         .bottom-nav {
             display: none;
             position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            height: 70px;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            height: 75px;
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 40px;
             justify-content: space-around;
             align-items: center;
-            border-top: 1px solid var(--glass-border);
+            border: 1px solid var(--glass-border);
             z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
 
         .nav-item {
@@ -408,117 +491,137 @@
             align-items: center;
             color: var(--text-muted);
             font-size: 0.8rem;
+            font-weight: 700;
             gap: 6px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition-smooth);
+            position: relative;
         }
 
-        .nav-item i {
-            font-size: 1.4rem;
+        .nav-item i { font-size: 1.5rem; transition: var(--transition-smooth); }
+
+        .nav-item.active { color: white; }
+        .nav-item.active i { color: var(--primary); transform: translateY(-3px); }
+
+        .nav-add-btn {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            transform: translateY(-15px);
+            box-shadow: 0 10px 20px var(--primary-glow);
+            border: 4px solid var(--bg-dark);
+            transition: var(--transition-smooth);
         }
 
-        .nav-item.active {
-            color: var(--primary-color);
-        }
+        .nav-add-btn:active { transform: translateY(-15px) scale(0.9); }
 
+        /* --- Modals (Bottom Sheet on Mobile, Centered on Desktop) --- */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(11, 15, 25, 0.9);
-            backdrop-filter: blur(8px);
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             z-index: 2000;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
 
         .modal-content {
-            background: var(--surface-color);
-            width: 90%;
-            max-width: 800px;
+            background: var(--bg-surface);
+            width: 95%;
+            max-width: 900px;
             max-height: 90vh;
-            border-radius: 20px;
+            border-radius: var(--border-radius-lg);
             border: 1px solid var(--glass-border);
-            transform: scale(0.95) translateY(20px);
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform: scale(0.95) translateY(30px);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             flex-direction: column;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
             overflow: hidden;
         }
 
-        .modal-overlay.active .modal-content {
-            transform: scale(1) translateY(0);
-        }
+        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
 
         .modal-header {
-            padding: 20px 25px;
+            padding: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--surface-light);
+            background: rgba(255,255,255,0.02);
             border-bottom: 1px solid var(--glass-border);
         }
 
-        .modal-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
+        .modal-title { font-size: 1.4rem; font-weight: 900; color: white; }
 
         .modal-close {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.1);
             border: none;
-            color: var(--text-main);
-            width: 40px; height: 40px;
+            color: white;
+            width: 45px; height: 45px;
             border-radius: 50%;
             font-size: 1.2rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .modal-close:hover {
-            background: var(--primary-color);
-            transform: rotate(90deg);
-        }
+        .modal-close:hover { background: #ef4444; transform: rotate(90deg); }
 
         .modal-body {
             padding: 25px;
             overflow-y: auto;
             flex: 1;
+            scroll-behavior: smooth;
         }
 
+        /* --- Episodes List --- */
         .episode-item {
             display: flex;
             gap: 20px;
             padding: 15px;
-            border-radius: 12px;
+            border-radius: var(--border-radius-md);
             cursor: pointer;
-            transition: all 0.3s;
-            background: var(--surface-light);
+            transition: var(--transition-smooth);
+            background: var(--bg-surface-light);
             margin-bottom: 15px;
             border: 1px solid transparent;
+            align-items: center;
         }
 
         .episode-item:hover {
-            border-color: var(--primary-color);
-            transform: translateX(-5px);
+            border-color: var(--primary);
+            background: rgba(255, 140, 0, 0.05);
+            transform: translateX(-10px);
         }
 
         .episode-item img {
-            width: 140px;
-            height: 80px;
+            width: 160px;
+            height: 90px;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
+        .ep-info h4 { font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; color: white; }
+        .ep-info span { font-size: 0.9rem; color: var(--primary); font-weight: 700; display: flex; align-items: center; gap: 5px; }
+
+        /* --- Video Player & Actions --- */
         .player-wrapper {
             position: relative;
             width: 100%;
@@ -534,10 +637,11 @@
 
         .action-bar {
             display: flex;
-            gap: 40px;
-            padding: 20px 25px;
-            background: var(--surface-light);
+            gap: 30px;
+            padding: 20px 30px;
+            background: var(--bg-surface);
             border-bottom: 1px solid var(--glass-border);
+            align-items: center;
         }
 
         .action-btn {
@@ -545,250 +649,330 @@
             border: none;
             color: var(--text-muted);
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
-            font-size: 1.1rem;
-            font-weight: 700;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 800;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition-smooth);
         }
 
         .action-btn i {
-            font-size: 1.6rem;
+            width: 50px; height: 50px;
+            background: var(--bg-surface-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: var(--transition-smooth);
         }
 
-        .action-btn:hover, .action-btn.liked {
-            color: var(--primary-color);
+        .action-btn:hover i { background: rgba(255,255,255,0.1); color: white; transform: scale(1.1); }
+        
+        /* Heartbeat Animation for Like */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.3); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.3); }
+            70% { transform: scale(1); }
         }
 
+        .action-btn.liked i {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.15);
+            animation: heartbeat 1s ease;
+        }
+        .action-btn.liked span { color: #ef4444; }
+
+        /* --- Comments & Inputs --- */
         .modern-input {
             width: 100%;
-            padding: 18px 20px;
-            background: var(--bg-color);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
+            padding: 18px 25px;
+            background: var(--bg-dark);
+            border: 2px solid var(--glass-border);
+            border-radius: 20px;
             color: white;
             margin-bottom: 20px;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            font-weight: 500;
             outline: none;
-            transition: all 0.3s;
+            transition: var(--transition-smooth);
         }
 
         .modern-input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+            background: rgba(255, 140, 0, 0.02);
         }
 
         .comment-box {
             display: flex;
             gap: 15px;
             margin-bottom: 30px;
+            position: relative;
         }
 
+        .comment-box input { margin-bottom: 0; padding-left: 70px; } /* Space for button */
+
         .btn-send {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px; height: 45px;
             background: var(--primary-gradient);
             color: white;
             border: none;
-            padding: 0 25px;
-            border-radius: 12px;
+            border-radius: 50%;
             font-size: 1.2rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px var(--primary-glow);
         }
 
-        .btn-send:hover {
-            transform: scale(1.05);
-        }
+        .btn-send:hover { transform: translateY(-50%) scale(1.1); }
 
         .comment-item {
             display: flex;
             gap: 15px;
-            margin-bottom: 20px;
-            background: var(--surface-light);
-            padding: 15px;
-            border-radius: 12px;
+            margin-bottom: 25px;
+            animation: fadeIn 0.4s ease;
         }
 
         .comment-avatar {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background: var(--primary-color);
+            background: var(--primary-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             color: white;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
+        .comment-bubble {
+            background: var(--bg-surface-light);
+            padding: 18px 25px;
+            border-radius: 20px 0 20px 20px; /* Chat bubble style for Arabic (RTL) */
+            flex: 1;
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .comment-name { font-size: 0.95rem; color: var(--text-muted); font-weight: 800; margin-bottom: 8px; }
+        .comment-text { font-size: 1.1rem; color: white; line-height: 1.5; font-weight: 500; }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Mobile Responsiveness (Massive Focus) --- */
         @media (max-width: 992px) {
-            .sidebar {
-                display: none;
-            }
-            .main-content {
-                margin-right: 0;
-            }
-            .bottom-nav {
-                display: flex;
-            }
-            header {
-                justify-content: center;
-            }
-            .search-wrapper {
-                max-width: 100%;
-            }
-            .hero-title {
-                font-size: 2rem;
-            }
+            .sidebar { transform: translateX(100%); }
+            .main-content { margin-right: 0; padding-bottom: 100px; } /* Space for bottom nav */
+            .bottom-nav { display: flex; }
+            header { justify-content: center; padding: 15px 4%; }
+            .search-wrapper { max-width: 100%; border-radius: 20px; }
+            .hero-banner { height: 50vh; padding: 40px 4%; border-radius: 0 0 30px 30px;}
+            .hero-title { font-size: 2.2rem; }
+            .hero-desc { font-size: 1rem; }
+            .section-title { font-size: 1.4rem; }
+            
+            /* Massive, attractive cards on mobile */
+            .card { flex: 0 0 200px; height: 300px; }
+            .video-card-thumb { aspect-ratio: auto; height: 200px; }
+            
+            /* Bottom Sheet Modals for Mobile */
+            .modal-overlay { align-items: flex-end; }
             .modal-content {
                 width: 100%;
-                height: 100vh;
-                max-height: 100vh;
-                border-radius: 0;
+                height: 90vh;
+                max-height: 90vh;
+                border-radius: 35px 35px 0 0;
                 transform: translateY(100%);
+                transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+                border-bottom: none;
             }
-            .modal-overlay {
-                align-items: flex-end;
-            }
-            .modal-overlay.active .modal-content {
-                transform: translateY(0);
-            }
-            .card {
-                flex: 0 0 160px;
-            }
-            .card-img-wrapper {
-                height: 220px;
-            }
-            .app-container {
-                padding-bottom: 70px;
-            }
+            .modal-overlay.active .modal-content { transform: translateY(0); }
+            
+            .modal-header { padding: 20px; }
+            .modal-title { font-size: 1.2rem; }
+            .episode-item img { width: 120px; height: 70px; }
+            
+            /* Sticky comment box on mobile player */
+            .comment-box { position: sticky; bottom: 0; background: var(--bg-surface); padding: 15px 0; z-index: 10; margin-bottom: 0; border-top: 1px solid var(--glass-border);}
         }
+
+        /* Loading Spinner */
+        .loader-container { display: flex; justify-content: center; align-items: center; padding: 50px; }
+        .spinner { width: 50px; height: 50px; border: 5px solid var(--bg-surface-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         
+        <!-- Desktop Sidebar -->
         <aside class="sidebar">
             <div class="brand-logo">TurkDrama</div>
             <ul class="sidebar-menu">
                 <li class="active" onclick="switchTab('tab-home', this)">
-                    <i class="fas fa-home"></i> الرئيسية
+                    <i class="fas fa-compass"></i> اكتشف
                 </li>
                 <li onclick="switchTab('tab-videos', this)">
-                    <i class="fas fa-play-circle"></i> مشاركات الأعضاء
+                    <i class="fas fa-play-circle"></i> مجتمع المنصة
                 </li>
             </ul>
-            <div class="upload-btn-container">
+            <div style="margin-top: auto;">
                 <button class="btn-upload" onclick="openModal('addVideoModal')">
-                    <i class="fas fa-cloud-upload-alt"></i> رفع منشور
+                    <i class="fas fa-plus"></i> شارك فيديو
                 </button>
             </div>
         </aside>
 
+        <!-- Main Content Area -->
         <main class="main-content">
             
             <header>
                 <div class="search-wrapper">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="ابحث عن مسلسل، حلقة، أو فيلم...">
+                    <input type="text" id="searchInput" placeholder="ابحث عن مسلسلك المفضل...">
                 </div>
             </header>
 
+            <!-- Home Tab -->
             <div id="tab-home" class="tab-content active">
                 <div class="hero-banner">
                     <div class="hero-content">
-                        <h1 class="hero-title">اكتشف أروع المسلسلات التركية</h1>
-                        <p class="hero-desc">مكتبة ضخمة تضم مئات المسلسلات المدبلجة بجودة عالية، تصفح، شارك، واستمتع بالمشاهدة.</p>
+                        <span class="hero-badge"><i class="fas fa-fire"></i> حصرياً</span>
+                        <h1 class="hero-title">عالم الدراما التركية بين يديك</h1>
+                        <p class="hero-desc">استمتع بمشاهدة أحدث وأقوى المسلسلات التركية المدبلجة والمترجمة بجودة سينمائية عالية. تصفح، شارك، وعش القصة.</p>
+                        <button class="hero-btn" onclick="document.getElementById('playlistsContainer1').scrollIntoView({behavior: 'smooth'})">
+                            <i class="fas fa-play"></i> ابدأ المشاهدة
+                        </button>
                     </div>
                 </div>
 
                 <div class="section-wrapper">
-                    <h2 class="section-title">الأكثر شهرة ومتابعة</h2>
-                    <div class="scroll-grid" id="playlistsContainer1"></div>
+                    <h2 class="section-title"><i class="fas fa-crown"></i> التريند اليوم</h2>
+                    <div class="scroll-grid" id="playlistsContainer1">
+                        <div class="loader-container"><div class="spinner"></div></div>
+                    </div>
                 </div>
                 
                 <div class="section-wrapper">
-                    <h2 class="section-title">إضافات مميزة</h2>
+                    <h2 class="section-title"><i class="fas fa-bolt"></i> مضاف حديثاً</h2>
                     <div class="scroll-grid" id="playlistsContainer2"></div>
                 </div>
 
                 <div class="section-wrapper">
-                    <h2 class="section-title">مختارات حصريّة</h2>
+                    <h2 class="section-title"><i class="fas fa-star"></i> الأعلى تقييماً</h2>
                     <div class="scroll-grid" id="playlistsContainer3"></div>
                 </div>
             </div>
 
+            <!-- Community Videos Tab -->
             <div id="tab-videos" class="tab-content">
-                <div class="section-wrapper" style="padding-top: 20px;">
-                    <h2 class="section-title">أحدث مشاركات الأعضاء</h2>
-                    <div class="grid-container" id="userVideosContainer"></div>
+                <div class="section-wrapper" style="padding-top: 30px;">
+                    <h2 class="section-title" style="justify-content: center; font-size: 2rem; margin-bottom: 40px;">
+                        <i class="fas fa-users"></i> إبداعات المجتمع
+                    </h2>
+                    <div class="grid-container" id="userVideosContainer">
+                        <div class="loader-container" style="grid-column: 1/-1;"><div class="spinner"></div></div>
+                    </div>
                 </div>
             </div>
 
         </main>
     </div>
 
+    <!-- Mobile Bottom Navigation -->
     <nav class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('tab-home', this)">
-            <i class="fas fa-home"></i>
-            <span>الرئيسية</span>
+        <div class="nav-item active" onclick="switchTab('tab-home', this, true)">
+            <i class="fas fa-compass"></i>
+            <span>اكتشف</span>
         </div>
-        <div class="nav-item" onclick="openModal('addVideoModal')">
-            <i class="fas fa-plus-circle" style="font-size: 2.5rem; color: var(--primary-color);"></i>
+        <div class="nav-add-btn" onclick="openModal('addVideoModal')">
+            <i class="fas fa-plus"></i>
         </div>
-        <div class="nav-item" onclick="switchTab('tab-videos', this)">
-            <i class="fas fa-users"></i>
-            <span>المشاركات</span>
+        <div class="nav-item" onclick="switchTab('tab-videos', this, true)">
+            <i class="fas fa-play-circle"></i>
+            <span>المجتمع</span>
         </div>
     </nav>
 
+    <!-- Playlist Episodes Modal -->
     <div class="modal-overlay" id="playlistModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" id="playlistModalTitle"></div>
+                <div class="modal-title" id="playlistModalTitle">قائمة الحلقات</div>
                 <button class="modal-close" onclick="closeModal('playlistModal')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body" id="episodesList"></div>
         </div>
     </div>
 
+    <!-- Video Player & Comments Modal -->
     <div class="modal-overlay" id="playerModal">
         <div class="modal-content" style="padding: 0; display: flex; flex-direction: column;">
             <div class="player-wrapper" id="playerContainer"></div>
+            
             <div class="action-bar">
                 <button class="action-btn" id="likeBtn">
-                    <i class="fas fa-heart"></i> <span id="likeCountText">0</span>
+                    <i class="fas fa-heart"></i>
+                    <span id="likeCountText">0 إعجاب</span>
                 </button>
                 <button class="action-btn" onclick="document.getElementById('commentInput').focus()">
-                    <i class="fas fa-comment-dots"></i> <span>تعليق</span>
+                    <i class="fas fa-comment"></i>
+                    <span>تعليق</span>
                 </button>
-                <button class="action-btn" style="margin-right: auto;" onclick="closePlayer()">
-                    <i class="fas fa-compress-arrows-alt"></i> <span>إغلاق</span>
+                <button class="action-btn" style="margin-right: auto; color: white;" onclick="closePlayer()">
+                    <i class="fas fa-chevron-down"></i>
+                    <span>إغلاق</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <h3 id="playerVideoTitle" style="margin-bottom: 25px; font-size: 1.3rem;"></h3>
+            
+            <div class="modal-body" style="background: var(--bg-dark);">
+                <h3 id="playerVideoTitle" style="margin-bottom: 30px; font-size: 1.4rem; font-weight: 900; line-height: 1.4;"></h3>
+                
                 <div class="comment-box">
-                    <input type="text" id="commentInput" class="modern-input" style="margin:0;" placeholder="شاركنا رأيك في هذا المقطع...">
+                    <input type="text" id="commentInput" class="modern-input" placeholder="اكتب تعليقاً مذهلاً...">
                     <button id="sendCommentBtn" class="btn-send"><i class="fas fa-paper-plane"></i></button>
                 </div>
-                <div id="commentsContainer"></div>
+                
+                <div id="commentsContainer">
+                    <!-- Comments injected here -->
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Add Video Modal -->
     <div class="modal-overlay" id="addVideoModal">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <div class="modal-title">رفع منشور جديد</div>
+                <div class="modal-title"><i class="fas fa-cloud-upload-alt" style="color:var(--primary); margin-left:10px;"></i> رفع مقطع جديد</div>
                 <button class="modal-close" onclick="closeModal('addVideoModal')"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
-                <input type="text" id="addTitle" class="modern-input" placeholder="عنوان المنشور / المشهد...">
-                <input type="text" id="addUrl" class="modern-input" placeholder="رابط يوتيوب (https://youtube.com/...)">
-                <button class="btn-upload" id="submitVideoBtn" style="margin-top: 15px;">
-                    <i class="fas fa-paper-plane"></i> نشر الآن
+                <div style="text-align: center; margin-bottom: 30px; color: var(--text-muted);">
+                    <i class="fab fa-youtube" style="font-size: 4rem; color: #ff0000; margin-bottom: 15px;"></i>
+                    <p>شارك أفضل المشاهد واللقطات من مسلسلاتك المفضلة مع مجتمع TurkDrama</p>
+                </div>
+                <input type="text" id="addTitle" class="modern-input" placeholder="عنوان المقطع (مثال: مشهد حزين من الحفرة)...">
+                <input type="text" id="addUrl" class="modern-input" placeholder="رابط يوتيوب هنا...">
+                <button class="btn-upload" id="submitVideoBtn" style="background: var(--primary-gradient); border: none; margin-top: 10px; padding: 18px; font-size: 1.2rem; border-radius: 20px;">
+                    <i class="fas fa-rocket"></i> نشر المقطع الآن
                 </button>
             </div>
         </div>
@@ -796,10 +980,10 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, push, set, onValue, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getDatabase, ref, push, set, onValue, get, off } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
+        // API Keys (Kept exactly as provided by user)
         const YOUTUBE_API_KEY = "AIzaSyA4udj09he_6KiDbkKN1faciOhgqWwKOcI"; 
-
         const firebaseConfig = {
             apiKey: "AIzaSyAjE-2q6PONBkCin9ZN22gDp9Q8pAH9ZW8",
             authDomain: "story-97cf7.firebaseapp.com",
@@ -814,27 +998,53 @@
         const db = getDatabase(app);
 
         let currentVideoId = null; 
-        let allPlaylists =[];
+        let allPlaylists = [];
+        let currentLikesRef = null;
+        let currentCommentsRef = null;
 
-        window.openModal = (id) => document.getElementById(id).classList.add('active');
-        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+        // UI Functions
+        window.openModal = (id) => {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling on mobile
+        };
+        
+        window.closeModal = (id) => {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
 
         window.closePlayer = () => {
             closeModal('playerModal');
             document.getElementById('playerContainer').innerHTML = ''; 
             currentVideoId = null;
+            // Detach firebase listeners to prevent memory leaks
+            if(currentLikesRef) off(currentLikesRef);
+            if(currentCommentsRef) off(currentCommentsRef);
         }
 
-        window.switchTab = (targetId, element = null) => {
+        window.switchTab = (targetId, element, isMobile = false) => {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(targetId).classList.add('active');
             
+            // Sync active state between desktop and mobile navs
             document.querySelectorAll('.sidebar-menu li, .nav-item').forEach(el => el.classList.remove('active'));
-            if(element) element.classList.add('active');
+            
+            if(isMobile) {
+                element.classList.add('active');
+                const index = Array.from(element.parentNode.children).indexOf(element);
+                const desktopTarget = document.querySelectorAll('.sidebar-menu li')[index > 1 ? 1 : 0];
+                if(desktopTarget) desktopTarget.classList.add('active');
+            } else {
+                element.classList.add('active');
+                const index = Array.from(element.parentNode.children).indexOf(element);
+                const mobileTarget = document.querySelectorAll('.nav-item')[index === 1 ? 2 : 0];
+                if(mobileTarget) mobileTarget.classList.add('active');
+            }
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Search Filter
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
             const allCards = document.querySelectorAll('.card, .video-card');
@@ -844,6 +1054,7 @@
             });
         });
 
+        // Fetch YouTube Playlists
         async function fetchPlaylists() {
             try {
                 const query = encodeURIComponent("مسلسلات تركية مدبلجة كاملة");
@@ -858,8 +1069,13 @@
                         if(data2.items) allPlaylists.push(...data2.items);
                     }
                     renderPlaylists();
+                } else {
+                    document.getElementById('playlistsContainer1').innerHTML = '<p style="color:red; padding:20px;">عذراً، استنفذ مفتاح API الحصة المخصصة له.</p>';
                 }
-            } catch (error) {}
+            } catch (error) {
+                console.error(error);
+                document.getElementById('playlistsContainer1').innerHTML = '<p style="padding:20px;">حدث خطأ في جلب البيانات.</p>';
+            }
         }
 
         function renderPlaylists() {
@@ -871,31 +1087,32 @@
 
             allPlaylists.forEach((item, index) => {
                 const plId = item.id.playlistId;
-                const title = item.snippet.title;
-                const thumb = item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : item.snippet.thumbnails.default.url;
+                const title = item.snippet.title.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+                // Get best resolution thumbnail, fallback to others
+                const thumb = item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : 
+                             (item.snippet.thumbnails.medium ? item.snippet.thumbnails.medium.url : item.snippet.thumbnails.default.url);
 
-                const card = `
+                const cardHTML = `
                     <div class="card" data-title="${title}" onclick="openPlaylist('${plId}', '${title.replace(/'/g, "\\'")}')">
-                        <div class="card-img-wrapper">
-                            <img src="${thumb}" class="card-img">
-                            <div class="card-overlay"><i class="fas fa-play"></i></div>
-                        </div>
-                        <div class="card-info">
+                        <img src="${thumb}" class="card-img" loading="lazy">
+                        <div class="card-gradient">
                             <div class="card-title">${title}</div>
                         </div>
+                        <div class="play-circle"><i class="fas fa-play"></i></div>
                     </div>
                 `;
                 
-                if(index < 33) c1.innerHTML += card;
-                else if(index < 66) c2.innerHTML += card;
-                else c3.innerHTML += card;
+                if(index < 15) c1.innerHTML += cardHTML;
+                else if(index < 30) c2.innerHTML += cardHTML;
+                else c3.innerHTML += cardHTML;
             });
         }
 
+        // Open Playlist Episodes
         window.openPlaylist = async (playlistId, title) => {
             document.getElementById('playlistModalTitle').innerText = title;
             const epCont = document.getElementById('episodesList');
-            epCont.innerHTML = '<div style="text-align:center; padding:50px;"><i class="fas fa-circle-notch fa-spin fa-3x" style="color:var(--primary-color);"></i></div>';
+            epCont.innerHTML = '<div class="loader-container"><div class="spinner"></div></div>';
             openModal('playlistModal');
 
             try {
@@ -904,80 +1121,108 @@
                 
                 epCont.innerHTML = '';
                 if(data.items && data.items.length > 0) {
-                    data.items.forEach((item, idx) => {
+                    data.items.forEach((item) => {
                         const ytId = item.snippet.resourceId.videoId;
                         const epTitle = item.snippet.title;
-                        const thumb = item.snippet.thumbnails.medium ? item.snippet.thumbnails.medium.url : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400';
+                        const thumb = item.snippet.thumbnails.medium ? item.snippet.thumbnails.medium.url : 
+                                      (item.snippet.thumbnails.default ? item.snippet.thumbnails.default.url : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400');
 
                         epCont.innerHTML += `
                             <div class="episode-item" onclick="playVideo('${ytId}', '${epTitle.replace(/'/g, "\\'")}')">
-                                <img src="${thumb}">
-                                <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
-                                    <h4 style="font-size:1.1rem; margin-bottom:10px;">${epTitle}</h4>
-                                    <span style="font-size:0.9rem; color:var(--primary-color); font-weight:bold;"><i class="fas fa-play-circle"></i> مشاهدة الحلقة</span>
+                                <img src="${thumb}" loading="lazy">
+                                <div class="ep-info">
+                                    <h4>${epTitle}</h4>
+                                    <span><i class="fas fa-play-circle"></i> شاهد الآن</span>
                                 </div>
                             </div>
                         `;
                     });
+                } else {
+                    epCont.innerHTML = '<p style="text-align:center; padding:30px; color:var(--text-muted);">لا توجد حلقات متاحة في هذه القائمة.</p>';
                 }
-            } catch(e) {}
+            } catch(e) {
+                epCont.innerHTML = '<p style="text-align:center; padding:30px; color:red;">حدث خطأ أثناء جلب الحلقات.</p>';
+            }
         }
 
+        // Play Video & Load Firebase Data
         window.playVideo = (ytId, title) => {
             closeModal('playlistModal');
             currentVideoId = ytId;
             document.getElementById('playerVideoTitle').innerText = title;
-            document.getElementById('playerContainer').innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" allow="autoplay; fullscreen"></iframe>`;
+            document.getElementById('playerContainer').innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" allow="autoplay; fullscreen; encrypted-media"></iframe>`;
             openModal('playerModal');
             loadFirebaseData(ytId);
         }
 
+        // Firebase Integration
         function loadFirebaseData(ytId) {
-            const likesRef = ref(db, `likes/${ytId}`);
-            const commentsRef = ref(db, `comments/${ytId}`);
+            // Clean up old listeners
+            if(currentLikesRef) off(currentLikesRef);
+            if(currentCommentsRef) off(currentCommentsRef);
+
+            currentLikesRef = ref(db, `likes/${ytId}`);
+            currentCommentsRef = ref(db, `comments/${ytId}`);
             
             const likeBtn = document.getElementById('likeBtn');
-            likeBtn.className = 'action-btn';
+            likeBtn.className = 'action-btn'; // Reset class
 
-            onValue(likesRef, snap => {
-                document.getElementById('likeCountText').innerText = snap.val() || 0;
+            // Listen for Likes
+            onValue(currentLikesRef, snap => {
+                const count = snap.val() || 0;
+                document.getElementById('likeCountText').innerText = count > 0 ? `${count} إعجاب` : 'أعجبني';
             });
 
-            onValue(commentsRef, snap => {
+            // Listen for Comments
+            onValue(currentCommentsRef, snap => {
                 const cont = document.getElementById('commentsContainer');
                 cont.innerHTML = '';
                 const data = snap.val();
                 if(data) {
-                    Object.values(data).forEach(c => {
+                    // Sort by timestamp if available, else object order
+                    const comments = Object.values(data).sort((a,b) => (b.ts || 0) - (a.ts || 0));
+                    comments.forEach(c => {
                         cont.innerHTML += `
                             <div class="comment-item">
-                                <div class="comment-avatar"><i class="fas fa-user"></i></div>
-                                <div>
-                                    <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:5px;">عضو TurkDrama</div>
-                                    <div style="font-size:1rem; color:white;">${c.text}</div>
+                                <div class="comment-avatar"><i class="fas fa-user-astronaut"></i></div>
+                                <div class="comment-bubble">
+                                    <div class="comment-name">عضو TurkDrama</div>
+                                    <div class="comment-text">${c.text}</div>
                                 </div>
                             </div>
                         `;
                     });
+                } else {
+                    cont.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">كن أول من يعلق على هذا المقطع!</div>';
                 }
             });
 
+            // Handle Like Click
             likeBtn.onclick = () => {
-                get(likesRef).then(snap => {
-                    set(likesRef, (snap.val() || 0) + 1);
-                    likeBtn.classList.add('liked');
-                });
+                if(!likeBtn.classList.contains('liked')) {
+                    get(currentLikesRef).then(snap => {
+                        set(currentLikesRef, (snap.val() || 0) + 1);
+                        likeBtn.classList.add('liked');
+                    });
+                }
             };
         }
 
+        // Add Comment
         document.getElementById('sendCommentBtn').addEventListener('click', () => {
             const input = document.getElementById('commentInput');
-            if(input.value.trim() && currentVideoId) {
-                push(ref(db, `comments/${currentVideoId}`), { text: input.value.trim(), ts: Date.now() })
-                .then(() => input.value = '');
+            const text = input.value.trim();
+            if(text && currentVideoId) {
+                push(ref(db, `comments/${currentVideoId}`), { text: text, ts: Date.now() })
+                .then(() => {
+                    input.value = '';
+                    // Scroll to newly added comment area
+                    document.getElementById('commentsContainer').scrollIntoView({behavior: 'smooth', block: 'start'});
+                });
             }
         });
 
+        // Add User Video
         document.getElementById('submitVideoBtn').addEventListener('click', () => {
             const title = document.getElementById('addTitle').value.trim();
             const url = document.getElementById('addUrl').value.trim();
@@ -985,18 +1230,26 @@
             const ytId = match ? match[1] : null;
 
             if(title && ytId) {
+                const btn = document.getElementById('submitVideoBtn');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري النشر...';
+                
                 push(ref(db, 'user_videos'), { ytId, title, ts: Date.now() }).then(() => {
                     document.getElementById('addTitle').value = '';
                     document.getElementById('addUrl').value = '';
                     closeModal('addVideoModal');
-                    const targetBtn = window.innerWidth > 992 
-                        ? document.querySelectorAll('.sidebar-menu li')[1] 
-                        : document.querySelectorAll('.nav-item')[2];
-                    switchTab('tab-videos', targetBtn);
+                    btn.innerHTML = '<i class="fas fa-rocket"></i> نشر المقطع الآن';
+                    
+                    // Navigate to community tab
+                    const isMobile = window.innerWidth <= 992;
+                    const targetBtn = isMobile ? document.querySelectorAll('.nav-item')[2] : document.querySelectorAll('.sidebar-menu li')[1];
+                    switchTab('tab-videos', targetBtn, isMobile);
                 });
+            } else {
+                alert('يرجى إدخال عنوان صالح ورابط يوتيوب صحيح.');
             }
         });
 
+        // Listen for Community Videos
         onValue(ref(db, 'user_videos'), snap => {
             const cont = document.getElementById('userVideosContainer');
             cont.innerHTML = '';
@@ -1006,22 +1259,27 @@
                 videos.forEach(v => {
                     cont.innerHTML += `
                         <div class="video-card" data-title="${v.title}" onclick="playVideo('${v.ytId}', '${v.title.replace(/'/g, "\\'")}')">
-                            <div style="position:relative;">
-                                <img src="https://img.youtube.com/vi/${v.ytId}/hqdefault.jpg">
-                                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;">
-                                    <i class="fas fa-play-circle" style="font-size:3rem; color:rgba(255,255,255,0.9);"></i>
+                            <div class="video-card-thumb">
+                                <img src="https://img.youtube.com/vi/${v.ytId}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${v.ytId}/hqdefault.jpg'" loading="lazy">
+                                <div class="video-card-overlay">
+                                    <i class="fas fa-play-circle"></i>
                                 </div>
                             </div>
                             <div class="video-card-info">
                                 <div class="video-card-title">${v.title}</div>
-                                <span style="font-size:0.85rem; color:var(--primary-color); font-weight:bold;"><i class="fas fa-video"></i> تشغيل المقطع</span>
+                                <span style="font-size:0.9rem; color:var(--primary); font-weight:800; display:flex; align-items:center; gap:8px;">
+                                    <i class="fas fa-play"></i> تشغيل المقطع
+                                </span>
                             </div>
                         </div>
                     `;
                 });
+            } else {
+                cont.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--text-muted); font-size:1.2rem;">لا توجد مشاركات بعد. كن أول من يشارك!</div>';
             }
         });
 
+        // Init
         fetchPlaylists();
 
     </script>
