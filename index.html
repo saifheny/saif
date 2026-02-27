@@ -3,534 +3,1027 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Life World - The Absolute King</title>
+    <title>TurkDrama Premium</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; touch-action: none; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background-color: #000; position: fixed; }
-        #game-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
-        
-        /* Start Screen */
-        #start-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; pointer-events: auto; backdrop-filter: blur(10px); color: white; transition: opacity 1s; }
-        #start-screen h1 { font-size: 3.5rem; margin-bottom: 5px; color: gold; text-shadow: 0 0 20px rgba(255,215,0,0.8); }
-        .btn { background: rgba(20, 20, 20, 0.8); border: 2px solid gold; padding: 15px 40px; color: gold; font-size: 1.3rem; border-radius: 10px; cursor: pointer; font-weight: bold; text-transform: uppercase; box-shadow: 0 0 15px rgba(255,215,0,0.4); }
-        .btn:active { background: gold; color: black; transform: scale(0.95); }
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
 
-        /* HUD */
-        .hud-top { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; z-index: 50; }
-        .clock-panel { background: rgba(0, 0, 0, 0.8); padding: 10px 20px; border-radius: 12px; color: white; font-size: 1.1rem; border: 1px solid gold; font-weight: bold; }
-        
-        /* Inventory Icon */
-        #inventory-btn { width: 55px; height: 55px; background: rgba(0,0,0,0.8); border: 2px solid gold; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; pointer-events: auto; box-shadow: 0 0 15px rgba(255,215,0,0.6); cursor: pointer; z-index: 60; }
-        #inventory-btn:active { transform: scale(0.9); background: gold; }
+        :root {
+            --bg-color: #0b0f19;
+            --surface-color: #151a28;
+            --surface-light: #1e2538;
+            --primary-color: #f59e0b;
+            --primary-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(21, 26, 40, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --sidebar-width: 280px;
+        }
 
-        /* Inventory Panel */
-        #inventory-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 320px; background: rgba(10,10,10,0.98); border: 2px solid gold; border-radius: 15px; padding: 25px; color: white; display: none; pointer-events: auto; z-index: 100; box-shadow: 0 0 40px rgba(0,0,0,0.9); }
-        .inv-item { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1.2rem; border-bottom: 1px solid #444; padding-bottom: 8px; font-weight: bold; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* Controls - Fixed Joystick */
-        #control-right { position: absolute; bottom: 0; right: 0; width: 50%; height: 100%; pointer-events: auto; z-index: 20; }
-        #joystick-zone { position: absolute; bottom: 0; left: 0; width: 50%; height: 100%; pointer-events: auto; z-index: 20; }
-        
-        #joystick-base { position: absolute; bottom: 40px; left: 40px; width: 130px; height: 130px; background: rgba(255, 255, 255, 0.15); border: 2px solid rgba(255, 215, 0, 0.5); border-radius: 50%; pointer-events: none; z-index: 30; }
-        #joystick-stick { position: absolute; top: 50%; left: 50%; width: 50px; height: 50px; background: rgba(255, 215, 0, 0.8); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px rgba(0,0,0,0.8); }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
 
-        /* Crosshair & Interaction */
-        #crosshair { position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: gold; border-radius: 50%; transform: translate(-50%, -50%); border: 1px solid black; z-index: 40; }
-        #context-btn { position: absolute; top: 58%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); border: 2px solid gold; color: white; padding: 10px 25px; border-radius: 20px; font-size: 1.1rem; font-weight: bold; pointer-events: auto; display: none; box-shadow: 0 0 15px rgba(255,215,0,0.5); z-index: 60; cursor: pointer; }
-        #context-btn:active { background: gold; color: black; }
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
 
-        /* Dialog Menu */
-        #dialog-menu { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); border: 2px solid gold; padding: 25px; border-radius: 15px; display: none; pointer-events: auto; color: white; z-index: 100; min-width: 300px; box-shadow: 0 0 30px black; }
-        .dialog-title { font-size: 1.5rem; margin-bottom: 20px; text-align: center; border-bottom: 2px solid gold; padding-bottom: 10px; font-weight: bold; color: gold; }
-        .dialog-btn { width: 100%; margin-bottom: 10px; background: #222; border: 1px solid gold; padding: 12px; color: white; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
-        .dialog-btn:active { background: gold; color: black; }
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--surface-color);
+            border-left: 1px solid var(--glass-border);
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .brand-logo {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+            text-align: center;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu li i {
+            font-size: 1.3rem;
+        }
+
+        .sidebar-menu li:hover, .sidebar-menu li.active {
+            background: var(--surface-light);
+            color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .upload-btn-container {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .btn-upload {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-upload:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            padding: 20px 4%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            z-index: 90;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .search-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--surface-light);
+            border-radius: 20px;
+            padding: 10px 20px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+        }
+
+        .search-wrapper i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-left: 15px;
+        }
+
+        .search-wrapper input {
+            background: transparent;
+            border: none;
+            color: white;
+            outline: none;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .hero-banner {
+            position: relative;
+            width: 100%;
+            height: 50vh;
+            background: url('https://images.unsplash.com/photo-1542304082-f5c71b69eb07?q=80&w=2000&auto=format&fit=crop') center/cover;
+            display: flex;
+            align-items: flex-end;
+            padding: 40px 4%;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(11, 15, 25, 0.9) 0%, rgba(11, 15, 25, 0.4) 100%);
+        }
+
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(to top, var(--bg-color), transparent);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .hero-desc {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            max-width: 600px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+            padding-bottom: 40px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-wrapper {
+            padding: 30px 4% 0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 24px;
+            background: var(--primary-gradient);
+            border-radius: 10px;
+        }
+
+        .scroll-grid {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding-bottom: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .scroll-grid::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .scroll-grid::-webkit-scrollbar-track {
+            background: var(--surface-color);
+            border-radius: 10px;
+        }
+
+        .scroll-grid::-webkit-scrollbar-thumb {
+            background: var(--surface-light);
+            border-radius: 10px;
+        }
+
+        .card {
+            flex: 0 0 200px;
+            background: var(--surface-color);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border-color: var(--primary-color);
+        }
+
+        .card-img-wrapper {
+            position: relative;
+            width: 100%;
+            height: 280px;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 15, 25, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .card-overlay i {
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.6));
+            transform: scale(0.8);
+            transition: transform 0.3s;
+        }
+
+        .card:hover .card-overlay i {
+            transform: scale(1);
+        }
+
+        .card-info {
+            padding: 15px;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 0 4%;
+        }
+
+        .video-card {
+            background: var(--surface-color);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            border-color: var(--primary-color);
+        }
+
+        .video-card img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+
+        .video-card-info {
+            padding: 15px;
+        }
+
+        .video-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            height: 70px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid var(--glass-border);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-item i {
+            font-size: 1.4rem;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 15, 25, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface-light);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: rgba(255,255,255,0.05);
+            border: none;
+            color: var(--text-main);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--primary-color);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 25px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .episode-item {
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--surface-light);
+            margin-bottom: 15px;
+            border: 1px solid transparent;
+        }
+
+        .episode-item:hover {
+            border-color: var(--primary-color);
+            transform: translateX(-5px);
+        }
+
+        .episode-item img {
+            width: 140px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background: #000;
+        }
+
+        .player-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border: none;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 40px;
+            padding: 20px 25px;
+            background: var(--surface-light);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-btn i {
+            font-size: 1.6rem;
+        }
+
+        .action-btn:hover, .action-btn.liked {
+            color: var(--primary-color);
+        }
+
+        .modern-input {
+            width: 100%;
+            padding: 18px 20px;
+            background: var(--bg-color);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .modern-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.1);
+        }
+
+        .comment-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn-send {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-send:hover {
+            transform: scale(1.05);
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: var(--surface-light);
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .comment-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-right: 0;
+            }
+            .bottom-nav {
+                display: flex;
+            }
+            header {
+                justify-content: center;
+            }
+            .search-wrapper {
+                max-width: 100%;
+            }
+            .hero-title {
+                font-size: 2rem;
+            }
+            .modal-content {
+                width: 100%;
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+                transform: translateY(100%);
+            }
+            .modal-overlay {
+                align-items: flex-end;
+            }
+            .modal-overlay.active .modal-content {
+                transform: translateY(0);
+            }
+            .card {
+                flex: 0 0 160px;
+            }
+            .card-img-wrapper {
+                height: 220px;
+            }
+            .app-container {
+                padding-bottom: 70px;
+            }
+        }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
 </head>
 <body>
 
-    <canvas id="game-canvas"></canvas>
-
-    <div id="ui-layer">
-        <div id="start-screen">
-            <h1>عصر الملوك</h1>
-            <p style="margin-bottom: 30px; color: #ddd; font-size: 1.2rem;">أنت الملك المطلق. القصر والمدينة ملكك.</p>
-            <button class="btn" id="start-btn">دخول المملكة</button>
-        </div>
-
-        <div id="hud" style="display:none;">
-            <div class="hud-top">
-                <div class="clock-panel" id="time-display">⏰ 08:00 صباحاً</div>
-                <div id="inventory-btn">🎒</div>
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <div class="brand-logo">TurkDrama</div>
+            <ul class="sidebar-menu">
+                <li class="active" onclick="switchTab('tab-home', this)">
+                    <i class="fas fa-home"></i> الرئيسية
+                </li>
+                <li onclick="switchTab('tab-videos', this)">
+                    <i class="fas fa-play-circle"></i> مشاركات الأعضاء
+                </li>
+            </ul>
+            <div class="upload-btn-container">
+                <button class="btn-upload" onclick="openModal('addVideoModal')">
+                    <i class="fas fa-cloud-upload-alt"></i> رفع منشور
+                </button>
             </div>
+        </aside>
+
+        <main class="main-content">
             
-            <div id="crosshair"></div>
-            <button id="context-btn">تفاعل</button>
+            <header>
+                <div class="search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="ابحث عن مسلسل، حلقة، أو فيلم...">
+                </div>
+            </header>
 
-            <!-- Controls -->
-            <div id="joystick-zone"></div>
-            <div id="control-right"></div>
-            <div id="joystick-base"><div id="joystick-stick"></div></div>
+            <div id="tab-home" class="tab-content active">
+                <div class="hero-banner">
+                    <div class="hero-content">
+                        <h1 class="hero-title">اكتشف أروع المسلسلات التركية</h1>
+                        <p class="hero-desc">مكتبة ضخمة تضم مئات المسلسلات المدبلجة بجودة عالية، تصفح، شارك، واستمتع بالمشاهدة.</p>
+                    </div>
+                </div>
+
+                <div class="section-wrapper">
+                    <h2 class="section-title">الأكثر شهرة ومتابعة</h2>
+                    <div class="scroll-grid" id="playlistsContainer1"></div>
+                </div>
+                
+                <div class="section-wrapper">
+                    <h2 class="section-title">إضافات مميزة</h2>
+                    <div class="scroll-grid" id="playlistsContainer2"></div>
+                </div>
+
+                <div class="section-wrapper">
+                    <h2 class="section-title">مختارات حصريّة</h2>
+                    <div class="scroll-grid" id="playlistsContainer3"></div>
+                </div>
+            </div>
+
+            <div id="tab-videos" class="tab-content">
+                <div class="section-wrapper" style="padding-top: 20px;">
+                    <h2 class="section-title">أحدث مشاركات الأعضاء</h2>
+                    <div class="grid-container" id="userVideosContainer"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('tab-home', this)">
+            <i class="fas fa-home"></i>
+            <span>الرئيسية</span>
         </div>
-
-        <!-- Inventory -->
-        <div id="inventory-panel">
-            <h3 style="text-align:center; color:gold; margin-bottom:20px; border-bottom:2px solid gold; padding-bottom:10px;">حقيبة الملك</h3>
-            <div class="inv-item"><span>💰 المال:</span> <span id="inv-money">5000$</span></div>
-            <div class="inv-item"><span>❤️ الصحة:</span> <span id="inv-hp">100</span></div>
-            <div class="inv-item"><span>🪵 الخشب:</span> <span id="inv-wood">50</span></div>
-            <div class="inv-item"><span>🍎 الطعام:</span> <span id="inv-food">100</span></div>
-            <button class="dialog-btn" style="margin-top:20px; background:red; border-color:darkred;" onclick="document.getElementById('inventory-panel').style.display='none'">إغلاق</button>
+        <div class="nav-item" onclick="openModal('addVideoModal')">
+            <i class="fas fa-plus-circle" style="font-size: 2.5rem; color: var(--primary-color);"></i>
         </div>
+        <div class="nav-item" onclick="switchTab('tab-videos', this)">
+            <i class="fas fa-users"></i>
+            <span>المشاركات</span>
+        </div>
+    </nav>
 
-        <!-- Dialog -->
-        <div id="dialog-menu">
-            <div class="dialog-title" id="dialog-title">شخصية</div>
-            <div id="dialog-actions"></div>
-            <button class="dialog-btn" style="margin-top:15px; background:red; border-color:darkred;" onclick="document.getElementById('dialog-menu').style.display='none'">إلغاء</button>
+    <div class="modal-overlay" id="playlistModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="playlistModalTitle"></div>
+                <button class="modal-close" onclick="closeModal('playlistModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="episodesList"></div>
         </div>
     </div>
 
-<script>
-// Procedural Textures
-const TextureGen = {
-    createGrass: () => {
-        const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#2e5c1e'; ctx.fillRect(0,0,512,512);
-        for(let i=0; i<3000; i++) { ctx.fillStyle = Math.random()>0.5 ? '#3a7a24' : '#1e3d13'; ctx.fillRect(Math.random()*512, Math.random()*512, 3, 3); }
-        const tex = new THREE.CanvasTexture(canvas); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(60,60); return tex;
-    },
-    createWall: () => {
-        const canvas = document.createElement('canvas'); canvas.width = 256; canvas.height = 256;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#d0c0b0'; ctx.fillRect(0,0,256,256);
-        ctx.fillStyle = '#a09080';
-        for(let y=0; y<256; y+=32) {
-            ctx.fillRect(0, y, 256, 3);
-            for(let x=0; x<256; x+=64) { ctx.fillRect(x + ((y/32)%2==0?0:32), y, 3, 32); }
-        }
-        return new THREE.CanvasTexture(canvas);
-    }
-};
+    <div class="modal-overlay" id="playerModal">
+        <div class="modal-content" style="padding: 0; display: flex; flex-direction: column;">
+            <div class="player-wrapper" id="playerContainer"></div>
+            <div class="action-bar">
+                <button class="action-btn" id="likeBtn">
+                    <i class="fas fa-heart"></i> <span id="likeCountText">0</span>
+                </button>
+                <button class="action-btn" onclick="document.getElementById('commentInput').focus()">
+                    <i class="fas fa-comment-dots"></i> <span>تعليق</span>
+                </button>
+                <button class="action-btn" style="margin-right: auto;" onclick="closePlayer()">
+                    <i class="fas fa-compress-arrows-alt"></i> <span>إغلاق</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h3 id="playerVideoTitle" style="margin-bottom: 25px; font-size: 1.3rem;"></h3>
+                <div class="comment-box">
+                    <input type="text" id="commentInput" class="modern-input" style="margin:0;" placeholder="شاركنا رأيك في هذا المقطع...">
+                    <button id="sendCommentBtn" class="btn-send"><i class="fas fa-paper-plane"></i></button>
+                </div>
+                <div id="commentsContainer"></div>
+            </div>
+        </div>
+    </div>
 
-const Textures = { grass: TextureGen.createGrass(), wall: TextureGen.createWall() };
-Textures.wall.wrapS = Textures.wall.wrapT = THREE.RepeatWrapping; Textures.wall.repeat.set(2,2);
+    <div class="modal-overlay" id="addVideoModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title">رفع منشور جديد</div>
+                <button class="modal-close" onclick="closeModal('addVideoModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="addTitle" class="modern-input" placeholder="عنوان المنشور / المشهد...">
+                <input type="text" id="addUrl" class="modern-input" placeholder="رابط يوتيوب (https://youtube.com/...)">
+                <button class="btn-upload" id="submitVideoBtn" style="margin-top: 15px;">
+                    <i class="fas fa-paper-plane"></i> نشر الآن
+                </button>
+            </div>
+        </div>
+    </div>
 
-const Materials = {
-    grass: new THREE.MeshStandardMaterial({ map: Textures.grass, roughness: 1.0 }),
-    wall: new THREE.MeshStandardMaterial({ map: Textures.wall, roughness: 0.9 }),
-    // Shiny Gold and Diamond materials for Palace
-    palaceGold: new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.9, roughness: 0.1 }),
-    palaceDiamond: new THREE.MeshStandardMaterial({ color: 0xe0ffff, metalness: 0.8, roughness: 0.0, transparent: true, opacity: 0.9 }),
-    redCarpet: new THREE.MeshStandardMaterial({ color: 0x990000, roughness: 1.0 }),
-    wood: new THREE.MeshStandardMaterial({ color: 0x4a3018, roughness: 0.9 }),
-    skin: new THREE.MeshStandardMaterial({ color: 0xffe0bd }),
-    hairDark: new THREE.MeshStandardMaterial({ color: 0x111111 }),
-    clothServant: new THREE.MeshStandardMaterial({ color: 0xeeeeee }),
-    clothCity: new THREE.MeshStandardMaterial({ color: 0xaa5566 }),
-    door: new THREE.MeshStandardMaterial({ color: 0x3d2314 }),
-    bed: new THREE.MeshStandardMaterial({ color: 0x224488 })
-};
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-const PlayerStats = { hp: 100, money: 5000, wood: 50, food: 100 };
+        const YOUTUBE_API_KEY = "AIzaSyA4udj09he_6KiDbkKN1faciOhgqWwKOcI"; 
 
-class Game {
-    constructor() {
-        this.time = 8; this.timeSpeed = 0.004; 
-        this.npcs = []; this.autoDoors = []; this.interactables = [];
-        this.joystick = { x: 0, y: 0 }; this.look = { yaw: 0, pitch: 0, tYaw: 0, tPitch: 0 };
-        
-        this.initThree(); this.initPhysics();
-        this.buildWorld(); this.initPlayer();
-        this.initControls(); this.initUI();
-        
-        document.getElementById('start-btn').onclick = () => {
-            document.getElementById('start-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('start-screen').style.display = 'none';
-                document.getElementById('hud').style.display = 'block';
-                if(navigator.vibrate) navigator.vibrate(50);
-                requestAnimationFrame(this.animate.bind(this));
-            }, 500);
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjE-2q6PONBkCin9ZN22gDp9Q8pAH9ZW8",
+            authDomain: "story-97cf7.firebaseapp.com",
+            databaseURL: "https://story-97cf7-default-rtdb.firebaseio.com",
+            projectId: "story-97cf7",
+            storageBucket: "story-97cf7.firebasestorage.app",
+            messagingSenderId: "742801388214",
+            appId: "1:742801388214:web:32a305a8057b0582c5ec17"
         };
-    }
 
-    initThree() {
-        this.canvas = document.getElementById('game-canvas');
-        this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: false, powerPreference: "high-performance" });
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-        this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        this.scene = new THREE.Scene(); this.scene.background = new THREE.Color(0x87CEEB);
-        this.camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 400);
+        let currentVideoId = null; 
+        let allPlaylists =[];
 
-        this.hemiLight = new THREE.HemisphereLight(0xffffff, 0x444455, 0.6); this.scene.add(this.hemiLight);
-        this.dirLight = new THREE.DirectionalLight(0xffeedd, 1.2);
-        this.dirLight.castShadow = true;
-        this.dirLight.shadow.camera.top = 150; this.dirLight.shadow.camera.bottom = -150;
-        this.dirLight.shadow.camera.left = -150; this.dirLight.shadow.camera.right = 150;
-        this.dirLight.shadow.mapSize.width = 1024; this.dirLight.shadow.mapSize.height = 1024;
-        this.scene.add(this.dirLight);
+        window.openModal = (id) => document.getElementById(id).classList.add('active');
+        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
 
-        window.addEventListener('resize', () => {
-            this.camera.aspect = window.innerWidth/window.innerHeight; this.camera.updateProjectionMatrix();
-            this.renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    }
+        window.closePlayer = () => {
+            closeModal('playerModal');
+            document.getElementById('playerContainer').innerHTML = ''; 
+            currentVideoId = null;
+        }
 
-    initPhysics() {
-        this.world = new CANNON.World(); this.world.gravity.set(0, -20, 0);
-        this.world.broadphase = new CANNON.NaiveBroadphase();
-        this.physicsMaterial = new CANNON.Material("standard");
-        this.world.addContactMaterial(new CANNON.ContactMaterial(this.physicsMaterial, this.physicsMaterial, { friction: 0.1, restitution: 0.0 }));
-    }
-
-    addPhysicsBox(x,y,z, sx,sy,sz) {
-        const body = new CANNON.Body({ mass: 0, material: this.physicsMaterial });
-        body.addShape(new CANNON.Box(new CANNON.Vec3(sx/2, sy/2, sz/2)));
-        body.position.set(x, y, z); this.world.addBody(body);
-        return body;
-    }
-
-    buildWorld() {
-        // Ground
-        const ground = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), Materials.grass);
-        ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; this.scene.add(ground);
-        const gBody = new CANNON.Body({ mass: 0, material: this.physicsMaterial });
-        gBody.addShape(new CANNON.Plane()); gBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0), -Math.PI/2);
-        this.world.addBody(gBody);
-
-        this.buildPalace();
-        
-        // City Houses & NPCs
-        const cityLocations = [ {x: 80, z: 80}, {x: -80, z: 80}, {x: 80, z: -80}, {x: -80, z: -80}, {x: 100, z: 0}, {x: -100, z: 0} ];
-        cityLocations.forEach((loc, i) => {
-            this.buildHouse(loc.x, loc.z);
+        window.switchTab = (targetId, element = null) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
             
-            const homeInside = new THREE.Vector3(loc.x, 0, loc.z);
-            const homeDoor = new THREE.Vector3(loc.x, 0, loc.z + 10);
+            document.querySelectorAll('.sidebar-menu li, .nav-item').forEach(el => el.classList.remove('active'));
+            if(element) element.classList.add('active');
             
-            // Spawn Husband and Wife, and link them!
-            let wife = this.spawnNPC(loc.x+5, 0, loc.z+15, 'female', homeInside, homeDoor);
-            let husband = this.spawnNPC(loc.x-5, 0, loc.z+15, 'male', homeInside, homeDoor);
-            husband.wife = wife; // Link for inheritance logic
-        });
-    }
-
-    createWallWithHole(px, py, pz, width, height, depth, holeWidth, holeHeight, material) {
-        const group = new THREE.Group(); group.position.set(px, py, pz);
-        const sideW = (width - holeWidth) / 2;
-        const left = new THREE.Mesh(new THREE.BoxGeometry(sideW, height, depth), material);
-        left.position.set(-width/2 + sideW/2, 0, 0); left.castShadow = true; left.receiveShadow = true; group.add(left);
-        this.addPhysicsBox(px + left.position.x, py, pz, sideW, height, depth);
-        const right = new THREE.Mesh(new THREE.BoxGeometry(sideW, height, depth), material);
-        right.position.set(width/2 - sideW/2, 0, 0); right.castShadow = true; right.receiveShadow = true; group.add(right);
-        this.addPhysicsBox(px + right.position.x, py, pz, sideW, height, depth);
-        const topH = height - holeHeight;
-        if(topH > 0) {
-            const top = new THREE.Mesh(new THREE.BoxGeometry(holeWidth, topH, depth), material);
-            top.position.set(0, height/2 - topH/2, 0); top.castShadow = true; top.receiveShadow = true; group.add(top);
-            this.addPhysicsBox(px, py + top.position.y, pz, holeWidth, topH, depth);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        this.scene.add(group);
-        return group;
-    }
 
-    createAutoDoor(x, y, z, width, height, isDouble = false, rotY = 0) {
-        const pivot = new THREE.Group(); pivot.position.set(x, y, z); pivot.rotation.y = rotY; this.scene.add(pivot);
-        if(!isDouble) {
-            const door = new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.5), Materials.door);
-            door.position.set(width/2, height/2, 0); door.castShadow = true; pivot.add(door);
-            this.autoDoors.push({ pivot: pivot, type: 'single', closed: 0, open: Math.PI/2, meshPos: new THREE.Vector3(x,y,z) });
-        } else {
-            const doorL = new THREE.Mesh(new THREE.BoxGeometry(width/2, height, 1), Materials.wood);
-            doorL.position.set(-width/4, height/2, 0); doorL.castShadow = true; pivot.add(doorL);
-            const doorR = new THREE.Mesh(new THREE.BoxGeometry(width/2, height, 1), Materials.wood);
-            doorR.position.set(width/4, height/2, 0); doorR.castShadow = true; pivot.add(doorR);
-            this.autoDoors.push({ pivot: pivot, type: 'slide', closed: 0, open: width/2, doorL: doorL, doorR: doorR, meshPos: new THREE.Vector3(x,y,z) });
-        }
-    }
-
-    buildHouse(x, z) {
-        const w=16, h=8, d=16, t=1;
-        // Walls
-        const m1 = new THREE.Mesh(new THREE.BoxGeometry(w, h, t), Materials.wall); m1.position.set(x, h/2, z-d/2); this.scene.add(m1); this.addPhysicsBox(x, h/2, z-d/2, w, h, t);
-        const m2 = new THREE.Mesh(new THREE.BoxGeometry(t, h, d), Materials.wall); m2.position.set(x-w/2, h/2, z); this.scene.add(m2); this.addPhysicsBox(x-w/2, h/2, z, t, h, d);
-        const m3 = new THREE.Mesh(new THREE.BoxGeometry(t, h, d), Materials.wall); m3.position.set(x+w/2, h/2, z); this.scene.add(m3); this.addPhysicsBox(x+w/2, h/2, z, t, h, d);
-        this.createWallWithHole(x, h/2, z+d/2, w, h, t, 4, 6, Materials.wall);
-        this.createAutoDoor(x-2, 0, z+d/2, 4, 6, false);
-
-        // Furnishings
-        const carpet = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), Materials.redCarpet);
-        carpet.rotation.x = -Math.PI/2; carpet.position.set(x, 0.1, z); this.scene.add(carpet);
-        
-        const bed = new THREE.Mesh(new THREE.BoxGeometry(4, 1.5, 6), Materials.bed);
-        bed.position.set(x - w/2 + 3, 0.75, z - d/2 + 4); this.scene.add(bed);
-
-        const table = new THREE.Mesh(new THREE.BoxGeometry(3, 2, 3), Materials.wood);
-        table.position.set(x + w/2 - 3, 1, z - d/2 + 3); this.scene.add(table);
-
-        // Roof
-        const roof = new THREE.Mesh(new THREE.ConeGeometry(14, 6, 4), new THREE.MeshStandardMaterial({color: 0x553322}));
-        roof.position.set(x, h+3, z); roof.rotation.y = Math.PI/4; roof.castShadow = true; this.scene.add(roof);
-    }
-
-    buildPalace() {
-        const px = 0, pz = 0, size = 110, h = 16, t = 2;
-        
-        // Outer Walls (Diamond & Gold)
-        const mB = new THREE.Mesh(new THREE.BoxGeometry(size, h, t), Materials.palaceDiamond); mB.position.set(px, h/2, pz-size/2); this.scene.add(mB); this.addPhysicsBox(px, h/2, pz-size/2, size, h, t);
-        const mL = new THREE.Mesh(new THREE.BoxGeometry(t, h, size), Materials.palaceGold); mL.position.set(px-size/2, h/2, pz); this.scene.add(mL); this.addPhysicsBox(px-size/2, h/2, pz, t, h, size);
-        const mR = new THREE.Mesh(new THREE.BoxGeometry(t, h, size), Materials.palaceGold); mR.position.set(px+size/2, h/2, pz); this.scene.add(mR); this.addPhysicsBox(px+size/2, h/2, pz, t, h, size);
-        this.createWallWithHole(px, h/2, pz+size/2, size, h, t, 16, 10, Materials.palaceGold);
-        this.createAutoDoor(px, 0, pz+size/2, 16, 10, true);
-
-        // Grand Red Carpet in courtyard
-        const mainCarpet = new THREE.Mesh(new THREE.PlaneGeometry(16, size), Materials.redCarpet);
-        mainCarpet.rotation.x = -Math.PI/2; mainCarpet.position.set(0, 0.1, 0); this.scene.add(mainCarpet);
-
-        // Grand King's Bedroom (At the far back of the palace)
-        const bedRoomSize = 30;
-        const bWall = new THREE.Mesh(new THREE.BoxGeometry(bedRoomSize, h, t), Materials.palaceDiamond); bWall.position.set(0, h/2, -size/2 + bedRoomSize); this.scene.add(bWall); this.addPhysicsBox(0, h/2, -size/2 + bedRoomSize, bedRoomSize, h, t);
-        
-        // Massive Golden Bed in King's Room
-        const grandBed = new THREE.Mesh(new THREE.BoxGeometry(10, 2, 14), Materials.palaceGold);
-        grandBed.position.set(0, 1, -size/2 + 10); this.scene.add(grandBed);
-        const mattress = new THREE.Mesh(new THREE.BoxGeometry(9, 1, 13), Materials.redCarpet);
-        mattress.position.set(0, 2.5, -size/2 + 10); this.scene.add(mattress);
-
-        // Spawn 18 Servants (Harem/Maids) in the Palace
-        for(let i=0; i<18; i++) {
-            let sx = (Math.random()-0.5) * 80;
-            let sz = (Math.random()-0.5) * 80;
-            this.spawnNPC(sx, 0, sz, 'servant', new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,20));
-        }
-    }
-
-    spawnNPC(x, y, z, type, homeInside, homeDoor) {
-        const group = new THREE.Group(); group.position.set(x,y,z);
-        let isFemale = (type === 'female' || type === 'servant');
-        let mat = type === 'servant' ? Materials.clothServant : (isFemale ? Materials.clothCity : Materials.wood);
-        
-        const body = new THREE.Mesh(new THREE.BoxGeometry(isFemale?0.8:1.2, 1.3, 0.6), mat);
-        body.position.y = 1.2; body.castShadow = true; group.add(body);
-        const head = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 16), Materials.skin);
-        head.position.y = 2.1; head.castShadow = true; group.add(head);
-        if(isFemale) { const hair = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.4, 0.5), Materials.hairDark); hair.position.set(0,1.8,-0.1); group.add(hair); }
-        
-        this.scene.add(group);
-        const hitBox = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2.5, 1.5), new THREE.MeshBasicMaterial({visible:false}));
-        hitBox.position.y = 1.2; group.add(hitBox);
-
-        const npc = {
-            mesh: group, type: type, hp: 100, 
-            homeInside: homeInside, homeDoor: homeDoor,
-            target: new THREE.Vector3(x,0,z), state: 'wander',
-            isDead: false, timer: 0, wife: null
-        };
-
-        hitBox.userData = {
-            actionName: 'تفاعل',
-            interact: () => { if(!npc.isDead) this.openDialog(npc); }
-        };
-        this.interactables.push(hitBox); this.npcs.push(npc);
-        return npc;
-    }
-
-    initPlayer() {
-        this.pBody = new CANNON.Body({ mass: 70, material: this.physicsMaterial, shape: new CANNON.Sphere(0.6), linearDamping: 0.9, fixedRotation: true });
-        this.pBody.position.set(0, 5, 80); 
-        this.world.addBody(this.pBody);
-        
-        this.pGroup = new THREE.Group(); this.scene.add(this.pGroup);
-        this.camera.position.set(0, 1.8, 0); this.pGroup.add(this.camera);
-        this.raycaster = new THREE.Raycaster();
-    }
-
-    initControls() {
-        const jZone = document.getElementById('joystick-zone');
-        const jStick = document.getElementById('joystick-stick');
-        let isDrag = false;
-        
-        jZone.addEventListener('touchstart', (e) => { isDrag = true; this.handleJoy(e.touches[0]); });
-        jZone.addEventListener('touchmove', (e) => {
-            if(isDrag) {
-                for(let i=0; i<e.touches.length; i++) {
-                    if(e.touches[i].clientX < window.innerWidth/2) { this.handleJoy(e.touches[i]); break; }
-                }
-            }
-        });
-        const endJoy = () => { isDrag=false; jStick.style.transform=`translate(-50%,-50%)`; this.joystick={x:0,y:0}; };
-        jZone.addEventListener('touchend', endJoy); jZone.addEventListener('touchcancel', endJoy);
-
-        const rZone = document.getElementById('control-right'); let lastT = null;
-        rZone.addEventListener('touchstart', e => { 
-            for(let i=0; i<e.touches.length; i++) { if(e.touches[i].clientX >= window.innerWidth/2) { lastT = {x: e.touches[i].clientX, y: e.touches[i].clientY}; break; } }
-        });
-        rZone.addEventListener('touchmove', e => {
-            if(!lastT) return;
-            for(let i=0; i<e.touches.length; i++) {
-                if(e.touches[i].clientX >= window.innerWidth/2) {
-                    const t = e.touches[i];
-                    this.look.tYaw -= (t.clientX - lastT.x)*0.005;
-                    this.look.tPitch -= (t.clientY - lastT.y)*0.005;
-                    this.look.tPitch = Math.max(-Math.PI/2.1, Math.min(Math.PI/2.1, this.look.tPitch));
-                    lastT = {x: t.clientX, y: t.clientY}; break;
-                }
-            }
-        });
-        rZone.addEventListener('touchend', () => lastT=null);
-
-        document.getElementById('inventory-btn').onclick = (e) => {
-            e.stopPropagation();
-            document.getElementById('inventory-panel').style.display = 'block';
-            document.getElementById('inv-money').innerText = PlayerStats.money + '$';
-            document.getElementById('inv-hp').innerText = PlayerStats.hp;
-            if(navigator.vibrate) navigator.vibrate(20);
-        };
-        document.getElementById('context-btn').onclick = (e) => { e.preventDefault(); if(this.curObj) this.curObj.userData.interact(); };
-    }
-
-    handleJoy(t) {
-        const base = document.getElementById('joystick-base').getBoundingClientRect();
-        const cX = base.left + base.width/2; const cY = base.top + base.height/2;
-        let dx = t.clientX - cX, dy = t.clientY - cY, dist = Math.sqrt(dx*dx+dy*dy);
-        const max = base.width/2 - 10;
-        if(dist > max) { dx = (dx/dist)*max; dy = (dy/dist)*max; }
-        document.getElementById('joystick-stick').style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-        this.joystick = {x: dx/max, y: dy/max};
-    }
-
-    initUI() { setInterval(() => {
-        this.time += this.timeSpeed; if(this.time >= 24) this.time = 0;
-        let h = Math.floor(this.time), m = Math.floor((this.time-h)*60);
-        document.getElementById('time-display').innerText = `⏰ ${h%12||12}:${m<10?'0':''}${m} ${h>=12?'مساءً':'صباحاً'}`;
-        
-        let isNight = this.time > 18 || this.time < 6;
-        this.scene.background.setHex(isNight ? 0x050515 : 0x87CEEB);
-        this.dirLight.intensity = isNight ? 0.0 : 1.2;
-    }, 100); }
-
-    openDialog(npc) {
-        const menu = document.getElementById('dialog-menu'), acts = document.getElementById('dialog-actions');
-        document.getElementById('dialog-title').innerText = npc.type==='servant' ? 'جارية القصر' : (npc.type==='female' ? 'رعية من نساء المدينة' : 'رجل من عامة الشعب');
-        acts.innerHTML = '';
-        const btn = (txt, fn) => { let b = document.createElement('button'); b.className='dialog-btn'; b.innerText=txt; b.onclick=()=>{fn();menu.style.display='none';}; acts.appendChild(b); };
-
-        if(npc.type === 'male') {
-            btn('🤝 أوامر ملكية (تحدث)', () => { alert("سمعاً وطاعة يا مولاي الملك."); });
-            btn('⚔️ إعدام ومصادرة أملاكه وزوجته', () => { 
-                npc.isDead = true; npc.mesh.rotation.x = Math.PI/2; npc.mesh.position.y = 0.5; 
-                PlayerStats.money += 1000; 
-                
-                // Transfer Wife to Palace and turn into Servant
-                if(npc.wife && !npc.wife.isDead) {
-                    npc.wife.type = 'servant';
-                    npc.wife.mesh.children[0].material = Materials.clothServant; // Change clothes
-                    npc.wife.homeInside = new THREE.Vector3(0, 0, 0); // Palace
-                    npc.wife.homeDoor = new THREE.Vector3(0, 0, 20);
-                    // Spawn a daughter servant
-                    this.spawnNPC(0, 0, 0, 'servant', new THREE.Vector3(0,0,0), new THREE.Vector3(0,0,20));
-                }
-                alert("تم الإعدام! أخذت منزله وأمواله، وأصبحت زوجته من جواريك وتم نقلها للقصر مع ابنتها."); 
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const allCards = document.querySelectorAll('.card, .video-card');
+            allCards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                card.style.display = title.includes(query) ? '' : 'none';
             });
-        } else if (npc.type === 'servant') {
-            btn('أوامر القصر (تحدث)', () => { alert("نحن في خدمتك يا جلالة الملك."); });
-        } else {
-            btn('تحدث معها', () => { alert("عاش الملك!"); });
-        }
-        menu.style.display = 'block';
-    }
-
-    animate() {
-        requestAnimationFrame(this.animate.bind(this));
-        const dt = 1/60;
-
-        // Camera & Movement
-        this.look.yaw += (this.look.tYaw - this.look.yaw)*0.2; this.look.pitch += (this.look.tPitch - this.look.pitch)*0.2;
-        const fwd = -this.joystick.y, rgt = this.joystick.x, spd = 16;
-        this.pBody.velocity.x = (rgt*Math.cos(this.look.yaw) + fwd*Math.sin(this.look.yaw))*spd;
-        this.pBody.velocity.z = (-rgt*Math.sin(this.look.yaw) + fwd*Math.cos(this.look.yaw))*spd;
-        this.world.step(dt);
-        this.pGroup.position.copy(this.pBody.position); this.pGroup.rotation.y = this.look.yaw; this.camera.rotation.x = this.look.pitch;
-
-        // Auto Doors Logic
-        this.autoDoors.forEach(door => {
-            let minDist = door.meshPos.distanceTo(this.pGroup.position);
-            this.npcs.forEach(n => { if(!n.isDead) minDist = Math.min(minDist, n.mesh.position.distanceTo(door.meshPos)); });
-            
-            let isOpen = minDist < 8;
-            if(door.type === 'single') { door.pivot.rotation.y += ((isOpen ? door.open : door.closed) - door.pivot.rotation.y) * 0.1; } 
-            else if(door.type === 'slide') {
-                door.doorL.position.x += ((isOpen ? -door.open : -door.open/2) - door.doorL.position.x) * 0.1;
-                door.doorR.position.x += ((isOpen ? door.open : door.open/2) - door.doorR.position.x) * 0.1;
-            }
         });
 
-        // Context Btn
-        this.raycaster.setFromCamera(new THREE.Vector2(0,0), this.camera);
-        const hits = this.raycaster.intersectObjects(this.interactables, false);
-        const cBtn = document.getElementById('context-btn');
-        if(hits.length>0 && hits[0].distance<6) { this.curObj = hits[0].object; cBtn.style.display='block'; cBtn.innerText = this.curObj.userData.actionName; } 
-        else { this.curObj = null; cBtn.style.display='none'; }
-
-        // AI Logic
-        let isNight = this.time > 18 || this.time < 6;
-        this.npcs.forEach(n => {
-            if(n.isDead) return;
-
-            // KING AURA: Everyone respects the King
-            let distToKing = n.mesh.position.distanceTo(this.pGroup.position);
-            if(distToKing < 15) {
-                n.mesh.lookAt(this.pGroup.position.x, n.mesh.position.y, this.pGroup.position.z);
-                return; // HALT AND RESPECT
-            }
-
-            n.timer -= dt;
-            let target = n.target;
-
-            if(n.type === 'servant') {
-                // Servants stay inside Palace bounds
-                if(n.timer <= 0) {
-                    target.set((Math.random()-0.5)*100, 0, (Math.random()-0.5)*100);
-                    n.timer = 4 + Math.random()*5;
-                }
-            } else {
-                // Citizens logic
-                if(isNight) {
-                    let dInside = n.mesh.position.distanceTo(n.homeInside);
-                    if(dInside > 5) target.copy(n.homeDoor);
-                    if(n.mesh.position.distanceTo(n.homeDoor) < 3) target.copy(n.homeInside);
-                } else {
-                    if(n.timer <= 0) {
-                        target.set((Math.random()-0.5)*200, 0, (Math.random()-0.5)*200);
-                        n.timer = 5 + Math.random()*5;
+        async function fetchPlaylists() {
+            try {
+                const query = encodeURIComponent("مسلسلات تركية مدبلجة كاملة");
+                const res1 = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=playlist&q=${query}&maxResults=50&key=${YOUTUBE_API_KEY}`);
+                const data1 = await res1.json();
+                
+                if(data1.items) {
+                    allPlaylists.push(...data1.items);
+                    if(data1.nextPageToken) {
+                        const res2 = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=playlist&q=${query}&maxResults=50&pageToken=${data1.nextPageToken}&key=${YOUTUBE_API_KEY}`);
+                        const data2 = await res2.json();
+                        if(data2.items) allPlaylists.push(...data2.items);
                     }
+                    renderPlaylists();
                 }
-                // Keep citizens out of Palace
-                if (Math.abs(target.x) < 55 && Math.abs(target.z) < 55) {
-                    target.x = target.x > 0 ? 60 : -60;
-                }
-            }
+            } catch (error) {}
+        }
 
-            const dir = new THREE.Vector3().subVectors(target, n.mesh.position); dir.y = 0;
-            if(dir.length() > 1) {
-                dir.normalize();
-                n.mesh.position.addScaledVector(dir, 3 * dt);
-                n.mesh.rotation.y = Math.atan2(dir.x, dir.z);
+        function renderPlaylists() {
+            const c1 = document.getElementById('playlistsContainer1');
+            const c2 = document.getElementById('playlistsContainer2');
+            const c3 = document.getElementById('playlistsContainer3');
+            
+            c1.innerHTML = ''; c2.innerHTML = ''; c3.innerHTML = '';
+
+            allPlaylists.forEach((item, index) => {
+                const plId = item.id.playlistId;
+                const title = item.snippet.title;
+                const thumb = item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : item.snippet.thumbnails.default.url;
+
+                const card = `
+                    <div class="card" data-title="${title}" onclick="openPlaylist('${plId}', '${title.replace(/'/g, "\\'")}')">
+                        <div class="card-img-wrapper">
+                            <img src="${thumb}" class="card-img">
+                            <div class="card-overlay"><i class="fas fa-play"></i></div>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title">${title}</div>
+                        </div>
+                    </div>
+                `;
+                
+                if(index < 33) c1.innerHTML += card;
+                else if(index < 66) c2.innerHTML += card;
+                else c3.innerHTML += card;
+            });
+        }
+
+        window.openPlaylist = async (playlistId, title) => {
+            document.getElementById('playlistModalTitle').innerText = title;
+            const epCont = document.getElementById('episodesList');
+            epCont.innerHTML = '<div style="text-align:center; padding:50px;"><i class="fas fa-circle-notch fa-spin fa-3x" style="color:var(--primary-color);"></i></div>';
+            openModal('playlistModal');
+
+            try {
+                const res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${YOUTUBE_API_KEY}`);
+                const data = await res.json();
+                
+                epCont.innerHTML = '';
+                if(data.items && data.items.length > 0) {
+                    data.items.forEach((item, idx) => {
+                        const ytId = item.snippet.resourceId.videoId;
+                        const epTitle = item.snippet.title;
+                        const thumb = item.snippet.thumbnails.medium ? item.snippet.thumbnails.medium.url : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400';
+
+                        epCont.innerHTML += `
+                            <div class="episode-item" onclick="playVideo('${ytId}', '${epTitle.replace(/'/g, "\\'")}')">
+                                <img src="${thumb}">
+                                <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+                                    <h4 style="font-size:1.1rem; margin-bottom:10px;">${epTitle}</h4>
+                                    <span style="font-size:0.9rem; color:var(--primary-color); font-weight:bold;"><i class="fas fa-play-circle"></i> مشاهدة الحلقة</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch(e) {}
+        }
+
+        window.playVideo = (ytId, title) => {
+            closeModal('playlistModal');
+            currentVideoId = ytId;
+            document.getElementById('playerVideoTitle').innerText = title;
+            document.getElementById('playerContainer').innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" allow="autoplay; fullscreen"></iframe>`;
+            openModal('playerModal');
+            loadFirebaseData(ytId);
+        }
+
+        function loadFirebaseData(ytId) {
+            const likesRef = ref(db, `likes/${ytId}`);
+            const commentsRef = ref(db, `comments/${ytId}`);
+            
+            const likeBtn = document.getElementById('likeBtn');
+            likeBtn.className = 'action-btn';
+
+            onValue(likesRef, snap => {
+                document.getElementById('likeCountText').innerText = snap.val() || 0;
+            });
+
+            onValue(commentsRef, snap => {
+                const cont = document.getElementById('commentsContainer');
+                cont.innerHTML = '';
+                const data = snap.val();
+                if(data) {
+                    Object.values(data).forEach(c => {
+                        cont.innerHTML += `
+                            <div class="comment-item">
+                                <div class="comment-avatar"><i class="fas fa-user"></i></div>
+                                <div>
+                                    <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:5px;">عضو TurkDrama</div>
+                                    <div style="font-size:1rem; color:white;">${c.text}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            });
+
+            likeBtn.onclick = () => {
+                get(likesRef).then(snap => {
+                    set(likesRef, (snap.val() || 0) + 1);
+                    likeBtn.classList.add('liked');
+                });
+            };
+        }
+
+        document.getElementById('sendCommentBtn').addEventListener('click', () => {
+            const input = document.getElementById('commentInput');
+            if(input.value.trim() && currentVideoId) {
+                push(ref(db, `comments/${currentVideoId}`), { text: input.value.trim(), ts: Date.now() })
+                .then(() => input.value = '');
             }
         });
 
-        this.renderer.render(this.scene, this.camera);
-    }
-}
+        document.getElementById('submitVideoBtn').addEventListener('click', () => {
+            const title = document.getElementById('addTitle').value.trim();
+            const url = document.getElementById('addUrl').value.trim();
+            const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+            const ytId = match ? match[1] : null;
 
-window.onload = () => new Game();
-</script>
+            if(title && ytId) {
+                push(ref(db, 'user_videos'), { ytId, title, ts: Date.now() }).then(() => {
+                    document.getElementById('addTitle').value = '';
+                    document.getElementById('addUrl').value = '';
+                    closeModal('addVideoModal');
+                    const targetBtn = window.innerWidth > 992 
+                        ? document.querySelectorAll('.sidebar-menu li')[1] 
+                        : document.querySelectorAll('.nav-item')[2];
+                    switchTab('tab-videos', targetBtn);
+                });
+            }
+        });
+
+        onValue(ref(db, 'user_videos'), snap => {
+            const cont = document.getElementById('userVideosContainer');
+            cont.innerHTML = '';
+            const data = snap.val();
+            if(data) {
+                const videos = Object.values(data).sort((a,b) => b.ts - a.ts);
+                videos.forEach(v => {
+                    cont.innerHTML += `
+                        <div class="video-card" data-title="${v.title}" onclick="playVideo('${v.ytId}', '${v.title.replace(/'/g, "\\'")}')">
+                            <div style="position:relative;">
+                                <img src="https://img.youtube.com/vi/${v.ytId}/hqdefault.jpg">
+                                <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;">
+                                    <i class="fas fa-play-circle" style="font-size:3rem; color:rgba(255,255,255,0.9);"></i>
+                                </div>
+                            </div>
+                            <div class="video-card-info">
+                                <div class="video-card-title">${v.title}</div>
+                                <span style="font-size:0.85rem; color:var(--primary-color); font-weight:bold;"><i class="fas fa-video"></i> تشغيل المقطع</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        });
+
+        fetchPlaylists();
+
+    </script>
 </body>
 </html>
